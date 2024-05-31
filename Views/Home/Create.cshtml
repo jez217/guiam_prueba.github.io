@@ -1,0 +1,186 @@
+﻿@model Pautas.Models.Pautas.PautaModel
+
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<style>
+
+    .form-control {
+        border-color: #38b17a;
+        color: #2f2f2f;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+
+    .chosen-container .chosen-results li.highlighted {
+        background-color: #15a362;
+        background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #30b075), color-stop(90%, #15a362));
+        background-image: -webkit-linear-gradient(#30b075 20%, #15a362 90%);
+        background-image: -moz-linear-gradient(#30b075 20%, #15a362 90%);
+        background-image: -o-linear-gradient(#30b075 20%, #15a362 90%);
+        background-image: linear-gradient(#30b075 20%, #15a362 90%);
+        color: #fff;
+    }
+
+    .chosen-container-multi .chosen-choices {
+        -moz-box-sizing: border-box;
+        border: 1px solid #38b17a;
+        border-radius: 0.375rem;
+        cursor: text;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        position: relative;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        width: 100%;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+</style>
+<div class="app-wrapper">
+
+    <div class="app-content pt-3 p-md-3 p-lg-5">
+        <div style="    background: linear-gradient(0deg, rgba(56, 177, 122, 0.14049369747899154) 0%, rgba(255, 255, 255, 1) 51%); border-radius: 30px;;border-radius: 30px;color: black;border: 2px solid #38b17a;  ">
+            <div style="background: #38b17a;border-radius: 26px 26px 0 0;padding-top: 10px;padding-bottom: 20px;">
+                <div class="row align-items-center">
+                    <div class="col-1 text-center">
+                        <a asp-action="Index">
+                            <i class="bi bi-arrow-left-circle-fill display-7" style="color:#fffbf4"></i>
+                        </a>
+                    </div>
+                    <div class="col-10 text-center">
+                        <h1 class="text-light">
+                            Crear Pauta
+                        </h1>
+                    </div>
+                    <div class="col text-center">
+                    </div>
+                </div>
+            </div>
+            <div class="container-xl" style="padding-top: 3%;padding-right: 7%;padding-left: 7%;padding-bottom: 20%; border-radius: 30px;">
+                <div class="row mb-2">
+                </div>
+                @using (Html.BeginForm("Create", "Home", FormMethod.Post, new { id = "create-form" }))
+                {
+                    <div class="row">
+                        <div class="col">
+                            <label>Campaña</label>
+                            @Html.TextBoxFor(m => m.CAMPANNA, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                        </div>
+                        <div class="col">
+                            <label>Nombre de Producto</label>
+                            @Html.TextBoxFor(m => m.PRODUCT_NAME, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col form-group">
+                            <label>Tienda</label>
+                            @Html.ListBoxFor(m => m.STORE_CODE, (IEnumerable<SelectListItem>)Model.STOREDROPDOWNS, new { @class = "form-control chosen-select", @required = "required", data_placeholder = "Seleccione la Tienda", @autocomplete = "off" })
+                        </div>
+                        <div class="col">
+                            <label>Departamento</label>
+                            @Html.DropDownListFor(m => m.PC_ID, (List<SelectListItem>)Model.PCDROPDOWNS, "Seleccionar", new { @class = "form-control form-select", @autocomplete = "off" })
+                        </div>
+                        <div class="col form-group">
+                            <label>Mes</label>
+                            @Html.DropDownListFor(m => m.MONTH_ID, (List<SelectListItem>)Model.MONTHDROPDOWNS, "Seleccionar", new { @class = "form-control form-select", @autocomplete = "off" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col">
+                            <label>Año</label>
+                            @Html.TextBoxFor(m => m.ANNO, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                        </div>
+                        <div class="col">
+                            <label>Fecha de Inicio</label>
+                            @Html.TextBoxFor(m => m.START_DATE, new { @class = "form-control", @type = "date", @required = "required", @autocomplete = "off" })
+                        </div>
+                        <div class="col form-group">
+                            <label>Fecha de Fin</label>
+                            @Html.TextBoxFor(m => m.END_DATE, new { @class = "form-control", @type = "date", @required = "required", @autocomplete = "off" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col">
+                            <label>Alcance RRSS</label>
+                            @Html.TextBoxFor(m => m.SCOPE_RRSS, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                        </div>
+                        <div class="col">
+                            <label>Costo por Resultado ADS</label>
+                            @Html.TextBoxFor(m => m.COST_RESULT, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                        </div>
+                        <div class="col form-group">
+                            <label>Inversión ADS</label>
+                            @Html.TextBoxFor(m => m.INV_ADS, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col text-center">
+
+
+                            <button type="submit" style="font-size: 17px" class="btn app-btn-primary card-item" href="@Url.Action("Create", "Home")">
+                                <i class="bi bi-send-plus-fill display-9">
+                                </i> Crear Pauta
+                            </button>
+
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section scripts {
+    <script>
+        //ENVIO DE DATOS PARA CREAR LA PAUTA
+        $(document).ready(function () {
+            // Captura el evento submit del formulario
+            $('#create-form').submit(function (event) {
+
+                event.preventDefault();
+
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function (data) {
+
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        }).then((result) => {
+
+                            // Redirecciona a la página de edición si se hace clic en Aceptar
+                            if (result.isConfirmed) {
+                                window.location.href = '@Url.Action("Edit", "Home")' + '?id=' + data.id;
+                            }
+                        });
+                    },
+                    error: function () {
+                        // Muestra un Sweet Alert con un mensaje de error
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Hubo un error al procesar la solicitud',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                });
+            });
+        });
+
+    </script>
+
+}

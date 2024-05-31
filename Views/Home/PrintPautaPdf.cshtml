@@ -1,0 +1,335 @@
+﻿  @model Pautas.Models.Pautas.PautaModel
+  @using System.Globalization
+@{
+    ViewData["Title"] = "PrintPautaPdf";
+    Layout = null;
+}
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Pauta @Model.PAUTA_ID</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <link href="~/plugins/bootstrap/css/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/plugins/bootstrap/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+</head>
+
+<body style="font-size: 14px; border-radius: 30px; color: black;border: 2px solid #b5b5b5; ">
+
+
+    <style>
+
+        h3 {
+            font-size: 17px;
+        }
+    </style>
+ 
+    <div class="section">
+
+        <div class="container-full ">
+
+            <div class="change-color">
+                <div class="change-color" style="background: #b5b5b5;border-radius: 26px 26px 0 0;padding-top: 1px;padding-bottom: 1px;">
+
+                    <div class="row align-items-center">
+
+
+                        <div class="col text-center">
+                            <h1 class="text-light">
+                                Pauta @Model.PAUTA_ID
+                            </h1>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="container-xl" style="padding-right: 7%;padding-left: 7%;padding-bottom: 10%; margin-top: 5px">
+
+                    <div class="change-color-light" style="background-color: ; border-radius: 20px; padding: 2%">
+                        <div class="row">
+                            <div class="col">
+                                <ul style="list-style: none; text-transform: uppercase">
+                                    <li>
+                                        <h3 style="font-weight:700">Campaña: <span>@Model.CAMPANNA</span> </h3>
+                                    </li>
+                                    <li>
+                                        <b>Fecha de Inicio: </b> <span>@Model.START_DATE</span> | <b>Fecha Final: </b> <span>@Model.END_DATE</span>
+                                    </li>
+                                </ul>
+
+                            </div>
+                            <div class="col-1">
+                                <i class="bi bi-file-earmark-text display-4"></i>
+                            </div>
+                        </div>
+
+
+                        <table class="table table-borderless text-center">
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight: 700; border-right: 1px solid #fff;">Nombre de Producto</td>
+                                    <td style="font-weight: 700; border-right: 1px solid #fff;">Tiendas</td>
+                                    <td style="font-weight: 700;">Departamento</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 1px solid #fff;">@Model.PRODUCT_NAME</td>
+                                    <td style="border-right: 1px solid #ffff;">@Model.STORE_NAME</td>
+                                    <td>@Model.PC_NAME</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+
+                        <hr style="
+                            border: 2px solid #9d9d9d;
+                            border-bottom: 0;
+                            border-right: 0;
+                            border-left: 0;
+                            margin-top: 0;
+                          " />
+
+                        <table class="table text-center" >
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight: 700">Alcance RRSS</td>
+                                    <td style="font-weight: 700">Costo por Resultado ADS</td>
+                                    <td style="font-weight: 700">Inversión ADS</td>
+                                    <td style="font-weight: 700">ROI</td>
+
+                                </tr>
+                                <tr>
+                                    <td>@Model.SCOPE_RRSS</td>
+                                    <td>@Model.COST_RESULT</td>
+                                    <td>@Model.INV_ADS</td>
+
+                                    <td>@Model.ROI</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+
+
+                        <div>
+
+                            <div class="row pb-4 align-items-center text-center">
+                                @foreach (var col in Model.ListaPautaImages)
+                                {
+                                    <div class="col-4">
+
+                                        <img class="pt-2" style="width: 65%; align-items: center" src="~/ImgPauta/@col.IMAGES_NAME">
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div>
+
+
+                            <table id="myTable1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <a id="exportButton" class="" style="color: #803740">
+                                    </a>
+                                    <tr style="text-transform: uppercase">
+                                        <th>Producto</th>
+                                        <th>Código</th>
+                                        <th>Venta</th>
+                                        <th>pza</th>
+                                        <th>Utilidad</th>
+                                        <th>Margen</th>
+                                        <th>Transac</th>
+@*                                         <th>TICKET</th>
+ *@
+@*                                         <th></th> <!-- Agregué esta columna para el botón de eliminación -->
+ *@                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (var item in Model.ListaProducDetail)
+                                    {
+                                        <tr>
+                                            <td style="font-weight: 700 ">@item.PROD_DESC</td>
+                                            <td>@item.PRODUCT_CODE</td>
+
+                                            <td>$@item.SALE</td>
+                                            <td>@item.QTY</td>
+                                            <td>$@item.UTILITY</td>
+                                            <td>@item.MARGIN%</td>
+                                            <td>@item.TRANSNUM</td>
+@*                                             <td>@item.TICKET_PROM</td>
+ *@
+@* 
+                                            <td>
+                                                <a data-bs-toggle="tooltip" id="btnEliminar" class="display-10" onclick="confirmDeleted('@item.PRODUCT_CODE', '@item.PAUTA_ID')">
+                                                    <i class="bi bi-trash-fill display-8" style="color: #c30000"></i>
+                                                </a>
+                                            </td> *@
+                                        </tr>
+                                    }
+                                </tbody>
+
+                                <tfoot>
+                                    <tr style="font-weight: 600">
+                                        <td colspan="2">Total  </td>
+
+                                        <td colspan="1">$@ViewBag.TotalVenta</td>
+                                        <td colspan="1">@ViewBag.TotalPiezas</td>
+                                        <td colspan="1">$@ViewBag.TotalUtilidad</td>
+                                        <td colspan="4"></td>
+
+                                    </tr>
+                                </tfoot>
+                             </table>
+
+@*                             <table id="totaTable" class="table mt-3 table-striped table-bordered text-center" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr style="text-transform: uppercase">
+                                        <th>Total de Ventas</th>
+                                        <th>Total de PZA</th>
+                                        <th>Total de Utilidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center">
+                                        <td>@ViewBag.TotalVenta</td>
+                                        <td>@ViewBag.TotalPiezas</td>
+                                        <td>@ViewBag.TotalUtilidad</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+ *@                            <hr style="
+                            border: 2px solid #9d9d9d;
+                            border-bottom: 0;
+                            border-right: 0;
+                            border-left: 0;
+                            margin-top: ;
+                            margin-bottom: 0" />
+
+
+                        </div>
+                    </div>
+                    
+
+
+
+                    
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modal Form Producto -->
+    <div class="modal fade" id="ModalProducto" tabindex="-1" aria-labelledby="ModalProductoLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="ModalProductoLabel">Ingresa el producto de la pauta</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                @using (Html.BeginForm("InsertProduct", "Home", FormMethod.Post, new { id = "AgregarProducto-form" }))
+                {
+                    @Html.HiddenFor(m => m.PAUTA_ID)
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">
+                                <label>Código</label>
+                                <input id="PRODUCT_CODE" class="form-control" autocomplete="off" onkeyup="SearchProduct();" />
+
+                            </div>
+                            <div class="col">
+                                <label>Descripción</label>
+                                <input id="PROD_DESC" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col">
+                                <label>Referencia</label>
+                                <input id="SUPPLIER_CODE" class="form-control" readonly />
+                            </div>
+                            <div class="col">
+                                <label>Precio</label>
+                                <input id="PRICE_RETAIL" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="row mt-2 text-center">
+                            <div class="col-12">
+                                <label>Imagen </label>
+                                <img id="PHOTO_PATH" src="" style="width: 100%; object-fit: cover" />
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn app-btn-warning" style="color: #fff;">
+                            Agregar
+                            <i class="bi bi-plus-circle"></i>
+                        </button>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Form Imagen -->
+    <div class="modal fade" id="ModalImagen" tabindex="-1" aria-labelledby="ModalImagenLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="ModalProductoLabel">Ingresa las imagenes de la pauta</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                @using (Html.BeginForm("UploadImage", "Home", FormMethod.Post, new { @id = "UploadImage-form", @enctype = "multipart/form-data" }))
+                {
+                    <div class="modal-body">
+                        @Html.HiddenFor(m => m.PAUTA_ID)
+                        <div class="row mt-2">
+                            <div class="col">
+                                <label for="imageInput" class="form-label">Seleccione imágenes</label>
+                                <input type="file" name="file" id="file" class="form-control" accept="image/*">
+
+                                <div class="image-preview" id="imagePreview"></div>
+                                <div id="carouselExampleIndicators" class="carousel slide mt-3" data-ride="carousel">
+                                    <div class="carousel-inner" id="imagePreview"></div>
+                                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div id="image-preview-container"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn app-btn-warning" style="color: #fff;">Guardar <i class="bi bi-floppy2"></i></button>
+
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+
+
+</body>
+
+</html>

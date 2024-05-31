@@ -1,0 +1,1007 @@
+﻿@model Pautas.Models.Pautas.PautaModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<style>
+
+    .fixed-action-btn {
+        position: fixed;
+        right: 30px;
+        bottom: 35px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+        transition: all 300ms ease;
+    }
+
+        .fixed-action-btn .bi-filetype-pdf {
+            transition: transform 300ms ease;
+        }
+
+        .fixed-action-btn:hover .bi-filetype-pdf {
+            transform: scale(1.5);
+        }
+
+
+    .owl-carousel .item {
+        text-align: center;
+    }
+
+        .owl-carousel .item img {
+            max-width: 100%;
+            max-height: 200px;
+            display: inline-block;
+            object-fit: contain;
+        }
+</style>
+<style>
+    div.dt-buttons > .dt-button:first-child, div.dt-buttons > div.dt-button-split .dt-button:first-child {
+        margin-left: 0;
+        border-radius: 10px;
+        background: #fbfff8;
+        color: #569f1c;
+        font-weight: 600;
+        border: 1px solid;
+    }
+
+    div.dt-buttons > .dt-button:hover:not(.disabled), div.dt-buttons > div.dt-button-split .dt-button:hover:not(.disabled) {
+  
+        border-radius: 10px;
+        background: #fff;
+        color: #569f1c;
+        font-weight: 600;
+        border: 1px solid;
+    }
+
+    .image-preview img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .app {
+        background: #fbfaf3;
+    }
+
+    .form-control {
+        border-color: #bb9a62;
+        color: #2f2f2f;
+    }
+
+        .form-control:focus {
+            color: var(--bs-body-color);
+            background-color: var(--bs-body-bg);
+            border-color: #bb9a62;
+            outline: 0;
+            box-shadow: 0 0 0 .25rem #bb9a6261;
+        }
+
+    .chosen-container-active .chosen-choices {
+        border: 1px solid #5897fb;
+        box-shadow: 0 0 0 .25rem #bb9a6261;
+    }
+
+    .chosen-container-multi .chosen-choices li.search-choice {
+        position: relative;
+        margin: 3px 0 3px 5px;
+        padding: 3px 20px 3px 5px;
+        border: 1px solid #bb9a62;
+        border-radius: 3px;
+        background-image: linear-gradient(45deg, #f5df99 0%, #cc9343 100%);
+        background-clip: padding-box;
+        box-shadow: 0 0 2px white inset, 0 1px 0 #bb9a6261 color: #000;
+        line-height: 13px;
+        cursor: default;
+    }
+
+    .chosen-container .chosen-results li.highlighted {
+        background-color: #bb9a62;
+        background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #cc9343), color-stop(90%, #cc9343));
+        background-image: -webkit-linear-gradient(#cc9343 20%, #cc9343 90%);
+        background-image: -moz-linear-gradient(#cc9343 20%, #cc9343 90%);
+        background-image: -o-linear-gradient(#cc9343 20%, #cc9343 90%);
+        background-image: linear-gradient(#cc9343 20%, #cc9343 90%);
+        color: #fff;
+    }
+
+    .chosen-container-multi .chosen-choices {
+        -moz-box-sizing: border-box;
+        border: 1px solid #bb9a62;
+        border-radius: 0.375rem;
+        cursor: text;
+        overflow: hidden;
+        position: relative;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        width: 100%;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+
+</style>
+<head>
+    <title>Pauta @Model.PAUTA_ID</title>
+</head>
+<div class="app-wrapper">
+
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+
+        <div class="change-color" style="background: rgb(254,253,247);
+background: linear-gradient(0deg, rgba(254,253,247,1) 0%, rgba(255,255,255,1) 51%); border-radius: 30px;;border-radius: 30px;color: black;border: 2px solid #bb9a62; ">
+            <div class="change-color" style="background: #bb9a62;border-radius: 26px 26px 0 0;padding-top: 10px;padding-bottom: 20px;">
+
+                <div class="row align-items-center">
+
+                    <div class="col-1 text-center">
+                        <a asp-action="Details">
+                            <i class="bi bi-arrow-left-circle-fill display-7" style="color:#fffbf4"></i>
+                        </a>
+                    </div>
+                    <div class="col-10 text-center">
+                        <h1 class="text-light">
+                            Editar Pauta #@Model.PAUTA_ID
+                        </h1>
+                    </div>
+                    <div class="col text-center">
+
+                        @using (Html.BeginForm("PautaFinish", "Home", FormMethod.Post, new { id = "FinishStatus-form" }))
+                        {
+                            @Html.HiddenFor(m => m.PAUTA_ID)
+                            <button type="submit" id="btnTerminar" class="btn btn-secondary" style="padding-top:11px;padding-bottom:11px; border-radius: 50px; font-size:20px; color: #fff; "><i class="bi bi-clipboard-check-fill  display-7"></i></button>
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-xl" style="padding-right: 7%;padding-left: 7%;padding-bottom: 10%; margin-top: 30px">
+
+                <div class="change-color-light" style="background-color: #f5f3e8; border-radius: 20px; padding: 2%">
+                    <div class="row mb-2 justify-content-end">
+
+                        <label class="text-danger">@ViewBag.mensaje</label>     
+                      @*    <div class="col-10">
+                          
+                        </div>  *@
+                        <div class="col-1 card-item" >
+                            <a id="btnProducto" class="card-item" href="" data-bs-toggle="modal" data-bs-target="#ModalProducto" title="Agrega Producto" style="color: #803740;">
+                                <i class="bi bi-box-fill display-7 card-item"></i>
+                            </a>
+                        </div>
+                        <div class="col-1 card-item" >
+                            <a id="btnImagen" href="" data-bs-toggle="modal" data-bs-target="#ModalImagen" title="Agrega Imagen" style="color: #803740;">
+                                <i class="bi bi-images display-7"></i>
+                            </a>
+                        </div>
+                         <div class="col-10">
+                        </div> 
+
+                    </div>
+
+
+                    @using (Html.BeginForm("Edit", "Home", FormMethod.Post, new { id = "edit-form" }))
+                    {
+                        @Html.HiddenFor(m => m.PAUTA_ID)
+                        <div class="row">
+                            <div class="col">
+                                <label>Campaña</label>
+                                @Html.TextBoxFor(m => m.CAMPANNA, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                            </div>
+                            <div class="col">
+                                <label>Nombre de Producto</label>
+                                @Html.TextBoxFor(m => m.PRODUCT_NAME, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col form-group">
+                                <label>Tienda: <span id="selectedStoresLabel">@Model.STORE_NAME</span></label>
+                                <div id="storeSelectionContainer">
+                                    @Html.ListBoxFor(m => m.STORE_CODE, (IEnumerable<SelectListItem>)Model.STOREDROPDOWNS, new { @class = "form-control chosen-select", @required = "required", data_placeholder = "", style = "display:none;", @autocomplete = "off" })
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <label>Departamento</label>
+                                @Html.DropDownListFor(m => m.PC_ID, (List<SelectListItem>)Model.PCDROPDOWNS, "Seleccionar", new { @class = "form-control form-select", @autocomplete = "off" })
+                            </div>
+                            <div class="col form-group">
+                                <label>Mes</label>
+                                @Html.DropDownListFor(m => m.MONTH_ID, (List<SelectListItem>)Model.MONTHDROPDOWNS, "Seleccionar", new { @class = "form-control form-select", @autocomplete = "off" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label>Año</label>
+                                @Html.TextBoxFor(m => m.ANNO, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                            </div>
+                            <div class="col">
+                                <label>Fecha de Inicio</label>
+                                @Html.TextBoxFor(m => m.START_DATE, new { @class = "form-control", @type = "date", @required = "required", @autocomplete = "off" })
+                            </div>
+                            <div class="col form-group">
+                                <label>Fecha de Fin</label>
+                                @Html.TextBoxFor(m => m.END_DATE, new { @class = "form-control", @type = "date", @required = "required", @autocomplete = "off" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label>Alcance RRSS</label>
+                                @Html.TextBoxFor(m => m.SCOPE_RRSS, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                            </div>
+                            <div class="col">
+                                <label>Costo por Resultado ADS</label>
+                                @Html.TextBoxFor(m => m.COST_RESULT, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                            </div>
+                            <div class="col form-group">
+                                <label>Inversión ADS</label>
+                                @Html.TextBoxFor(m => m.INV_ADS, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-4">
+                                <label>ROI: <span style="color:brown"> $@Model.ROI</span></label>
+
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row justify-content-center text-center">
+
+                            <div class="col">
+                                <button type="submit" id="btnEditar" style="font-size: 17px; background: #803740" class="btn app-btn-warning text-center card-item" href="@Url.Action("Create", "Home")">
+                                    <i class="bi bi-pencil-fill display-9"></i> Editar
+                                </button>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+                <hr style="
+                    border: 2px solid #b35202;
+                    border-bottom: 0;
+                    border-right: 0;
+                    border-left: 0;
+                    margin-top: 5%;
+                    margin-bottom: 3%" />
+
+                <div>
+
+                    <div>
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-table1">
+                                    <i class="bi bi-box-fill display-8" style="color:#b35202"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-table2">
+                                    <i class="bi bi-images display-8 card-item" style="color:#b35202"></i>
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-2">
+                            <div class="tab-pane show active" id="tab-table1">
+                                <table id="myTable1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                    <thead>
+                                        <a id="exportButton" class="" style="color: #803740">
+                                        </a>
+                                        <tr style="text-transform: uppercase">
+                                            <th>Producto</th>
+                                            <th>Código</th>
+                                            <th>Venta</th>
+                                            <th>pza</th>
+                                            <th>Utilidad</th>
+                                            <th>Margen</th>
+                                            <th>Transac</th>
+@*                                             <th>TICKET P</th>
+ *@
+                                            <th></th> <!-- Agregué esta columna para el botón de eliminación -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (var item in Model.ListaProducDetail)
+                                        {
+                                            <tr>
+                                                <td style="font-weight: 700 ">@item.PROD_DESC</td>
+                                                <td>@item.PRODUCT_CODE</td>
+
+                                                <td>$@item.SALE</td>
+                                                <td>@item.QTY</td>
+                                                <td>$@item.UTILITY</td>
+                                                <td>@item.MARGIN</td>
+                                                <td>@item.TRANSNUM</td>
+@*                                                 <td>@item.TICKET_PROM</td>
+ *@                                                
+
+                                                <td>
+                                                    <a data-bs-toggle="tooltip" id="btnEliminar" class="display-10" onclick="confirmDeleted('@item.PRODUCT_CODE', '@item.PAUTA_ID')">
+                                                        <i class="bi bi-trash-fill display-8" style="color: #c30000"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+
+                                    <tfoot>
+                                        <tr style="font-weight: 600">
+                                            <td colspan="2">Total  </td>
+
+                                            <td colspan="1">$@ViewBag.TotalVenta</td>
+                                            <td colspan="1">@ViewBag.TotalPiezas</td>
+                                            <td colspan="1">$@ViewBag.TotalUtilidad</td>
+                                            <td colspan="4"></td>
+
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+                            <div class="tab-pane" id="tab-table2">
+                                <div class="owl-carousel owl-theme">
+                                    @foreach (var item in Model.ListaPautaImages)
+                                    {
+                                        <div class="item">
+                                            <a class="display-10" onclick="confirmImageDeleted('@item.ID')">
+                                                <i class="bi bi-x-circle-fill display-8" style="color: #c30000"></i>
+                                            </a>
+
+                                            <img src="~/ImgPauta/@item.IMAGES_NAME" data-toggle="modal" data-target="#exampleModal">
+                                        </div>
+                                    }
+                                </div>
+                                <!-- Modal imágenes-->
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content text-center">
+                                            <div class="modal-header">
+                                                <h1>@Model.IMAGES_NAME</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <img src="" id="modalImage" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal Form Producto -->
+<div class="modal fade" id="ModalProducto" tabindex="-1" aria-labelledby="ModalProductoLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ModalProductoLabel">Ingresa el producto de la pauta</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            @using (Html.BeginForm("InsertProduct", "Home", FormMethod.Post, new { id = "AgregarProducto-form" }))
+            {
+                @Html.HiddenFor(m => m.PAUTA_ID)
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <label>Código</label>
+                            <input id="PRODUCT_CODE" class="form-control" autocomplete="off" onkeyup="SearchProduct();" />
+
+                        </div>
+                        <div class="col">
+                            <label>Descripción</label>
+                            <input id="PROD_DESC" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <label>Referencia</label>
+                            <input id="SUPPLIER_CODE" class="form-control" readonly />
+                        </div>
+                        <div class="col">
+                            <label>Precio</label>
+                            <input id="PRICE_RETAIL" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="row mt-2 text-center">
+                        <div class="col-12">
+                            <label>Imagen </label>
+                            <img id="PHOTO_PATH" src="" style="width: 100%; object-fit: cover" />
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn app-btn-warning" style="color: #fff;">
+                        Agregar
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Form Imagen -->
+<div class="modal fade" id="ModalImagen" tabindex="-1" aria-labelledby="ModalImagenLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ModalProductoLabel">Ingresa las imagenes de la pauta</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            @using (Html.BeginForm("UploadImage", "Home", FormMethod.Post, new { @id = "UploadImage-form", @enctype = "multipart/form-data" }))
+            {
+                <div class="modal-body">
+                    @Html.HiddenFor(m => m.PAUTA_ID)
+                    <div class="row mt-2">
+                        <div class="col">
+                            <label for="imageInput" class="form-label">Seleccione imágenes</label>
+                            <input type="file" name="file" id="file" class="form-control" accept="image/*">
+
+                            <div class="image-preview" id="imagePreview"></div>
+                            <div id="carouselExampleIndicators" class="carousel slide mt-3" data-ride="carousel">
+                                <div class="carousel-inner" id="imagePreview"></div>
+                                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div id="image-preview-container"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn app-btn-warning" style="color: #fff;">Guardar <i class="bi bi-floppy2"></i></button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Muestra la Imagen -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="PROD_DESC">Vista de imagen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="
+                 align-self: center;
+                 ">
+                <div class="row">
+                    <div class="col text-center">
+                        <img src="" class="img-fluid" id="modalImage" style="
+                 width: 50%;
+                 ">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fixed-action-btn">
+    <a href='@Url.Action("PrintPautaPdf", "Home", new { id = Model.PAUTA_ID })' class="btn btn-warning text-center fixed-action-btn card-item" style="border-radius: 50px; font-size: 18px; color: #803740; background: #F0F3EC; border: 2px solid #bb9a62" target="_blank">
+        <i class="bi bi-file-earmark-pdf-fill display-6 text-center"></i>
+    </a>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            // Definir el idioma de DataTables
+            var idioma = {
+                "decimal": "",
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ Entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "Sin resultados encontrados",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Ultimo",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            };
+
+            // Inicializa DataTables en la tabla con el idioma definido
+            var table = $('#myTable1').DataTable({
+                language: idioma
+            });
+
+            // Añade un botón de exportación a la tabla
+            new $.fn.dataTable.Buttons(table, {
+                buttons: [{
+                    extend: 'excelHtml5',
+                    text: '<i class="bi bi-file-spreadsheet-fill display-9"></i> Exportar Excel'
+                }]
+            });
+
+            // Añade el contenedor de botones al botón exportButton
+            $('#exportButton').append(table.buttons().container());
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                // Obtener el ID de la pestaña activa
+                var targetTableId = $(e.target).attr('data-bs-target');
+
+                // Inicializar DataTables en la tabla correspondiente
+                $(targetTableId + ' table').DataTable({
+                    // Configuración de DataTables
+                });
+            });
+        });
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#myTable1').DataTable();
+            $('#totalTable').DataTable();
+        });
+    </script>
+    <script>
+        //Mantenemos el Modal sin salida
+        $(document).ready(function () {
+            // Cuando se haga clic en una imagen del carrusel
+            $('#carouselExample .carousel-item img').click(function () {
+                // Obtenemos la ruta de la imagen clicada
+                var imgSrc = $(this).attr('src');
+                // Actualizamos la imagen del modal con la imagen clicada
+                $('#modalImage').attr('src', imgSrc);
+                // Mostramos el modal
+                $('#imageModal').modal('show');
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.carousel').carousel({
+                interval: 9000
+            })
+        });
+
+    </script>
+    <script>
+        //AJUSTES PARA EL CHOSEN DE LAS TIENDAS
+        $(document).ready(function () {
+
+            // Verificar si el estado es 3 o 4
+            if ('@Model.STATUS_ID' == 3 || '@Model.STATUS_ID' == 4) {
+                // Ocultar los elementos
+                document.getElementById("btnProducto").hidden = true;
+                document.getElementById("btnImagen").hidden = true;
+                document.getElementById("btnTerminar").hidden = true;
+                document.getElementById("btnEditar").hidden = true;
+
+                var btnEliminarElements = document.querySelectorAll('#btnEliminar');
+
+                btnEliminarElements.forEach(function (element) {
+                    element.style.display = 'none';
+                });
+
+                // Cambiar el título si el estado es 3 o 4
+                var titulo = document.querySelector('.text-light');
+                if (titulo.textContent.trim() === 'Editar Pauta') {
+                    titulo.textContent = 'Pautas Finalizadas';
+                }
+
+                // Cambiar el color de fondo de elementos con la clase "change-color" a gris
+                var elementos = document.querySelectorAll('.change-color');
+                elementos.forEach(function (elemento) {
+                    elemento.style.backgroundColor = '#838383';
+                    elemento.style.borderColor = '#838383';
+
+                });
+
+                var elementos = document.querySelectorAll('.change-color-light');
+
+                elementos.forEach(function (elemento) {
+                    elemento.style.backgroundColor = '#c5c5c5';
+                    elemento.style.borderColor = '#838383';
+
+                });
+
+            }
+
+        });
+
+        // Limpiar campos del modal al mostrarlo
+        $('#ModalProducto').on('show.bs.modal', function () {
+            $('#PRODUCT_CODE').val('');
+            $('#PROD_DESC').val('');
+            $('#SUPPLIER_CODE').val('');
+            $('#PRICE_RETAIL').val('');
+            $('#PHOTO_PATH').attr('src', '');
+        });
+
+
+    </script>
+
+    <script type="text/javascript">
+        // Ajustes para que aparescan en el label las tiendas al momento del editarlas
+        $(document).ready(function () {
+            $('#selectedStoresLabel').click(function () {
+                $('#storeSelectionContainer').show();
+            });
+
+            $('#STORE_CODE').change(function () {
+                updateSelectedStoresLabel();
+            });
+
+            function updateSelectedStoresLabel() {
+                var selectedStores = $('#STORE_CODE').val();
+
+                if (!selectedStores || selectedStores.length === 0) {
+                    $('#selectedStoresLabel').text('No hay tiendas seleccionadas');
+                    return;
+                }
+
+                var selectedStoresNames = selectedStores.map(function (storeCode) {
+                    var selectedStoreName = $('#STORE_CODE option[value="' + storeCode + '"]').text();
+                    return selectedStoreName;
+                });
+
+                $('#selectedStoresLabel').text(selectedStoresNames.join(', '));
+            }
+        });
+
+        // Funcion para cargar la informacion de los  productos
+        function SearchProduct() {
+            var PRODUCT_CODE = document.getElementById("PRODUCT_CODE").value;
+
+            $.ajax({
+                url: '@Url.Action("SearchProduct", "Home")',
+                dataType: 'json',
+                data: { 'PRODUCT_CODE': PRODUCT_CODE },
+                success: function (data) {
+                    console.log(data);
+                    document.getElementById("PROD_DESC").value = data.proD_DESC;
+                    document.getElementById("SUPPLIER_CODE").value = data.supplieR_CODE;
+                    document.getElementById("PRICE_RETAIL").value = data.pricE_RETAIL;
+                    document.getElementById("PHOTO_PATH").src = data.photO_PATH;
+                },
+                error: function () {
+                    // Muestra un Sweet Alert con un mensaje de error
+                    Alert("Ocurrio un error al buscar el producto");
+                }
+            });
+
+        }
+    </script>
+
+    <script>
+        // Ajustes personalisados para el carousel de imagenes de la pauta
+        $(document).ready(function () {
+            $(".owl-carousel").owlCarousel({
+                items: 3,
+                autoplay: true,
+                autoplayTimeout: 3000,
+                autoplayHoverPause: true,
+                nav: true, // Habilita la navegación
+                navText: ["<i class='fas fa-chevron-left'></i>", "<i class='fas fa-chevron-right'></i>"] // Establece el texto de navegación personalizado
+            });
+
+            $(".owl-carousel").on("click", ".owl-item img", function () {
+                var imageUrl = $(this).attr("src");
+                $("#modalImage").attr("src", imageUrl);
+                $("#exampleModal").modal("show");
+            });
+        });
+    </script>
+
+    <script>
+        // Funcion para accion del edit del formulario
+        $(document).ready(function () {
+            // Captura el evento submit del formulario
+            $('#edit-form').submit(function (event) {
+
+                event.preventDefault();
+
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function (data) {
+
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        }).then((result) => {
+
+                            // Redirecciona a la página de edición si se hace clic en Aceptar
+                            if (result.isConfirmed) {
+                                window.location.href = '@Url.Action("Edit", "Home")?id=' + data.id;
+                            }
+                        });
+                    },
+                    error: function () {
+                        // Muestra un Sweet Alert con un mensaje de error
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Hubo un error al procesar la solicitud',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                });
+            });
+        });
+
+        //Funcion para accion del Cargar la Imagen y agregarla a la Pauta
+        $(document).ready(function () {
+            $('#UploadImage-form').submit(function (event) {
+                event.preventDefault();
+
+                var id = $('#id').val();
+                var PAUTA_ID = $('#PAUTA_ID').val();
+
+                var formData = new FormData();
+                formData.append('id', id);
+                formData.append('PAUTA_ID', PAUTA_ID);
+
+                var fileInput = $('#file')[0].files[0];
+                formData.append('file', fileInput);
+
+                // Realizar la solicitud AJAX
+                $.ajax({
+                    url: '@Url.Action("UploadImage", "Home")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        Swal.fire({
+                            title: 'Agregado',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        }).then((result) => {
+
+                            // Redirecciona a la página de edición si se hace clic en Aceptar
+                            if (result.isConfirmed) {
+                                window.location.href = '@Url.Action("Edit", "Home")?id=' + data.id;
+                            }
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Hubo un error al procesar la solicitud',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Funcion para agregar producto del formulario en la pauta
+        $(document).ready(function () {
+            // Captura el evento submit del formulario
+            $('#AgregarProducto-form').submit(function (event) {
+                event.preventDefault();
+
+                var PAUTA_ID = $('#PAUTA_ID').val();
+                var PRODUCT_CODE = $('#PRODUCT_CODE').val();
+
+                $.ajax({
+                    url: '@Url.Action("InsertProduct", "Home")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        'PAUTA_ID': PAUTA_ID,
+                        'PRODUCT_CODE': PRODUCT_CODE
+                    },
+                    success: function (data) {
+                        Swal.fire({
+                            title: 'Agregado',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        }).then((result) => {
+                            // Redirecciona a la página de edición si se hace clic en Aceptar
+                            if (result.isConfirmed) {
+                                window.location.href = '@Url.Action("Edit", "Home")?id=' + data.id;
+                            }
+                        });
+                    },
+                    error: function () {
+                        // Muestra un Sweet Alert con un mensaje de error
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Hubo un error al procesar la solicitud',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                });
+            });
+        });
+
+        //Funcion para al hacer click en la accion cambiar a estado terminado
+        document.getElementById('btnTerminar').addEventListener('click', function (event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, terminar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    submitForm();
+                }
+            });
+        });
+        function submitForm() {
+            const form = $('#FinishStatus-form');
+
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function (data) {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    }).then((result) => {
+                        // Redirect to the Index page if the user clicks on Accept
+                        if (result.isConfirmed) {
+                            window.location.href = '@Url.Action("Index", "Home")';
+                        }
+                    });
+                },
+                error: function () {
+                    // Show a Sweet Alert with an error message
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Hubo un error al procesar la solicitud',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            });
+        }
+
+        //Funcion para confirmar el eliminado de un producto
+        function confirmDeleted(PRODUCT_CODE, PAUTA_ID) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, cancelar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deletePauta(PRODUCT_CODE, PAUTA_ID);
+                }
+            });
+        }
+        function deletePauta(PRODUCT_CODE, PAUTA_ID) {
+            $.ajax({
+                url: '@Url.Action("DeleteProduct", "Home")',
+                type: 'POST',
+                data: { PRODUCT_CODE: PRODUCT_CODE, PAUTA_ID: PAUTA_ID },
+                success: function (response) {
+                    if (response.message) {
+                        Swal.fire(
+                            '¡Eliminado!',
+                            response.message,
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire(
+                        'Error',
+                        'Hubo un error al eliminar la pauta.',
+                        'error'
+                    );
+                }
+            });
+
+        }
+
+        //Funcion para confirmar el eliminado de una imagen
+        function confirmImageDeleted(ID) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, cancelar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteImage(ID);
+                }
+            });
+        }
+        function deleteImage(ID) {
+            $.ajax({
+                url: '@Url.Action("DeleteImage", "Home")',
+                type: 'POST',
+                data: { ID: ID },
+                success: function (response) {
+                    if (response.message) {
+                        Swal.fire(
+                            '¡Eliminado!',
+                            response.message,
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire(
+                        'Error',
+                        'Hubo un error al eliminar la pauta.',
+                        'error'
+                    );
+                }
+            });
+
+        }
+    </script>
+
+}
+
+

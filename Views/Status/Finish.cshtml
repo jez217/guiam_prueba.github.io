@@ -1,0 +1,209 @@
+﻿@model IEnumerable<Pautas.Models.Pautas.PautaModel>
+
+    @{
+    ViewData["Title"] = "Terminado";
+    }
+    <style>
+        .app {
+            background: #dfdfdf;
+        }
+
+        div.dt-buttons > .dt-button:first-child, div.dt-buttons > div.dt-button-split .dt-button:first-child {
+            margin-left: 0;
+            border-radius: 10px;
+            background: #fbfff8;
+            color: #569f1c;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        div.dt-buttons > .dt-button:hover:not(.disabled), div.dt-buttons > div.dt-button-split .dt-button:hover:not(.disabled) {
+            border-radius: 10px;
+            background: #fff;
+            color: #569f1c;
+            font-weight: 600;
+            border: 1px solid;
+        }
+    </style>
+
+    <div class="app-wrapper">
+        <div class="app-content pt-3 p-md-3 p-lg-4">
+            <div style="
+    background: #fff;
+    border-radius: 30px;
+    color: black;
+    border: 2px solid #a1a1a1; ">
+                <div style="background: #a1a1a1;border-radius: 26px 26px 0 0;padding-top: 10px;padding-bottom: 20px;">
+                    <div class="row align-items-center">
+                        <div class="col-1 text-center">
+                            <a asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-arrow-left-circle-fill display-7" style="color:#fffbf4"></i>
+                            </a>
+                        </div>
+                        <div class="col text-center">
+                            <h1 class="text-light">
+                                Pautas Terminadas
+                            </h1>
+                        </div>
+                        <div class="col-3 text-center">
+                            <a class="btn app-btn-light" href="@Url.Action("Create", "Home")">
+                                <i class="bi bi-send-plus display-9"></i>
+                                Crear Pauta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="container-xl pt-2 pb-5" style="padding-right: 7%;padding-left: 7%;">
+                    <hr />
+
+                    <div class="table-responsive">
+                        <table id="StatusFinish" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
+                                <a id="exportButton" class="" style="color: #803740">
+
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Campaña</th>
+                                    <th>Estado</th>
+                                    <th>Departamento</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Final</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var model in Model)
+                            {
+                                <tr>
+
+                                    <td>@Html.DisplayFor(m => model.PAUTA_ID)</td>
+                                    <td>@Html.DisplayFor(m => model.CAMPANNA)</td>
+                                    <td>
+                                        @if (model.STATUS_ID == 1)
+                                        {
+                                        <button class="btn btn-primary btn-no-cursor" style="background: #8cbba1">@Html.DisplayFor(m => model.STATUS)</button>
+                                        }
+                                        else if (model.STATUS_ID == 2)
+                                        {
+                                        <button class="btn btn-warning btn-no-cursor" style="background: #8cb2bb">@Html.DisplayFor(m => model.STATUS)</button>
+                                        }
+                                        else
+                                        {
+                                        <button class="btn btn-secondary text-light btn-no-cursor">@Html.DisplayFor(m => model.STATUS)</button>
+                                        }
+                                    </td>
+                                    <td>@Html.DisplayFor(m => model.PC_NAME)</td>
+                                    <td>@Html.DisplayFor(m => model.START_DATE)</td>
+                                    <td>@Html.DisplayFor(m => model.END_DATE)</td>
+                                    <td>
+                                        <a title="Ver" class="btn app-btn-warning" style="background: #5d6778" href="@Url.Action("Edit", "Home", new { id = model.PAUTA_ID })">
+                                            <i class="bi bi-eye display-10"></i>
+                                        </a>
+                                    </td>
+
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+
+        <script>
+            $(document).ready(function () {
+                // Definir el idioma de DataTables
+                var idioma = {
+                    "decimal": "",
+                    "emptyTable": "No hay información",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                    "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                    "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ Entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "Sin resultados encontrados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                };
+
+                // Inicializa DataTables en la tabla con el idioma definido
+                var table = $('#StatusFinish').DataTable({
+                    language: idioma
+                });
+
+                // Añade un botón de exportación a la tabla
+                new $.fn.dataTable.Buttons(table, {
+                    buttons: [{
+                        extend: 'excelHtml5',
+                        text: '<i class="bi bi-file-spreadsheet-fill display-9"></i> Exportar Excel'
+                    }]
+                });
+
+                // Añade el contenedor de botones al botón exportButton
+                $('#exportButton').append(table.buttons().container());
+            });
+        </script>
+
+        <script>
+        //TABLA DE ESTADO TERMINADO
+        //CONFIRMACION DE PAUTA CANCELADA
+        function confirmCanceled(PAUTA_ID) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, cancelar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deletePauta(PAUTA_ID);
+                }
+            });
+        }
+
+        //REDIRECCION DE PAUTA CANCELADA A CONTROLADOR
+        function deletePauta(PAUTA_ID) {
+            $.ajax({
+                url: '@Url.Action("Canceled", "Home")',
+                type: 'POST',
+                data: { PAUTA_ID: PAUTA_ID },
+                success: function (response) {
+                    if (response.message) {
+                        Swal.fire(
+                            '¡Cancelar!',
+                            response.message,
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire(
+                        'Error',
+                        'Hubo un error al eliminar la pauta.',
+                        'error'
+                    );
+                }
+            });
+
+        }
+        </script>
+
+    }

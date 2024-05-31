@@ -1,0 +1,227 @@
+﻿@{
+    Layout = null;
+}
+@model Pautas.Models.Login.User
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!-- Site Metas -->
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>Login - Guiam</title>
+
+    <!-- bootstrap core css -->
+    <link rel="stylesheet" type="text/css" href="~/css/bootstrap.css" rel="stylesheet" />
+    <!-- fonts style -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="~/css/style.css" rel="stylesheet" />
+    <!-- responsive style -->
+    <link href="~/css/responsive.css" rel="stylesheet" />
+</head>
+
+<body style="background-color: hsl(0, 0%, 96%);">
+
+    <div class="">
+        <!-- header section starts -->
+        <header class="header_section">
+            <div class="">
+                <div class="row">
+                    <div class="col-lg-9 offset-lg-1">
+                        <nav class="navbar navbar-expand-lg custom_nav-container ">
+                            <a class="navbar-brand" href="index.html">
+                                <img src="~/img/Guian_negro.jpg" style="border-radius: 40px; width: 70px;" alt="">
+                                <span style="color: black; font-size:14px;">
+                                    Academy
+                                </span>
+                            </a>
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+
+                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                <div class="d-flex ml-auto flex-column flex-lg-row align-items-center ">
+                                    <ul class="navbar-nav">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="index.html">Home<span class="sr-only">(current)</span></a>
+                                        </li>
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                                               aria-haspopup="true" aria-expanded="false">Cursos</a>
+                                            <div class="dropdown-menu">
+                                                <div class="justify-content-center text-center">
+                                                    <a class="dropdown-item" href="piano.html">Piano</a>
+                                                    <a class="dropdown-item" href="drum.html">Drum</a>
+                                                    <a class="dropdown-item" href="">Guitar</a>
+                                                    <a class="dropdown-item" href="">Canto</a>
+                                                    <a class="dropdown-item" href="">Bajo</a>
+                                                    <a class="dropdown-item" href="">Violin</a>
+                                                </div>
+                                                <p class="text-center" style="font-size: 12px;">Presenciales</p>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item  text-center" href="#">Cursos Virtuales</a>
+                                            </div>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="about.html">Nosotros</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="contact.html">Contactanos</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="login.html">
+                                                <button type="button" class="btn btn-info">Login</button>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <form class="form-inline">
+                                        <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit"></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- end header section -->
+        <!-- Login section -->
+        <section class="layout_padding" style="padding-top: 90px;">
+            <div class="px-4 py-5 px-md-5 text-center text-lg-start">
+                <div class="container ">
+                    <div class="row gx-lg-5 align-items-center">
+                        <div class="col-lg-6 mb-5 mb-lg-0">
+                            <h3 class="text-info p-3">GUIAM Students</h3>
+
+                            <div class="card">
+                                <div class="card-body py-5 px-md-5">
+                                    @using (Html.BeginForm("Login", "User", FormMethod.Post, new { id = "formLogin" }))
+                                    {
+                                        <!-- Email input -->
+                                        <div class="form-outline mb-4">
+                                            @Html.EditorFor(m => m.Name, new { htmlAttributes = new { @class = "form-control", id = "Name", name = "Name", type = "text", placeholder = "Usuario", required = "required" } })
+                                            <label class="form-label" for="Name">Usuario</label>
+                                        </div>
+
+                                        <!-- Password input -->
+                                        <div class="form-outline mb-4">
+                                            @Html.EditorFor(m => m.Clave, new { htmlAttributes = new { @class = "form-control", id = "Clave", name = "Clave", type = "password", placeholder = "Clave", required = "required" } })
+                                            <label class="form-label" for="password">Contraseña</label>
+                                        </div>
+
+                                        <!-- Submit button -->
+                                        <button type="submit" id="submit" class="btn btn-info btn-block mb-4">Ingresa</button>
+
+                                        <!-- Register buttons -->
+                                        <div class="text-center">
+                                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                                <i class="fab fa-facebook-f"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                                <i class="fab fa-google"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                                <i class="fab fa-twitter"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-link btn-floating mx-1">
+                                                <i class="fab fa-github"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-5 mb-lg-0">
+                            <img src="~/img/undraw_access_account_re_8spm.svg" style="width: 300px;" alt="">
+                            <p class="pt-5" style="color: hsl(217, 10%, 50.8%)">
+                                Todos nuestros estudiantes GUIAM tienen acceso a su respectivo curso. Ingresa tus datos válidos para que tengas acceso a toda la información directa de nuestro método.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- end login section -->
+        <!-- footer section -->
+        <section class="container-fluid footer_section">
+            <div class="container">
+                <p>&copy; 2024 All Rights Reserved By <a href="https://html.design/">Digitjez</a></p>
+            </div>
+        </section>
+        <!-- end footer section -->
+        <!-- Scripts -->
+        <script src="~/js/jquery.min.js"></script>
+        <script src="~/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/common.js"></script>
+        <script src="~/js/sweetalert2/sweetalert2.all.min.js"></script>
+
+        <script>
+            function Login() {
+                event.preventDefault();
+                debugger;
+                var obj = serializeForm($('#formLogin'));
+                console.log(obj)
+                if (obj.hasError) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error: Algunos campos requeridos no han sido completados.',
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    })
+                }
+                else {
+                    $.ajax({
+                        url: '@Url.Action("Login", "User")'
+                        , method: 'POST'
+                        , contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+                        , data: obj.formData
+                        , success: function (data) {
+                            console.log(data)
+
+                            if (data.resp.code === "success") {
+                                window.location.href = '@Url.Action("Index", "Home")';
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: data.resp.message,
+                                    icon: 'error',
+                                    confirmButtonText: 'Ok'
+                                });
+                            }
+                            $('#miBoton').css('background-color', '#15a362'); // Cambia 'miBoton' con el ID real de tu botón
+                            debugger;
+
+                        }
+                        , error: function (error) {
+                            console.log(error)
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'No se pudo iniciar la sesión',
+                                icon: 'error',
+                                confirmButtonText: 'Ok'
+                            })
+                        }
+                    });
+                }
+
+            }
+        </script>
+
+
+
+
+    </div>
+</body>
+
+</html>
