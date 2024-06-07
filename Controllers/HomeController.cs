@@ -106,7 +106,6 @@ namespace Pautas.Controllers
         }
         #endregion
 
-
         #region <<<Crear Pauta>>>
         [HttpGet]
         public IActionResult Create()

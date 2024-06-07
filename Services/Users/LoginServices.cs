@@ -17,7 +17,7 @@ namespace Pautas.Services.Users
             {
                 using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
                 {
-                    using (SqlCommand cmd = new SqlCommand("P_CB_SYS_ACCESS_PORTAL", sql))
+                    using (SqlCommand cmd = new SqlCommand("p_GM_Acces_Portal", sql))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@Name", model.Name));
