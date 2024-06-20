@@ -309,132 +309,17 @@
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Usuarios</h1>
                     <p class="mb-2">
-                        En esta seccion crearas tus usuarios de la Academia Guiam.<a target="_blank"
-                                                                                     href="https://datatables.net">official DataTables documentation</a>.
+                        En esta seccion editaras tus usuarios de la Academia Guiam.
                     </p>
                     <button class="btn btn-outline-primary mb-3" href="#" data-toggle="modal" data-target="#formModal">
                         <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
                         Crear
                     </button>
                     <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Registro de Usuarios</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Id</th>
-                                            <th>Nombre</th>
-                                            <th>Apellido</th>
-                                            <th>Contraseña</th>
-                                            <th>Rol</th>
-                                            <th>Estado</th>
-                                            <th>Correo</th>
-                                            <th></th>
-                                            <th></th>
 
-                                        </tr>
-                                    </thead>
-                                    @*                                     <tfoot>
-                                    <tr>
-                                    <th>Name</th>
-                                    <th>Position</th>
-                                    <th>Office</th>
-                                    <th>Age</th>
-                                    <th>Start date</th>
-                                    <th>Salary</th>
-                                    </tr>
-                                    </tfoot> *@
-                                    <tbody>
-                                        @foreach (var item in Model.ListaUserDetail)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    @Html.DisplayFor(m => item.idUser)
-                                                </td>
-                                              
-                                                <td>@Html.DisplayFor(m => item.Name)</td>
-                                                <td>@Html.DisplayFor(m => item.Apellido)</td>
-                                                <td>@Html.DisplayFor(m => item.Clave)</td>
-                                                <td>@Html.DisplayFor(m => item.IdRol)</td>
-                                                <td>@Html.DisplayFor(m => item.IdStatus)</td>
-                                                <td>@Html.DisplayFor(m => item.Correo)</td>
-                                                <td>
-                                                   @*  <a href="@Url.Action("Update", "Admin", new { id = item.idUser })" class="btn btn-outline-primary mb-3" data-toggle="modal" data-target="#formModalEdit">
-                                                        <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        Editar
-                                                    </a> *@
-                                                    @* <button class="btn btn-outline-primary mb-3 edit-user" data-id="@item.idUser" data-toggle="modal" data-target="#formModalEdit">
-                                                        <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        Editar
-                                                    </button> *@
-                                                    
-                                                    <a data-bs-toggle="tooltip" title="Edita la pauta" class="btn btn-outline-primary mb-3" href="@Url.Action("Edit", "Admin", new { id = item.idUser })">
-                                                        <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                    </a>
-                                                </td>
+                    <form id="edit-form" method="post">
+                            @Html.HiddenFor(m => m.idUser )
 
-                                                <td>
-                                                    <a onclick="confirmUserDeleted('@item.idUser')">
-                                                        <i class="fas fa-fw fa-duotone fa-trash text-danger"></i>
-                                                    </a>
-                                                </td>
-
-
-                                            </tr>
-                                        }
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-            <!-- End of Main Content -->
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
-
-        </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <!-- End of Page Wrapper -->
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-
-    <!-- Scroll to Top Button-->
-
-    <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="formModalLabel">Formulario de Datos</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                    @* @using (Html.BeginForm("Create", "Admin", FormMethod.Post, new { id = "create-Form" }))
-                    { *@
-                    <form id="create-form">
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="name">Name</label>
@@ -472,20 +357,44 @@
                                 @Html.DropDownListFor(m => m.IdRol, (List<SelectListItem>)Model.ROLDROPDOWNS, new { @class = "form-control chosen-select", @required = "required", data_placeholder = "Seleccione el rol", @autocomplete = "off" })
 
                             </div>
-                        </div>
+                        </div> 
+                       @*  <a asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-arrow-left-circle-fill display-7" style="color:#fffbf4"></i>
+                        </a> *@
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                            <button class="btn btn-primary" type="submit">Guardar</button>
+                            <a asp-controller="Admin" asp-action="Admin" class=" btn btn-secondary" type="button" data-dismiss="modal">Cancelar</a>
+                            <button class="btn btn-primary" type="submit" href="@Url.Action("Edit", "Admin")">Guardar</button>
 
                         </div>
                     </form>
-
+                    
                 </div>
-
+                <!-- /.container-fluid -->
 
             </div>
+            <!-- End of Main Content -->
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Your Website 2020</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
         </div>
+        <!-- End of Content Wrapper -->
+
     </div>
+    <!-- End of Page Wrapper -->
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+
+    <!-- Scroll to Top Button-->
 
 
     <!-- Logout Modal-->
@@ -530,58 +439,6 @@
     <script src="~/plugins/sweetalert2/sweetalert2.all.min.js"></script>
     <script src="~/script/jquery.unobtrusive-ajax.js"></script>
 
-    <script>
-        function confirmUserDeleted(id) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: "¡No podrás revertir esto!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, eliminar!',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    deleteUser(id);
-                }
-            });
-        }
-
-        function deleteUser(id) {
-            $.ajax({
-                url: '@Url.Action("DeleteUserConfirmed", "Admin")',
-                type: 'POST',
-                data: { userId: id },  // Asegúrate de que el nombre del parámetro coincida
-                success: function (response) {
-                    if (response.code === "success") {
-                        Swal.fire(
-                            '¡Eliminado!',
-                            response.message,
-                            'success'
-                        ).then(() => {
-                            location.reload();  // Recargar la página después de la eliminación exitosa
-                        });
-                    } else {
-                        Swal.fire(
-                            'Error',
-                            response.message,
-                            'error'
-                        );
-                    }
-                },
-                error: function (xhr, status, error) {
-                    Swal.fire(
-                        'Error',
-                        'Hubo un error al eliminar el usuario.',
-                        'error'
-                    );
-                }
-            });
-        }
-    </script>
-
-
 
     <!-- Script para manejar el clic en el botón y cargar el modal -->
     <script>
@@ -607,65 +464,34 @@
 
 
     <script>
-        $(document).ready(function () {
-            // Captura el evento click del botón "Editar"
-            $('.edit-user').click(function () {
-                // Obtiene el id del usuario desde el atributo data
-                var userId = $(this).data('id');
-
-                // Realiza una solicitud AJAX para obtener los datos del usuario
-                $.ajax({
-                    url: '@Url.Action("Update", "Admin")', // URL de la acción Update en el controlador Admin
-                    type: 'GET',
-                    data: { idUser: userId }, // Envía el id del usuario al servidor
-                    success: function (data) {
-                        // Actualiza el formulario del modal con los datos del usuario
-                        $('#name').val(data.name);
-                        $('#apellido').val(data.apellido);
-                        $('#clave').val(data.clave);
-                        $('#correo').val(data.correo);
-                        $('#idStatus').val(data.idStatus);
-                        $('#idRol').val(data.idRol);
-                    },
-                    error: function () {
-                        // Maneja errores si es necesario
-                    }
-                });
-            });
-        });
-
-    </script>
-
-
-    <script>
-        // Función para la acción de edición del formulario
+        // Funcion para accion del edit del formulario
         $(document).ready(function () {
             // Captura el evento submit del formulario
-            $('#update-form').submit(function (event) {
-                // Evita que el formulario se envíe automáticamente
+            $('#edit-form').submit(function (event) {
+
                 event.preventDefault();
 
-                // Realiza una solicitud AJAX para actualizar los datos del usuario
                 $.ajax({
-                    url: this.action,
-                    type: this.method,
+                    url: '@Url.Action("Edit", "Admin")',
+                    type: 'POST',
                     data: $(this).serialize(),
                     success: function (data) {
-                        // Muestra una notificación de éxito utilizando SweetAlert
+
                         Swal.fire({
                             title: 'Éxito',
                             text: data.message,
                             icon: 'success',
                             confirmButtonText: 'Aceptar'
                         }).then((result) => {
+
                             // Redirecciona a la página de edición si se hace clic en Aceptar
                             if (result.isConfirmed) {
-                                window.location.href = '@Url.Action("Admin", "Admin")?idUser=' + data.idUser;
+                                window.location.href = '@Url.Action("Edit", "Admin")?idUser=' + data.idUser;
                             }
                         });
                     },
                     error: function () {
-                        // Muestra una notificación de error utilizando SweetAlert
+                        // Muestra un Sweet Alert con un mensaje de error
                         Swal.fire({
                             title: 'Error',
                             text: 'Hubo un error al procesar la solicitud',
@@ -676,68 +502,15 @@
                 });
             });
         });
+
     </script>
 
+    
 
-    <script>
-        $(document).ready(function () {
-            $('#create-form').on('submit', function (event) {
-                event.preventDefault(); // Previene el envío del formulario normal
-
-                // SweetAlert2 para confirmar el envío
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esto!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, enviar!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Enviar el formulario usando AJAX
-                        $.ajax({
-                            url: '@Url.Action("Create", "Admin")', // Cambia "Admin" por el nombre de tu controlador
-                            type: 'POST',
-                            data: $('#create-form').serialize(),
-                            success: function (response) {
-                                if (response.resp == true) {
-                                    Swal.fire({
-                                        title: '¡Éxito!',
-                                        text: response.message,
-                                        icon: 'success',
-                                        confirmButtonText: 'OK'
-                                    }).then(() => {
-                                        // Recargar la página
-                                        location.reload();
-                                    });
-                                } else {
-                                    Swal.fire(
-                                        'Error',
-                                        response.message,
-                                        'error'
-                                    );
-                                }
-                            },
-                            error: function () {
-                                Swal.fire(
-                                    'Error',
-                                    'Ha ocurrido un error al procesar tu solicitud.',
-                                    'error'
-                                );
-                            }
-                        });
-                    }
-                });
-            });
-        });
-    </script>
-
-
-
-@*     <script LANGUAGE="javascript">
+@* 
+    <script LANGUAGE="javascript">
         alert("Inicio Exitoso");
-    </script> *@
+    </script>
 
     <script>
         document.getElementById('open-edit-modal').addEventListener('click', function (event) {
@@ -745,7 +518,7 @@
             $('#formEditModal').modal('show');
         });
     </script>
-
+ *@
 </body>
 
 </html>

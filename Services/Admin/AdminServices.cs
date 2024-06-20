@@ -16,6 +16,52 @@ namespace Pautas.Services.Users
     {
         ConnectionDb _connService = new ConnectionDb();
 
+
+        #region UserSelect
+        public User SP_USER_SELECT_BY_ONE(int idUser)
+        {
+
+            User user = new User();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("p_GM_User_Select_By_One", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add(new SqlParameter("@Id_user", idUser));
+
+                        sql.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                var obj = new User()
+                                {
+                                    idUser = dr.GetInt32(dr.GetOrdinal("Id_user")),
+                                    Name = dr.GetStringNull(dr.GetOrdinal("Name")),
+                                    //IdRol = dr.GetInt32(dr.GetOrdinal("IdRol")),
+                                    IdStatus = dr.GetInt32Null(dr.GetOrdinal("Id_status")),
+                                    Correo = dr.GetStringNull(dr.GetOrdinal("Correo")),
+                                    Apellido = dr.GetStringNull(dr.GetOrdinal("Apellido")),
+                                    Clave = dr.GetStringNull(dr.GetOrdinal("Clave"))
+                                };
+                                user = obj;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejar excepción (opcional)
+            }
+            return user;
+        }
+        #endregion
+
         #region UserSelect
         public List<User> SP_USER_SELECT()
         {
@@ -116,9 +162,9 @@ namespace Pautas.Services.Users
         #endregion
 
         #region UpdateUser
-        public User UpdateUser(User model)
+        public GenericResponse UpdateUser(User model)
         {
-            User resp = new User();
+            GenericResponse resp = new GenericResponse();
             try
             {
                 using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
@@ -128,10 +174,10 @@ namespace Pautas.Services.Users
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         // Adding input parameters
-                        //cmd.Parameters.Add(new SqlParameter("@Id_user", model.idUser));
+                        cmd.Parameters.Add(new SqlParameter("@Id_user", model.idUser));
                         cmd.Parameters.Add(new SqlParameter("@Name", model.Name));
-                        cmd.Parameters.Add(new SqlParameter("@IdRol", model.IdRol));
-                        cmd.Parameters.Add(new SqlParameter("@Token", model.Token));
+                        //cmd.Parameters.Add(new SqlParameter("@IdRol", model.IdRol));
+                        //cmd.Parameters.Add(new SqlParameter("@Token", model.Token));
                         cmd.Parameters.Add(new SqlParameter("@Id_status", model.IdStatus));
                         cmd.Parameters.Add(new SqlParameter("@Correo", model.Correo));
                         cmd.Parameters.Add(new SqlParameter("@Apellido", model.Apellido));

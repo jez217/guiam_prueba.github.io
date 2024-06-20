@@ -22,10 +22,15 @@ namespace Pautas.Services.Users
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@Name", model.Name));
                         cmd.Parameters.Add(new SqlParameter("@Clave", model.Clave));
+                        //cmd.Parameters.Add(new SqlParameter("@Id_Rol", model.IdRol));
 
                         SqlParameter spUserId = new SqlParameter("@USERID", SqlDbType.Int);
                         spUserId.Direction = ParameterDirection.Output;
                         cmd.Parameters.Add(spUserId);
+
+                        SqlParameter spRolId = new SqlParameter("@ROL", SqlDbType.Int);
+                        spRolId.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(spRolId);
 
                         SqlParameter spUserName = new SqlParameter("@USER_NAME", SqlDbType.NVarChar, 200);
                         spUserName.Direction = ParameterDirection.Output;
@@ -42,10 +47,12 @@ namespace Pautas.Services.Users
                         sql.Open();
                         cmd.ExecuteNonQuery();
 
-                        resp.idUser = (spUserId.Value != DBNull.Value) ? Convert.ToInt32(spUserId.Value) : (int?)null;
-                        resp.Name = spUserName.Value.ToString();
-                        resp.Clave = model.Clave; // Asignar el valor de la contraseña
-                        resp.code = Convert.ToBoolean(sp_resp.Value) ? "success" : "error";
+                        resp.idUser = Convert.ToInt32(spUserId.Value);
+                        resp.Name = spUserName.Value.ToString(); 
+                        resp.Clave = model.Clave; // Asignar el valor de la contraseña 
+                        resp.IdRol = Convert.ToInt32(spRolId.Value); // Asignar el valor del rol 
+
+                        resp.code = sp_resp.Value.ToString();
                         resp.message = sp_mess.Value.ToString();
 
                     }

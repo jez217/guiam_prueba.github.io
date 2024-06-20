@@ -16,16 +16,16 @@ using System.Threading.Tasks;
 
 namespace Pautas.Controllers
 {        
-[Authorize]
-    public class AdminController : Controller
+    [Authorize]
+    public class StudentController : Controller
     {
         AdminServices _adminservice = new AdminServices();
         LoginServices _loginService = new LoginServices();
 
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<StudentController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public AdminController(ILogger<AdminController> logger, IWebHostEnvironment webHostEnvironment)
+        public StudentController(ILogger<StudentController> logger, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;

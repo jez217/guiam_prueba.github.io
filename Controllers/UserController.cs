@@ -18,38 +18,47 @@ namespace Pautas.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            User model = new User();
-
-            return View(model);
-
+            return View(new User());
         }
         #endregion
 
         #region Login Post
         [HttpPost]
-        public IActionResult Login(User model)
+        public async Task<IActionResult> Login(User model)
         {
             var resp = _loginService.ValidateAccess(model);
 
-            if (resp.code == "success")
+            if (resp.code == "True")
             {
-                HttpContext.Session.SetObject("Name", resp);
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, resp.Name),
+            new Claim(ClaimTypes.Role, resp.IdRol.ToString()) // Add role claim
+        };
 
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true
+                };
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
+                return Json(new { success = true, role = resp.IdRol });
             }
 
-            return Json(new { resp });
+            return Json(new { success = false, message = resp.message });
         }
         #endregion
 
         #region Logout
         [HttpGet]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
             return RedirectToAction("Login", "User");
         }
         #endregion
-
-       
     }
 }
