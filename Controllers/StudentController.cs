@@ -78,14 +78,11 @@ namespace Pautas.Controllers
         #endregion
 
         [Authorize]
-        public IActionResult Admin()
+        public IActionResult Index()
         {
-            User model = new User();
+           
 
-            model.ROLDROPDOWNS = _adminservice.RolDropdown();
-            model.ListaUserDetail = _adminservice.SP_USER_SELECT();
-
-            return View(model);
+            return View();
         }
 
         #region Create User GET
