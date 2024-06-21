@@ -1,0 +1,101 @@
+﻿@model Pautas.Models.Profesor.Folder
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>@Model.Name</title>
+    <link rel="stylesheet" href="~/css/bootstrap.css" />
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>@Model.Name</h2>
+        <button class="btn btn-primary mb-3" onclick="openCreateFolderModal(@Model.Id)">Crear Subcarpeta</button>
+        <button class="btn btn-primary mb-3" onclick="openUploadFileModal(@Model.Id)">Subir Archivo</button>
+
+        <h3>Subcarpetas</h3>
+        <div>
+            @foreach (var subFolder in Model.SubFolders)
+            {
+                <div>
+                    <h4>@subFolder.Name</h4>
+                    <a href="@Url.Action("ViewFolder", "Profesor", new { id = subFolder.Id })">Abrir</a>
+                </div>
+            }
+        </div>
+
+        <h3>Archivos</h3>
+        <div>
+            @foreach (var file in Model.Files)
+            {
+                <div>
+                    <h4>@file.Name</h4>
+                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })">Descargar</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Modal para crear subcarpeta -->
+    <div id="createFolderModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear Carpeta</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="createFolderForm" method="post" action="@Url.Action("CreateFolder", "Profesor")">
+                        <div class="form-group">
+                            <label for="folderName">Nombre de la Carpeta</label>
+                            <input type="text" class="form-control" id="folderName" name="Name" required />
+                        </div>
+                        <input type="hidden" name="ParentFolderId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary">Crear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para subir archivo -->
+    <div id="uploadFileModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Subir Archivo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadFileForm" method="post" action="@Url.Action("UploadFile", "Profesor")" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="fileName">Archivo</label>
+                            <input type="file" class="form-control" id="fileName" name="file" required />
+                        </div>
+                        <input type="hidden" name="FolderId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary">Subir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function openCreateFolderModal(parentFolderId) {
+            $('#parentFolderId').val(parentFolderId);
+            $('#createFolderModal').modal('show');
+        }
+
+        function openUploadFileModal(folderId) {
+            $('#FolderId').val(folderId);
+            $('#uploadFileModal').modal('show');
+        }
+    </script>
+</body>
+</html>

@@ -1,26 +1,22 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Pautas.Models;
-using Pautas.Models.Admin;
-using Pautas.Models.Login;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Pautas.Models.Profesor;
 using Pautas.Models.Pautas;
-using Pautas.Services.Extensions;
-using Pautas.Services.Pauta;
-using Pautas.Services.Users;
+using Pautas.Services.Profesor;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Security.Claims;
+using System.IO;
 using System.Threading.Tasks;
+using Pautas.Models.Login;
+using Pautas.Services.Extensions;
 
 namespace Pautas.Controllers
-{        
+{
     [Authorize]
     public class ProfesorController : Controller
-    {
-        AdminServices _adminservice = new AdminServices();
-        LoginServices _loginService = new LoginServices();
+    {        
+ProfesorServices _profesorServices = new ProfesorServices();
 
         private readonly ILogger<ProfesorController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -31,171 +27,76 @@ namespace Pautas.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        #region Login Get
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View(new User());
-        }
-        #endregion
-
-        #region Login Post
-        [HttpPost]
-        public async Task<IActionResult> Login(User model)
-        {
-            var resp = _loginService.ValidateAccess(model);
-
-            if (resp.code == "success")
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, resp.Name),
-                    // Agrega otros claims según sea necesario
-                };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = true
-                };
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                return RedirectToAction("Admin", "User");
-            }
-
-            return View(model); // O redirigir a la pantalla de inicio de sesión nuevamente
-        }
-        #endregion
-
-        #region Logout
-        [HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "User");
-        }
-        #endregion
-
-        [Authorize]
         public IActionResult Index()
         {
-       
-            return View();
+            var rootFolders = _profesorServices.GetRootFolders();
+            return View(rootFolders);
         }
 
-        #region Create User GET
-        [HttpGet]
-        public IActionResult CreateUser()
+        public IActionResult ViewFolder(int id)
         {
-            User user = new User();
-            user.ROLDROPDOWNS = _adminservice.RolDropdown();
-            return View(user);
-        }
-        #endregion
+            var folder = _profesorServices.GetFolderById(id);
 
-        #region Create User POST
-        [HttpPost]
-        public IActionResult CreateUser(User model)
-        {
-            GenericResponse resp = new GenericResponse();
-            resp = _adminservice.CreateUser(model);
-
-            if (resp.Resp)
+            if (folder.Id == 0)
             {
-                return Json(new { resp.id, resp.message });
+                return NotFound();
             }
-            else
-            {
-                return RedirectToAction("CreateUser");
-            }
-        }
-        #endregion
 
-        #region Insert Level User POST
-        [HttpPost]
-        public IActionResult InsertLevelUser(int USERID, int LEVELID)
-        {
-            Student resp = new Student();
-            resp = _adminservice.SP_GM_LEVEL_INSERT(USERID, LEVELID);
-            return Json(new { id = resp.id, message = resp.message });
+            return View(folder);
         }
-        #endregion
 
-        #region Edit User GET
         [HttpGet]
-        public IActionResult Edit(int id, string mensaje)
+        public IActionResult CreateFolder()
         {
-            //User user = new User();
+            Folder model = new Folder();
+            string user = User.Identity.Name;
 
-            User model = _adminservice.SP_USER_SELECT_BY_ONE(id);
-            model.ROLDROPDOWNS = _adminservice.RolDropdown();
+
+            model.CreatedBy = user;
+
+
             return View(model);
         }
 
-        #endregion
-
-        #region Update User POST
         [HttpPost]
-        public IActionResult Edit(User model)
+        public IActionResult CreateFolder(Folder model)
         {
-            var resp = _adminservice.UpdateUser(model);
+            string user = User.Identity.Name;
 
-            if (resp.code == "success")
-            {
-                return Json(new { message = resp.message, code = resp.code });
-            }
-            else
-            {
-                return Json(new { message = resp.message, code = resp.code });
-            }
+
+            model.CreatedBy = user;
+            _profesorServices.CreateFolder(model);
+            return RedirectToAction("Index");
         }
-        #endregion
 
-        #region Delete User GET
-        [HttpGet]
-        public IActionResult Delete(int id)
-        {
-            User user = _adminservice.SP_USER_SELECT_BY_ONE(id);
-            return View(user);
-        }
-        #endregion
-
-        #region Delete User POST
         [HttpPost]
-        public IActionResult DeleteUserConfirmed(int userId)
+        public async Task<IActionResult> UploadFile(IFormFile file, int folderId)
         {
-            var resp = _adminservice.DeleteUser(userId);
-
-            if (resp.code == "success")
+            if (file != null && file.Length > 0)
             {
-                return Json(new { message = resp.message, code = resp.code });
-            }
-            else
-            {
-                return Json(new { message = resp.message, code = resp.code });
-            }
-        }
-        #endregion
+                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", file.FileName);
 
-        #region Privacy de Login
-        public IActionResult Privacy()
-        {
-            User userAuth = HttpContext.Session.GetObject<User>("Name");
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
 
-            if (userAuth == null)
-            {
-                return RedirectToAction("Login", "User");
+                _profesorServices.UploadFile(file.FileName, filePath, folderId);
             }
 
-            return View();
+            return RedirectToAction("ViewFolder", new { id = folderId });
         }
-        #endregion
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        //public IActionResult DownloadFile(int id)
+        //{
+        //    var file = _profesorServices.GetFileById(id);
+        //    if (file == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var fileBytes = System.IO.File.ReadAllBytes(file.FilePath);
+        //    return File(fileBytes, "application/octet-stream", file.Name);
+        //}
     }
 }

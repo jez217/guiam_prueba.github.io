@@ -19,7 +19,7 @@ namespace Pautas.Controllers
     [Authorize]
     public class StudentController : Controller
     {
-        AdminServices _adminservice = new AdminServices();
+        ProfesorServices _adminservice = new ProfesorServices();
         LoginServices _loginService = new LoginServices();
 
         private readonly ILogger<StudentController> _logger;

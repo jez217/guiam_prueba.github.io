@@ -12,7 +12,7 @@ using Pautas.Models;
 
 namespace Pautas.Services.Users
 {
-    public class AdminServices
+    public class ProfesorServices
     {
         ConnectionDb _connService = new ConnectionDb();
 
