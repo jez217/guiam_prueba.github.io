@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pautas.Models;
 using Pautas.Models.Admin;
+
 using Pautas.Models.Login;
 using Pautas.Models.Pautas;
 using Pautas.Services.Extensions;
 using Pautas.Services.Pauta;
+using Pautas.Services.ProfesorService;
 using Pautas.Services.Users;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +21,7 @@ namespace Pautas.Controllers
 [Authorize]
     public class AdminController : Controller
     {
-        ProfesorServices _adminservice = new ProfesorServices();
+        AdminService _adminservice = new AdminService();
         LoginServices _loginService = new LoginServices();
 
         private readonly ILogger<AdminController> _logger;
@@ -90,17 +92,18 @@ namespace Pautas.Controllers
 
         #region Create User GET
         [HttpGet]
-        public IActionResult CreateUser()
+        public IActionResult Create()
         {
             User user = new User();
             user.ROLDROPDOWNS = _adminservice.RolDropdown();
+            user.LEVELDROPDOWNS = _adminservice.LevelDropdown();
             return View(user);
         }
         #endregion
 
         #region Create User POST
         [HttpPost]
-        public IActionResult CreateUser(User model)
+        public IActionResult Create(User model)
         {
             GenericResponse resp = new GenericResponse();
             resp = _adminservice.CreateUser(model);

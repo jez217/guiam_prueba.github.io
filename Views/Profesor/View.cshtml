@@ -1,0 +1,231 @@
+﻿@model Pautas.Models.Profesor.Folder
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>@Model.Name</title>
+    <link rel="stylesheet" href="~/css/bootstrap.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>@Model.Name</h2>
+        <button class="btn btn-primary mb-3" onclick="openCreateFolderModal(@Model.Id)">Crear Subcarpeta</button>
+        <button class="btn btn-primary mb-3" onclick="openUploadFileModal(@Model.Id)">Subir Archivo</button>
+
+        <h3>Subcarpetas</h3>
+        <div class="row">
+            @foreach (var subFolder in Model.SubFolders)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-folder"></i> <span id="folder-name-@subFolder.Id">@subFolder.Name</span></h5>
+                            <p class="card-text">Descripción o detalles de la subcarpeta si es necesario.</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@Url.Action("View", "Profesor", new { id = subFolder.Id })" class="btn btn-primary">Abrir</a>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="bi-three-dots-vertical" style="font-size:20px"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" onclick="openRenameFolderModal(@subFolder.Id, '@subFolder.Name')">Renombrar</a>
+                                    <a class="dropdown-item" onclick="deleteFolder(@subFolder.Id)">Eliminar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <h3>Archivos</h3>
+        <div class="row">
+            @foreach (var file in Model.Files)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@file.Name</h5>
+                         
+                        </div>
+                        <div class="card-footer">
+                            <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="btn btn-primary">Descargar</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <!-- Modal para crear subcarpeta -->
+    <div id="createFolderModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear Carpeta</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="createFolderForm" method="post" action="@Url.Action("CreateFolder", "Profesor")">
+                        <div class="form-group">
+                            <label for="folderName">Nombre de la Carpeta</label>
+                            <input type="text" class="form-control" id="folderName" name="Name" required />
+                        </div>
+                        <input type="hidden" name="ParentFolderId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary">Crear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para subir archivo -->
+    <div id="uploadFileModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Subir Archivo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadFileForm" method="post" action="@Url.Action("UploadFile", "Profesor")" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="fileName">Archivo</label>
+                            <input type="file" class="form-control" id="fileName" name="file" required />
+                        </div>
+                        <input type="hidden" name="FolderId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary">Subir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para renombrar carpeta -->
+    <div id="renameFolderModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Renombrar Carpeta</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="renameFolderForm" method="post">
+                        <div class="form-group">
+                            <label for="renameFolderName">Nuevo Nombre de la Carpeta</label>
+                            <input type="text" class="form-control" id="renameFolderName" name="Name" required />
+                        </div>
+                        <input type="hidden" name="Id" id="renameFolderId" />
+                        <button type="submit" class="btn btn-primary">Renombrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script>
+        function openCreateFolderModal(parentFolderId) {
+            $('#parentFolderId').val(parentFolderId);
+            $('#createFolderModal').modal('show');
+        }
+
+        function openUploadFileModal(folderId) {
+            $('#FolderId').val(folderId);
+            $('#uploadFileModal').modal('show');
+        }
+
+        function openRenameFolderModal(folderId, folderName) {
+            $('#renameFolderId').val(folderId);
+            $('#renameFolderName').val(folderName);
+            $('#renameFolderModal').modal('show');
+        }
+
+        function deleteFolder(folderId) {
+            if (confirm("¿Está seguro de que desea eliminar esta carpeta?")) {
+                $.post('@Url.Action("DeleteFolder", "Profesor")', { id: folderId }, function (result) {
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: result.message
+                        }).then(function () {
+                            // Actualizar la lista de subcarpetas sin recargar la página
+                            $('#folder-name-' + folderId).text(result.newName); // Actualizar el nombre en la vista
+                            $('#renameFolderModal').modal('hide'); // Cerrar el modal
+
+                            // Limpiar el fragmento de la URL
+                            history.pushState("", document.title, window.location.pathname);
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: result.message
+                        });
+                    }
+                }).fail(function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ocurrió un error al intentar eliminar la carpeta.'
+                    });
+                });
+            }
+        }
+
+        $('#renameFolderForm').submit(function (event) {
+            event.preventDefault();
+            $.ajax({
+                url: '@Url.Action("RenameFolder", "Profesor")',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: response.message
+                        }).then(function () {
+                            // Actualizar la vista con el nuevo nombre de la carpeta
+                            var folderId = $('#renameFolderId').val();
+                            var newName = $('#renameFolderName').val();
+                            $('#folder-name-' + folderId).text(newName); // Actualizar el nombre en la vista
+                            $('#renameFolderModal').modal('hide'); // Cerrar el modal
+
+                            // Limpiar el fragmento de la URL
+                            history.pushState("", document.title, window.location.pathname);
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ocurrió un error al intentar renombrar la carpeta.'
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

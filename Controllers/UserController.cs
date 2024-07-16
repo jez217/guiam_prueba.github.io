@@ -33,6 +33,7 @@ namespace Pautas.Controllers
                 var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, resp.Name),
+            new Claim(ClaimTypes.NameIdentifier, resp.idUser.ToString()),
             new Claim(ClaimTypes.Role, resp.IdRol.ToString()) // Add role claim
         };
 

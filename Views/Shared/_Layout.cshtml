@@ -1,7 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @using Newtonsoft.Json;
+@using Pautas.Models.Profesor
 
 @{
+    var folders = ViewBag.Folders as IEnumerable<Pautas.Models.Profesor.Folder>;
+
     string userAuth = User.Identity.IsAuthenticated ? User.Identity.Name : null;
      // Pautas.Models.Login.User User = JsonConvert.DeserializeObject<Pautas.Models.Login.User>(userAuth);
 }
@@ -32,7 +35,8 @@ else
     <link href="~/css/bootstrap.css" rel="stylesheet" />
     <link href="~/css/sb-admin-2.min.css" rel="stylesheet" />
     <link href="~/css/site.css" rel="stylesheet" />
-
+        <link href="~/plugins/bootstrap/css/bootstrap-icons.min.css" rel="stylesheet" />
+        <link href="~/plugins/bootstrap/css/bootstrap-icons.css" rel="stylesheet" />
 
 </head>
 
@@ -42,170 +46,74 @@ else
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-                <div class="sidebar-brand-icon">
-                    <img src="~/img/Guian_negro.jpg" alt="" style="border-radius: 50%;" width="50px">
-                </div>
-                <div class="sidebar-brand-text mx-3">Academy <sup>1</sup></div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="index.html">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Panel GUIAM</span>
-                </a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Nivel
-            </div>
-
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLibro"
-                   aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-book"></i>
-                    <span>Niveles</span>
-                </a>
-                <div id="collapseLibro" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Niveles</h6>
-                        <a class="collapse-item" href="">Nivel 1</a>
-                        <a class="collapse-item" href="">Nivel 2</a>
-                        <a class="collapse-item" href="">Nivel 3</a>
+                <!-- Sidebar - Brand -->
+                <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+                    <div class="sidebar-brand-icon">
+                        <img src="~/img/Guian_negro.jpg" alt="" style="border-radius: 50%;" width="50px">
                     </div>
+                    <div class="sidebar-brand-text mx-3">Academy <sup>1</sup></div>
+                </a>
+
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0">
+
+                <!-- Nav Item - Dashboard -->
+                @foreach (var folder in folders ?? Enumerable.Empty<Pautas.Models.Profesor.Folder>())
+                {
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="#collapse@folder.Id" data-toggle="collapse" aria-expanded="true" aria-controls="collapse@folder.Id">
+                            <i class="fas fa-fw fa-folder"></i>
+                            <span>@folder.Name</span>
+                        </a>
+                        <ul id="collapse@folder.Id" class="collapse list-unstyled">
+                            @if (folder.SubFolders != null && folder.SubFolders.Any())
+                            {
+                                @foreach (var subfolder in folder.SubFolders)
+                                {
+                                    <li>
+                                        <a class="nav-link" href="@Url.Action("View", "Profesor", new { id = subfolder.Id })">@subfolder.Name</a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                }
+
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    Nivel
                 </div>
-            </li>
 
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <!-- Divider -->
-            <hr class="sidebar-divider">
+                <!-- Nav Item - Pages Collapse Menu -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLibro"
+                       aria-expanded="true" aria-controls="collapseLibro">
+                        <i class="fas fa-fw fa-book"></i>
+                        <span>Niveles</span>
+                    </a>
+                    <ul id="collapseLibro" class="collapse list-unstyled">
+                        <li>
+                            <a class="nav-link" href="#">Nivel 1</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="#">Nivel 2</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="#">Nivel 3</a>
+                        </li>
+                    </ul>
+                </li>
 
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Multimedia
-            </div>
+                <!-- Otros elementos de sidebar -->
 
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseImagenes"
-                   aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-images"></i>
-                    <span>Imagenes</span>
-                </a>
-                <div id="collapseImagenes" class="collapse" aria-labelledby="headingUtilities"
-                     data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Ingresa a Imagenes:</h6>
-                        <a class="collapse-item" href="">Digitaciones</a>
-                        <a class="collapse-item" href="">Acordes</a>
-                        <a class="collapse-item" href="">Escalas</a>
-                        <a class="collapse-item" href="">Lecturas ritmicas</a>
-                        <a class="collapse-item" href="">Jam GUIAM</a>
-                    </div>
-                </div>
-            </li>
+            </ul>
+            <!-- End of Sidebar -->
 
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVideos"
-                   aria-expanded="true" aria-controls="collapsePages">
-                    <i class="fas fa-fw fa-file-video"></i>
-                    <span>Videos</span>
-                </a>
-                <div id="collapseVideos" class="collapse" aria-labelledby="headingPages"
-                     data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a href="videos.html"><h6 class="collapse-header">Ingresa a Videos:</h6></a>
-                        <a class="collapse-item" href="">Sesiones de clases</a>
-                        <a class="collapse-item" href="">Lecturas ritmicas</a>
-                        <a class="collapse-item" href="">Jam GUIAM</a>
-                        <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Otros videos:</h6>
-                        <a class="collapse-item" href="">Tecnicas GUIAM</a>
-                    </div>
-                </div>
-            </li>
-
-
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Formularios
-            </div>
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTest"
-                   aria-expanded="true" aria-controls="collapseTest">
-                    <i class="fas fa-fw fa-clipboard-list"></i>
-                    <span>Test</span>
-                </a>
-                <div id="collapseTest" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Secciones de Test:</h6>
-                        <a class="collapse-item" href="">Parciales</a>
-                        <a class="collapse-item" href="">Examenes</a>
-                        <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Otros videos:</h6>
-                        <a class="collapse-item" href="">Tecnicas GUIAM</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Otros
-            </div>
-
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="charts.html">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="tables.html">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Tables</span>
-                </a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-            <!-- Sidebar Message
-            <div class="sidebar-card d-none d-lg-flex">
-                <img class="sidebar-card-illustration mb-2" src="img/undraw_rocket.svg" alt="...">
-                <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and more!</p>
-                <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>
-            </div>-->
-
-        </ul>
-        <!-- End of Sidebar -->
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
 
@@ -453,6 +361,7 @@ else
         </div>
     </div>
 
+
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="~/vendor/jquery/jquery.min.js"></script>
     <script src="~/js/popper.js"></script>
@@ -467,6 +376,42 @@ else
 
     <!-- Page level plugins -->
     <script src="~/vendor/chart.js/Chart.min.js"></script>
+        <script>
+            // Función para guardar el estado del sidebar en una cookie
+            function saveSidebarState() {
+                const sidebarState = {};
+                $('#accordionSidebar .nav-item').each(function () {
+                    const itemId = $(this).attr('id');
+                    const isCollapsed = !$(this).hasClass('show');
+                    sidebarState[itemId] = isCollapsed;
+                });
+                document.cookie = `sidebarState=${JSON.stringify(sidebarState)}; path=/`;
+            }
+
+            // Función para restaurar el estado del sidebar desde la cookie
+            function restoreSidebarState() {
+                const sidebarStateCookie = document.cookie.split('; ').find(row => row.startsWith('sidebarState='));
+                if (sidebarStateCookie) {
+                    const sidebarState = JSON.parse(sidebarStateCookie.split('=')[1]);
+                    Object.entries(sidebarState).forEach(([itemId, isCollapsed]) => {
+                        const item = $(`#${itemId}`);
+                        if (isCollapsed) {
+                            item.removeClass('show');
+                        } else {
+                            item.addClass('show');
+                        }
+                    });
+                }
+            }
+
+            $(document).ready(function () {
+                restoreSidebarState(); // Restaurar el estado del sidebar al cargar la página
+
+                $('#accordionSidebar .nav-link').on('click', function () {
+                    saveSidebarState(); // Guardar el estado del sidebar al hacer clic en un enlace
+                });
+            });
+        </script>
 
     <!-- Page level custom scripts -->
     <script>

@@ -9,26 +9,32 @@ using Pautas.Models.Pautas;
 using Pautas.Services.Extensions;
 using Pautas.Services.Pauta;
 using Pautas.Services.Users;
+using Pautas.Services.ProfesorService;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Pautas.Models.Profesor;
 
 namespace Pautas.Controllers
-{        
+{
     [Authorize]
     public class StudentController : Controller
     {
-        ProfesorServices _adminservice = new ProfesorServices();
-        LoginServices _loginService = new LoginServices();
-
+        private readonly FolderAccessService _adminService;
+        private readonly LoginServices _loginService;
+        private readonly FolderAccessService _folderAccessService;
         private readonly ILogger<StudentController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public StudentController(ILogger<StudentController> logger, IWebHostEnvironment webHostEnvironment)
+        public StudentController(ILogger<StudentController> logger, IWebHostEnvironment webHostEnvironment, FolderAccessService folderAccessService, FolderAccessService profesorServices)
         {
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;
+            _folderAccessService = folderAccessService;
+            _adminService =  profesorServices; // Aquí inicializa tu servicio ProfesorServices correctamente
+            _loginService = new LoginServices();
         }
 
         #region Login Get
@@ -41,15 +47,17 @@ namespace Pautas.Controllers
 
         #region Login Post
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(User model)
         {
             var resp = _loginService.ValidateAccess(model);
 
             if (resp.code == "success")
             {
-                var claims = new List<Claim>
+                var claims = new[]
                 {
                     new Claim(ClaimTypes.Name, resp.Name),
+                    //new Claim(ClaimTypes.Role, resp.Role) // Asumiendo que `Role` es el nivel del usuario
                     // Agrega otros claims según sea necesario
                 };
 
@@ -61,7 +69,7 @@ namespace Pautas.Controllers
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
-                return RedirectToAction("Admin", "User");
+                return RedirectToAction("Index");
             }
 
             return View(model); // O redirigir a la pantalla de inicio de sesión nuevamente
@@ -76,108 +84,70 @@ namespace Pautas.Controllers
             return RedirectToAction("Login", "User");
         }
         #endregion
-
-        [Authorize]
         public IActionResult Index()
         {
-           
+            // Obtener el ID y nivel del usuario desde los claims
 
-            return View();
-        }
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            var userLevelClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
 
-        #region Create User GET
-        [HttpGet]
-        public IActionResult CreateUser()
-        {
-            User user = new User();
-            user.ROLDROPDOWNS = _adminservice.RolDropdown();
-            return View(user);
-        }
-        #endregion
-
-        #region Create User POST
-        [HttpPost]
-        public IActionResult CreateUser(User model)
-        {
-            GenericResponse resp = new GenericResponse();
-            resp = _adminservice.CreateUser(model);
-
-            if (resp.Resp)
+            if (userIdClaim == null || userLevelClaim == null)
             {
-                return Json(new { resp.id, resp.message });
+                return Unauthorized();
             }
-            else
-            {
-                return RedirectToAction("CreateUser");
-            }
-        }
-        #endregion
 
-        #region Insert Level User POST
-        [HttpPost]
-        public IActionResult InsertLevelUser(int USERID, int LEVELID)
+            string userId = userIdClaim.Value;
+            string userLevel = userLevelClaim.Value;
+
+            // Obtener todos los folders para el nivel del estudiante
+            var allFolders = _adminService.GetFoldersByLevel(userLevel);
+
+        
+
+
+            return View(allFolders);
+        }
+
+        public IActionResult View(int id)
         {
-            Student resp = new Student();
-            resp = _adminservice.SP_GM_LEVEL_INSERT(USERID, LEVELID);
-            return Json(new { id = resp.id, message = resp.message });
-        }
-        #endregion
-
-        #region Edit User GET
-        [HttpGet]
-        public IActionResult Edit(int id, string mensaje)
-        {
-            //User user = new User();
-
-            User model = _adminservice.SP_USER_SELECT_BY_ONE(id);
-            model.ROLDROPDOWNS = _adminservice.RolDropdown();
-            return View(model);
-        }
-
-        #endregion
-
-        #region Update User POST
-        [HttpPost]
-        public IActionResult Edit(User model)
-        {
-            var resp = _adminservice.UpdateUser(model);
-
-            if (resp.code == "success")
+            Models.Profesor.Folder folder = _adminService.GetFolderById(id);
+            if (folder == null)
             {
-                return Json(new { message = resp.message, code = resp.code });
+                return NotFound();
             }
-            else
-            {
-                return Json(new { message = resp.message, code = resp.code });
-            }
-        }
-        #endregion
 
-        #region Delete User GET
-        [HttpGet]
-        public IActionResult Delete(int id)
-        {
-            User user = _adminservice.SP_USER_SELECT_BY_ONE(id);
-            return View(user);
-        }
-        #endregion
+            folder.Listamages = _adminService.GetFilesByFolderId(id);
 
-        #region Delete User POST
-        [HttpPost]
-        public IActionResult DeleteUserConfirmed(int userId)
-        {
-            var resp = _adminservice.DeleteUser(userId);
-
-            if (resp.code == "success")
-            {
-                return Json(new { message = resp.message, code = resp.code });
-            }
-            else
-            {
-                return Json(new { message = resp.message, code = resp.code });
-            }
+            return View(folder);
         }
-        #endregion
+
+
+
+        //[Authorize]
+        //public async Task<IActionResult> AccessFolder(int folderId)
+        //{
+        //    // Obtener el ID del usuario desde los claims
+        //    var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        //    if (userIdClaim == null)
+        //    {
+        //        return Unauthorized();
+        //    }
+
+        //    int userId = int.Parse(userIdClaim.Value);
+
+        //    // Verificar el acceso a la carpeta usando el servicio
+        //    bool hasAccess = await _folderAccessService.HasAccessToFolder(userId, folderId);
+
+        //    if (hasAccess)
+        //    {
+        //        // Lógica para mostrar el contenido de la carpeta
+        //        return View("FolderView", folderId); // Suponiendo que tienes una vista FolderView
+        //    }
+        //    else
+        //    {
+        //        return Forbid();
+        //    }
+        //}
 
         #region Privacy de Login
         public IActionResult Privacy()

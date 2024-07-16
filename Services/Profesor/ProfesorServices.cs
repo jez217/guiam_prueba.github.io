@@ -1,16 +1,192 @@
 ﻿using Microsoft.Data.SqlClient;
 using Pautas.Models.Profesor;
-using Pautas.Models.Pautas;
+
 using Pautas.Services.Conection;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using Pautas.Models.Login;
 
-namespace Pautas.Services.Profesor
+namespace Pautas.Services.ProfesorService
 {
-    public class ProfesorServices
+    public class FolderAccessService
     {
         ConnectionDb _connService = new ConnectionDb();
+
+        public List<Models.Profesor.ImageModel> GetFilesByFolderId(int folderId)
+        {
+            List<Models.Profesor.ImageModel> fileList = new List<Models.Profesor.ImageModel>();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_ImageDetailSelect", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@FolderId", SqlDbType.Int).Value = folderId;
+
+                        sql.Open();
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                var file = new ImageModel()
+                                {
+                                    Id = dr.GetInt32(dr.GetOrdinal("Id")),
+                                    Name = dr.GetString(dr.GetOrdinal("Name")),
+                                    FilePath = dr.GetString(dr.GetOrdinal("FilePath")),
+                                    FolderId = dr.GetInt32(dr.GetOrdinal("FolderId")),
+                                    UploadedAt = dr.GetDateTime(dr.GetOrdinal("UploadedAt"))
+                                };
+                                fileList.Add(file);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejo de excepciones aquí
+                // Puedes registrar el error, lanzar una excepción o manejarlo de otra manera
+                fileList.Add(new Models.Profesor.ImageModel { FilePath = "error", Name = ex.Message });
+            }
+            return fileList;
+        }
+
+
+        public bool HasAccessToFolder(string userId, int folderId)
+        {
+            bool hasAccess = false;
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand command = new SqlCommand("p_GM_User_Level_Insert", sql))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.Add("@USERID", SqlDbType.Int).Value = userId;
+                        command.Parameters.Add("@LEVELID", SqlDbType.Int).Value = folderId;
+
+                        SqlParameter messageParam = new SqlParameter("@MESSAGE", SqlDbType.NVarChar, -1);
+                        messageParam.Direction = ParameterDirection.Output;
+                        command.Parameters.Add(messageParam);
+
+                        SqlParameter responseParam = new SqlParameter("@RESPONSE", SqlDbType.Bit);
+                        responseParam.Direction = ParameterDirection.Output;
+                        command.Parameters.Add(responseParam);
+
+                        sql.Open();
+                        command.ExecuteNonQuery();
+
+                        // Verificar si el procedimiento almacenado actualiza correctamente el acceso
+                        hasAccess = Convert.ToBoolean(responseParam.Value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejo de excepciones
+                Console.WriteLine($"Error en FolderAccessService: {ex.Message}");
+                hasAccess = false;
+            }
+
+            return hasAccess;
+        }
+
+        public List<Folder> GetFoldersByLevel(string folderLevel)
+        {
+            List<Folder> folders = new List<Folder>();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand command = new SqlCommand("sp_GetFoldersByLevel", sql))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@UserLevel", folderLevel);
+
+                        sql.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                folders.Add(new Folder
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    Name = reader.GetString(reader.GetOrdinal("Name")),
+                                    ParentFolderId = reader.IsDBNull(reader.GetOrdinal("ParentFolderId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("ParentFolderId")),
+                                    CreatedBy = reader.GetString(reader.GetOrdinal("CreatedBy")),
+                                    FolderLevel = reader.GetInt32(reader.GetOrdinal("FolderLevel"))
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejo de excepciones
+                Console.WriteLine($"Error en GetFoldersByLevel: {ex.Message}");
+            }
+
+            return folders;
+        }
+
+        public void RenameFolder(int id, string name)
+        {
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SP_RENAME_FOLDER", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        cmd.Parameters.AddWithValue("@Name", name);
+
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                        sql.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción, por ejemplo, registrar el error
+                throw new Exception("Error al renombrar la carpeta: " + ex.Message);
+            }
+        }
+
+        public void DeleteFolder(int id)
+        {
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SP_DELETE_FOLDER", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", id);
+
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                        sql.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción, por ejemplo, registrar el error
+                throw new Exception("Error al eliminar la carpeta: " + ex.Message);
+            }
+        }
+
+
 
         #region CreateFolder
         public void CreateFolder(Folder model)

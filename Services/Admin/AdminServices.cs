@@ -12,7 +12,7 @@ using Pautas.Models;
 
 namespace Pautas.Services.Users
 {
-    public class ProfesorServices
+    public class AdminService
     {
         ConnectionDb _connService = new ConnectionDb();
 
@@ -287,9 +287,9 @@ namespace Pautas.Services.Users
         #endregion
 
         #region LevelSelect
-        public List<Level> SP_LEVEL_SELECT()
+        public List<User> SP_LEVEL_SELECT()
         {
-            List<Level> olista = new List<Level>();
+            List<User> olista = new List<User>();
             //try
             //{
             using (SqlConnection sql = new SqlConnection(_connService.stringSqlPautaDb()))
@@ -304,9 +304,9 @@ namespace Pautas.Services.Users
                     {
                         while (dr.Read())
                         {
-                            var obj = new Level()
+                            var obj = new User()
                             {
-                                Id_level = dr.GetInt32(dr.GetOrdinal("Id_level")),
+                                IdLevel = dr.GetInt32Null(dr.GetOrdinal("Id_level")),
                                 Name = dr.GetString(dr.GetOrdinal("Name")),
                             };
                             olista.Add(obj);
@@ -374,6 +374,27 @@ namespace Pautas.Services.Users
                 {
                     Text = Rl.Descripcion,
                     Value = Rl.IdRol.ToString()
+                });
+            }
+
+            return oList;
+        }
+
+        #endregion
+
+        #region LevelDropdown
+        public List<SelectListItem> LevelDropdown()
+        {
+            List<SelectListItem> oList = new List<SelectListItem>();
+
+            var listRl = SP_LEVEL_SELECT();
+
+            foreach (var Rl in listRl)
+            {
+                oList.Add(new SelectListItem
+                {
+                    Text = Rl.Name,
+                    Value = Rl.IdLevel.ToString()
                 });
             }
 
