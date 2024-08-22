@@ -72,12 +72,17 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="createFolderForm" method="post" action="@Url.Action("CreateFolder", "Profesor")">
+                    <form id="createFolderForm" method="post" action="@Url.Action("CreateFolder", "Profesor", new { id = Model.Id_Folders_level}) ">
                         <div class="form-group">
                             <label for="folderName">Nombre de la Carpeta</label>
                             <input type="text" class="form-control" id="folderName" name="Name" required />
                         </div>
-                        <input type="hidden" name="ParentFolderId" value="@Model.Id" />
+
+                        <input type="hidden" id="Id_Folders_level" name="Id_Folders_level" value="@Model.Id_Folders_level" />
+                        <input type="hidden" id="ParentFolderId" name="ParentFolderId" value="@Model.ParentFolderId" />
+
+
+
                         <button type="submit" class="btn btn-primary">Crear</button>
                     </form>
                 </div>
@@ -101,8 +106,12 @@
                             <label for="fileName">Archivo</label>
                             <input type="file" class="form-control" id="fileName" name="file" required />
                         </div>
-                        <input type="hidden" name="FolderId" value="@Model.Id" />
-                        <button type="submit" class="btn btn-primary">Subir</button>
+
+
+                        <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+
+@*                         <input type="hidden" name="FolderId" value="@Model.Id" />
+ *@                        <button type="submit" class="btn btn-primary">Subir</button>
                     </form>
                 </div>
             </div>
@@ -136,6 +145,7 @@
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
     <script>
         function openCreateFolderModal(parentFolderId) {
             $('#parentFolderId').val(parentFolderId);

@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Pautas.Models.Login;
 using Pautas.Services.Extensions;
+using Pautas.Services.Users;
 
 namespace Pautas.Controllers
 {
@@ -28,34 +29,51 @@ FolderAccessService _profesorServices = new FolderAccessService();
         }
         public IActionResult Index()
         {
-            var rootFolders = _profesorServices.GetRootFolders();
+            var rootFoldersCurso = _profesorServices.GetRootFoldersCurso();
 
             // Pasa las carpetas y subcarpetas al ViewBag para que estén disponibles en el layout
-            ViewBag.Folders = rootFolders;
 
-            return View(rootFolders);
+            return View(rootFoldersCurso);
         }
 
-
-        public IActionResult View(int id)
+        [HttpPost]
+        public IActionResult DeleteFile(int id)
         {
-
-            var folder = _profesorServices.GetFolderById(id);
-
-            if (folder.Id == 0)
+            try
             {
-                return NotFound();
+                _profesorServices.DeleteFile(id); // Asegúrate de que este método existe en tu servicio
+                return Json(new { success = true, message = "¡Archivo eliminado correctamente!" });
             }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error al eliminar el archivo: {ex.Message}" });
+            }
+        }
 
-            return View(folder);
+        [HttpGet]
+        public IActionResult Nivel(int id)
+        {
+            var folderCurso = _profesorServices.GetFolderCursoById(id); // Método para obtener el curso por Id
+            ViewBag.FolderCursoId = folderCurso?.Id; // Asignar el Id del curso al ViewBag
+
+            var folderLevels = _profesorServices.GetFolderByLevel(id); // Método para obtener los niveles de la carpeta
+            ViewBag.name = folderCurso?.Name;
+
+            return View(folderLevels);
         }
 
         [HttpGet]
         public IActionResult CreateFolder()
         {
-            Folder model = new Folder();
             string user = User.Identity.Name;
+            FoldersLevel modellevel = new FoldersLevel();
+            FoldersCurso modelcurso = new FoldersCurso();
 
+            Folder model = new Folder
+            {
+                Id_Folders_level = modellevel.Id_Folders_level,  // Asume que has agregado estas propiedades en el modelo Folder
+                Id_Folder_curso = modellevel.Id_subfolders_curso
+            };
 
             model.CreatedBy = user;
 
@@ -78,10 +96,68 @@ FolderAccessService _profesorServices = new FolderAccessService();
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public IActionResult CreateFolderCurso()
+        {
+            Folder model = new Folder();
+            string user = User.Identity.Name;
+
+
+            model.CreatedBy = user;
+
+
+            return View(model);
+        }
 
         [HttpPost]
-        public async Task<IActionResult> UploadFile(IFormFile file, int folderId)
+        public IActionResult CreateFolderCurso(FoldersCurso model)
         {
+            string user = User.Identity.Name;
+
+            model.CreatedBy = user;
+            _profesorServices.CreateFolderCurso(model);
+
+            // Actualizar la lista de carpetas y subcarpetas después de crear la carpeta
+            //var rootFolders = _profesorServices.GetRootFoldersCurso(); // Asegúrate de obtener las carpetas correctamente
+            //ViewBag.Folders = rootFolders;  // Pasa la lista de carpetas y subcarpetas al ViewBag
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult CreateFolderLevel()
+        {
+            FoldersLevel model = new FoldersLevel();
+            string user = User.Identity.Name;
+
+
+            model.CreatedBy = user;
+
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult CreateFolderLevel(FoldersLevel model)
+        {
+            string user = User.Identity.Name;
+            model.CreatedBy = user;
+
+            if (model.Id_subfolders_curso == null)
+            {
+                // Puedes agregar lógica aquí si necesitas capturar el Id_subfolders_curso de otra forma
+            }
+
+            _profesorServices.CreateFolderLevel(model);
+
+            return RedirectToAction("Nivel", new { id = model.Id_Folders_level });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadFile(IFormFile file, int folderId, Folder model)
+        {
+
+
             if (file != null && file.Length > 0)
             {
                 try
@@ -101,7 +177,7 @@ FolderAccessService _profesorServices = new FolderAccessService();
                         await file.CopyToAsync(stream);
                     }
 
-                    _profesorServices.UploadFile(file.FileName, filePath, folderId);
+                    _profesorServices.UploadFile(file.FileName, filePath, model);
                 }
                 catch (Exception ex)
                 {
@@ -110,7 +186,44 @@ FolderAccessService _profesorServices = new FolderAccessService();
                 }
             }
 
-            return RedirectToAction("View", new { id = folderId });
+            return RedirectToAction("View", new { id = model.Id });
+        }
+
+        //[HttpGet]
+        //public IActionResult View(int id)
+        //{
+        //    var folderCurso = _profesorServices.GetFolderCursoById(id); // Método para obtener el curso por Id
+        //    ViewBag.FolderCursoId = folderCurso?.Id; // Asignar el Id del curso al ViewBag
+
+        //    var folderLevels = _profesorServices.GetFolderByLevel(id); // Método para obtener los niveles de la carpeta
+
+        //    ViewBag.name = folderCurso?.Name;
+
+
+
+        //    var model = new Models.Profesor.ImageModel
+        //    {
+        //        Listamages = _profesorServices.GetFilesByFolderId(id)
+        //    };
+
+        //    ViewBag.Files = _profesorServices.GetFilesByFolderId(id);
+        //    return View(model);
+        //}
+
+
+        [HttpGet]
+        public IActionResult View(int id)
+        {
+
+            var folder = _profesorServices.GetFolderById(id);
+            var file = _profesorServices.GetFilesByFolderId(id);
+
+            //if (folder.Id == 0)
+            //{
+            //    return NotFound();
+            //}
+
+            return View(folder);
         }
 
         [HttpPost]
@@ -128,7 +241,6 @@ FolderAccessService _profesorServices = new FolderAccessService();
             }
         }
 
-
         [HttpPost]
         public IActionResult DeleteFolder(int id)
         {
@@ -142,9 +254,6 @@ FolderAccessService _profesorServices = new FolderAccessService();
                 return Json(new { success = false, message = $"Error al eliminar la carpeta: {ex.Message}" });
             }
         }
-
-
-
 
         //public IActionResult DownloadFile(int id)
         //{

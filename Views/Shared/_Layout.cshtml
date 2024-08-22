@@ -3,7 +3,9 @@
 @using Pautas.Models.Profesor
 
 @{
-    var folders = ViewBag.Folders as IEnumerable<Pautas.Models.Profesor.Folder>;
+    // var folders = ViewBag.Folders as IEnumerable<Pautas.Models.Profesor.Folder>;
+    var foldersCurso = ViewBag.Folders as IEnumerable<Pautas.Models.Profesor.FoldersCurso>;
+    var foldersLevel = ViewBag.Folders as IEnumerable<Pautas.Models.Profesor.FoldersLevel>;
 
     string userAuth = User.Identity.IsAuthenticated ? User.Identity.Name : null;
      // Pautas.Models.Login.User User = JsonConvert.DeserializeObject<Pautas.Models.Login.User>(userAuth);
@@ -29,14 +31,13 @@ else
     <meta name="description" content="Portal - Bootstrap 5 Admin Dashboard Template For Developers">
     <meta name="author" content="Primavera Holding">
     <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
           rel="stylesheet">
-    <link href="~/css/bootstrap.css" rel="stylesheet" />
     <link href="~/css/sb-admin-2.min.css" rel="stylesheet" />
-    <link href="~/css/site.css" rel="stylesheet" />
-        <link href="~/plugins/bootstrap/css/bootstrap-icons.min.css" rel="stylesheet" />
-        <link href="~/plugins/bootstrap/css/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/plugins/bootstrap/css/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/plugins/bootstrap/css/bootstrap-icons.css" rel="stylesheet" />
 
 </head>
 
@@ -60,14 +61,14 @@ else
                 <hr class="sidebar-divider my-0">
 
                 <!-- Nav Item - Dashboard -->
-                @foreach (var folder in folders ?? Enumerable.Empty<Pautas.Models.Profesor.Folder>())
+@*                 @foreach (var folder in folders ?? Enumerable.Empty<Pautas.Models.Profesor.Folder>())
                 {
                     <li class="nav-item">
-                        <a class="nav-link collapsed" href="#collapse@folder.Id" data-toggle="collapse" aria-expanded="true" aria-controls="collapse@folder.Id">
+                        <a class="nav-link collapsed" href="@Url.Action("View", "Profesor", new { id = folder.Id })">
                             <i class="fas fa-fw fa-folder"></i>
                             <span>@folder.Name</span>
                         </a>
-                        <ul id="collapse@folder.Id" class="collapse list-unstyled">
+                        <ul id="collapse" class="collapse list-unstyled">
                             @if (folder.SubFolders != null && folder.SubFolders.Any())
                             {
                                 @foreach (var subfolder in folder.SubFolders)
@@ -78,8 +79,29 @@ else
                                 }
                             }
                         </ul>
+                    </li> 
+                } *@
+
+@*                 @foreach (var foldercurso in foldersCurso ?? Enumerable.Empty<Pautas.Models.Profesor.FoldersCurso>())
+                {
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="@Url.Action("View", "Profesor", new { id = foldercurso.Id })">
+                            <i class="fas fa-fw fa-folder"></i>
+                            <span>@foldercurso.Name</span>
+                        </a>
+                        <ul id="collapse" class="collapse list-unstyled">
+                            @if (foldercurso.SubFolders != null && foldercurso.SubFolders.Any())
+                            {
+                                @foreach (var subfolder in foldercurso.SubFolders)
+                                {
+                                    <li>
+                                        <a class="nav-link" href="@Url.Action("View", "Profesor", new { id = subfolder.Id })">@subfolder.Name</a>
+                                    </li>
+                                }
+                            }
+                        </ul>
                     </li>
-                }
+                } *@
 
                 <!-- Divider -->
                 <hr class="sidebar-divider">
@@ -129,7 +151,7 @@ else
                     </button>
 
                     <!-- Topbar Search -->
-                    <h4><b>Nivel 1</b></h4>
+                    <h4><b></b></h4>
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">

@@ -186,7 +186,27 @@ namespace Pautas.Services.ProfesorService
             }
         }
 
+        public void DeleteFile(int fileId)
+        {
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_DeleteFile", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", fileId);
 
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar el archivo: " + ex.Message);
+            }
+        }
 
         #region CreateFolder
         public void CreateFolder(Folder model)
@@ -196,6 +216,34 @@ namespace Pautas.Services.ProfesorService
                 using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
                 {
                     using (SqlCommand cmd = new SqlCommand("sp_CreateFolder", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@Name", model.Name);
+                        cmd.Parameters.AddWithValue("@Id_Folders_level", model.Id_Folders_level);
+                        cmd.Parameters.AddWithValue("@ParentFolderId", model.ParentFolderId);
+                        cmd.Parameters.AddWithValue("@CreatedBy", model.CreatedBy);
+
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al crear la carpeta", ex);
+            }
+        }
+        #endregion
+
+        #region CreateFolderCurso
+        public void CreateFolderCurso(FoldersCurso model)
+        {
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_CreateFolderCurso", sql))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -216,8 +264,41 @@ namespace Pautas.Services.ProfesorService
         }
         #endregion
 
+        #region CreateFolderLevel
+        public void CreateFolderLevel(FoldersLevel model)
+        {
+
+            //FoldersLevel model = new FoldersLevel();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_CreateFolderLevel", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Adding input parameters
+                        cmd.Parameters.AddWithValue("@Id_Folders_level", model.Id_Folders_level);
+
+                        cmd.Parameters.AddWithValue("@Name", model.Name);
+                        cmd.Parameters.AddWithValue("@Id_subfolders_curso", model.Id_subfolders_curso);
+                        cmd.Parameters.AddWithValue("@CreatedBy", model.CreatedBy);
+
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al crear la carpeta", ex);
+            }
+        }
+        #endregion
+
         #region UploadFile
-        public void UploadFile(string fileName, string filePath, int folderId)
+        public void UploadFile(string fileName, string filePath, Folder model)
         {
             try
             {
@@ -230,7 +311,7 @@ namespace Pautas.Services.ProfesorService
                         // Adding input parameters
                         cmd.Parameters.AddWithValue("@Name", fileName);
                         cmd.Parameters.AddWithValue("@FilePath", filePath);
-                        cmd.Parameters.AddWithValue("@FolderId", folderId);
+                        cmd.Parameters.AddWithValue("@FolderId", model.Id_Folders_level);
 
                         sql.Open();
                         cmd.ExecuteNonQuery();
@@ -244,6 +325,49 @@ namespace Pautas.Services.ProfesorService
         }
         #endregion
 
+        public bool CreateFile(string fileName, string filePath,  int folderLevelId, DateTime uploadedAt)
+        {
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+            {
+                sql.Open();
+                string query = "INSERT INTO Files (Name, FilePath, FolderId, UploadedAt, Id_Folders_level) VALUES (@Name, @FilePath, @FolderId, @UploadedAt, @FolderLevelId)";
+
+                using (SqlCommand command = new SqlCommand(query, sql))
+                {
+                    command.Parameters.AddWithValue("@Name", fileName);
+                    command.Parameters.AddWithValue("@FilePath", filePath);
+                    command.Parameters.AddWithValue("@UploadedAt", uploadedAt);
+                    command.Parameters.AddWithValue("@FolderLevelId", folderLevelId);
+
+                    int result = command.ExecuteNonQuery();
+                    return result > 0;
+                }
+            }
+        }
+
+        public bool CreateFolder(string folderName, int Id_subfolders_curso, int parentFolderId, int folderLevelId, string createdBy)
+        {
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+            {
+                sql.Open();
+                string query = "INSERT INTO Folders (Name, Id_subfolders_curso, CreatedBy, CreatedAt, FolderLevel, ParentFolderId) VALUES (@Name, @Id_subfolders_curso, @CreatedBy, @CreatedAt, @FolderLevel, @ParentFolderId,)";
+
+                using (SqlCommand command = new SqlCommand(query, sql))
+                {
+                    command.Parameters.AddWithValue("@Name", folderName);
+                    command.Parameters.AddWithValue("@Id_subfolders_curso", Id_subfolders_curso);
+                    command.Parameters.AddWithValue("@CreatedBy", createdBy);
+                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+                    command.Parameters.AddWithValue("@FolderLevel", folderLevelId);
+                    command.Parameters.AddWithValue("@ParentFolderId", parentFolderId);
+
+                    int result = command.ExecuteNonQuery();
+                    return result > 0;
+                }
+            }
+        }
+
+
         #region GetRootFolders
         public List<Folder> GetRootFolders()
         {
@@ -256,6 +380,7 @@ namespace Pautas.Services.ProfesorService
                     using (SqlCommand cmd = new SqlCommand("sp_GetRootFolders", sql))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
+
                         sql.Open();
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -266,8 +391,10 @@ namespace Pautas.Services.ProfesorService
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = reader.GetString(1),
-                                    ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
-                                    CreatedBy = reader.GetString(3)
+                                    Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+                                    CreatedBy = reader.GetString(3),
+                                    ParentFolderId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
+
                                 });
                             }
                         }
@@ -283,6 +410,140 @@ namespace Pautas.Services.ProfesorService
         }
         #endregion
 
+        #region GetRootFoldersCurso
+        public List<FoldersCurso> GetRootFoldersCurso()
+        {
+            List<FoldersCurso> rootFoldersCurso = new List<FoldersCurso>();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetRootFoldersCurso", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                rootFoldersCurso.Add(new FoldersCurso
+                                {
+                                    Id = reader.GetInt32(0),
+                                    ParentFolderId = reader.IsDBNull(1) ? (int?)null : reader.GetInt32(2),
+
+                                    Name = reader.GetString(2),
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las carpetas raíz", ex);
+            }
+
+            return rootFoldersCurso;
+        }
+        #endregion
+        public FoldersCurso GetFolderCursoById(int id)
+        {
+            FoldersCurso folderCurso = null;
+
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+            {
+                sql.Open();
+
+                using (SqlCommand command = new SqlCommand("spGetFolderCursoById", sql))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            folderCurso = new FoldersCurso
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                // otros campos si es necesario
+                            };
+                        }
+                    }
+                }
+            }
+
+            return folderCurso;
+        }
+
+        // Método para obtener el Id_subfolders_curso
+        public int? GetFolderCursoId(int folderLevelId)
+        {
+            int? folderCursoId = null;
+
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+            {
+                sql.Open();
+
+                using (SqlCommand command = new SqlCommand("spGetFolderCursoId", sql))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@FolderLevelId", folderLevelId);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            folderCursoId = reader.IsDBNull(0) ? (int?)null : reader.GetInt32(0);
+                        }
+                    }
+                }
+            }
+
+            return folderCursoId;
+        }
+
+        #region GetRootFoldersLevel
+        public List<FoldersLevel> GetRootFoldersLevel()
+        {
+            List<FoldersLevel> rootFoldersCurso = new List<FoldersLevel>();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetRootFoldersLevel", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                rootFoldersCurso.Add(new FoldersLevel
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Id_subfolders_curso = reader.IsDBNull(1) ? (int?)null : reader.GetInt32(2),
+
+                                    Name = reader.GetString(2),
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las carpetas raíz", ex);
+            }
+
+            return rootFoldersCurso;
+        }
+        #endregion
 
         #region GetFolderById
         public Folder GetFolderById(int id)
@@ -296,7 +557,7 @@ namespace Pautas.Services.ProfesorService
                     using (SqlCommand cmd = new SqlCommand("sp_GetFolderById", sql))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@Id", id);
+                        cmd.Parameters.AddWithValue("@Id_Folders_level", id);
                         sql.Open();
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -305,8 +566,7 @@ namespace Pautas.Services.ProfesorService
                             {
                                 folder.Id = reader.GetInt32(0);
                                 folder.Name = reader.GetString(1);
-                                folder.ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
-                                folder.CreatedBy = reader.GetString(3);
+                                folder.Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
                             }
                         }
                     }
@@ -315,7 +575,7 @@ namespace Pautas.Services.ProfesorService
                     folder.Files = new List<Models.Profesor.File>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
 
                     // Obtener subcarpetas
-                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE ParentFolderId = @Id", sql))
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE Id_Folders_level = @Id", sql))
                     {
                         cmd.Parameters.AddWithValue("@Id", id);
 
@@ -327,8 +587,7 @@ namespace Pautas.Services.ProfesorService
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = reader.GetString(1),
-                                    ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
-                                    CreatedBy = reader.GetString(3)
+                                    Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
                                 });
                             }
                         }
@@ -362,6 +621,48 @@ namespace Pautas.Services.ProfesorService
             }
 
             return folder;
+        }
+        #endregion
+
+        #region GetFolderByLevel
+        public List<FoldersLevel> GetFolderByLevel(int id)
+        {
+            List<FoldersLevel> rootFoldersLevel = new List<FoldersLevel>();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetFoldersByLevel", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id_subfolders_curso", id);
+
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                rootFoldersLevel.Add(new FoldersLevel
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Id_Folders_level = reader.GetInt32(2),
+                                    Id_subfolders_curso = reader.GetInt32(3),
+
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las carpetas raíz", ex);
+            }
+
+            return rootFoldersLevel;
         }
         #endregion
 

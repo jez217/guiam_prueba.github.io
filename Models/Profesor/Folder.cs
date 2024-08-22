@@ -7,6 +7,9 @@ namespace Pautas.Models.Profesor
         public int Id { get; set; }
         public string Name { get; set; }
         public int? ParentFolderId { get; set; }
+        public int? Id_Folders_level { get; set; }
+        public int? Id_Folder_curso { get; set; }
+        public int? Id_subfolders_curso { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<Folder> SubFolders { get; set; } = new List<Folder>();
