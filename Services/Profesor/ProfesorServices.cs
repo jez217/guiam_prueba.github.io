@@ -208,34 +208,6 @@ namespace Pautas.Services.ProfesorService
             }
         }
 
-        #region CreateFolder
-        public void CreateFolder(Folder model)
-        {
-            try
-            {
-                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
-                {
-                    using (SqlCommand cmd = new SqlCommand("sp_CreateFolder", sql))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        cmd.Parameters.AddWithValue("@Name", model.Name);
-                        cmd.Parameters.AddWithValue("@Id_Folders_level", model.Id_Folders_level);
-                        cmd.Parameters.AddWithValue("@ParentFolderId", model.ParentFolderId);
-                        cmd.Parameters.AddWithValue("@CreatedBy", model.CreatedBy);
-
-                        sql.Open();
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al crear la carpeta", ex);
-            }
-        }
-        #endregion
-
         #region CreateFolderCurso
         public void CreateFolderCurso(FoldersCurso model)
         {
@@ -297,34 +269,6 @@ namespace Pautas.Services.ProfesorService
         }
         #endregion
 
-        #region UploadFile
-        public void UploadFile(string fileName, string filePath, Folder model)
-        {
-            try
-            {
-                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
-                {
-                    using (SqlCommand cmd = new SqlCommand("sp_UploadFile", sql))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        // Adding input parameters
-                        cmd.Parameters.AddWithValue("@Name", fileName);
-                        cmd.Parameters.AddWithValue("@FilePath", filePath);
-                        cmd.Parameters.AddWithValue("@FolderId", model.Id_Folders_level);
-
-                        sql.Open();
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al subir el archivo", ex);
-            }
-        }
-        #endregion
-
         public bool CreateFile(string fileName, string filePath,  int folderLevelId, DateTime uploadedAt)
         {
             using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
@@ -345,28 +289,118 @@ namespace Pautas.Services.ProfesorService
             }
         }
 
-        public bool CreateFolder(string folderName, int Id_subfolders_curso, int parentFolderId, int folderLevelId, string createdBy)
+        #region CreateFolder
+        public void CreateFolder(Folder model)
         {
-            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+            try
             {
-                sql.Open();
-                string query = "INSERT INTO Folders (Name, Id_subfolders_curso, CreatedBy, CreatedAt, FolderLevel, ParentFolderId) VALUES (@Name, @Id_subfolders_curso, @CreatedBy, @CreatedAt, @FolderLevel, @ParentFolderId,)";
-
-                using (SqlCommand command = new SqlCommand(query, sql))
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
                 {
-                    command.Parameters.AddWithValue("@Name", folderName);
-                    command.Parameters.AddWithValue("@Id_subfolders_curso", Id_subfolders_curso);
-                    command.Parameters.AddWithValue("@CreatedBy", createdBy);
-                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
-                    command.Parameters.AddWithValue("@FolderLevel", folderLevelId);
-                    command.Parameters.AddWithValue("@ParentFolderId", parentFolderId);
+                    using (SqlCommand cmd = new SqlCommand("sp_CreateFolder", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                    int result = command.ExecuteNonQuery();
-                    return result > 0;
+                        // Adding input parameters
+                        cmd.Parameters.AddWithValue("@Name", model.Name);
+                        cmd.Parameters.AddWithValue("@ParentFolderId", model.ParentFolderId.HasValue ? (object)model.ParentFolderId.Value : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Id_Folders_level", model.Id_Folders_level.HasValue ? (object)model.Id_Folders_level.Value : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@CreatedBy", model.CreatedBy);
+
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al crear la carpeta", ex);
+            }
         }
+        #endregion
 
+        #region CreateFolder
+        public void CreateSubFolder(Folder model)
+        {
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_CreateSubFolder", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Adding input parameters
+                        cmd.Parameters.AddWithValue("@Name", model.Name);
+                        cmd.Parameters.AddWithValue("@ParentFolderId", model.Id);
+                        cmd.Parameters.AddWithValue("@CreatedBy", model.CreatedBy);
+
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al crear la carpeta", ex);
+            }
+        }
+        #endregion
+
+        #region UploadFile
+        public void UploadFile(string fileName, string filePath, int folderlevelId)
+        {
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_UploadFile", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Adding input parameters
+                        cmd.Parameters.AddWithValue("@Name", fileName);
+                        cmd.Parameters.AddWithValue("@FilePath", filePath);
+                        cmd.Parameters.AddWithValue("@FolderLevelId", folderlevelId);
+
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al subir el archivo", ex);
+            }
+        }
+        #endregion
+
+        #region UploadFile
+        public void UploadSubFile(string fileName, string filePath, int folderparentId)
+        {
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_UploadSubFile", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Adding input parameters
+                        cmd.Parameters.AddWithValue("@Name", fileName);
+                        cmd.Parameters.AddWithValue("@FilePath", filePath);
+                        cmd.Parameters.AddWithValue("@FolderParentId", folderparentId);
+
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al subir el archivo", ex);
+            }
+        }
+        #endregion
 
         #region GetRootFolders
         public List<Folder> GetRootFolders()
@@ -380,7 +414,6 @@ namespace Pautas.Services.ProfesorService
                     using (SqlCommand cmd = new SqlCommand("sp_GetRootFolders", sql))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-
                         sql.Open();
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -391,10 +424,8 @@ namespace Pautas.Services.ProfesorService
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = reader.GetString(1),
-                                    Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
-                                    CreatedBy = reader.GetString(3),
-                                    ParentFolderId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
-
+                                    ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+                                    CreatedBy = reader.GetString(3)
                                 });
                             }
                         }
@@ -407,6 +438,284 @@ namespace Pautas.Services.ProfesorService
             }
 
             return rootFolders;
+        }
+        #endregion
+
+        #region GetFolderById
+        public FoldersLevel GetLevelFolderById(int id)
+        {
+            FoldersLevel folder = new FoldersLevel();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetLevelFolderById", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                folder.Id = reader.GetInt32(0);
+                                folder.Name = reader.GetString(1);
+                                folder.Id_Folders_level = reader.GetInt32(2);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener la carpeta por ID", ex);
+            }
+
+            return folder;
+        }
+        #endregion
+
+        #region GetSubFolderById
+        public Folder GetSubFolderById(int id)
+        {
+            Folder folder = new Folder();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetSubFolderById", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                folder.Id = reader.GetInt32(0);
+                                folder.Name = reader.GetString(1);
+                                folder.ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
+                                folder.CreatedBy = reader.GetString(3);
+                            }
+                        }
+                    }
+
+                    folder.SubFolders = new List<Folder>();
+                    folder.Files = new List<Models.Profesor.File>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
+
+                    // Obtener subcarpetas
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE ParentFolderId = @Id", sql))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                folder.SubFolders.Add(new Folder
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+                                    CreatedBy = reader.GetString(3)
+                                });
+                            }
+                        }
+                    }
+
+                    // Obtener archivos
+                    using (SqlCommand cmd = new SqlCommand("sp_GetFilesBySubFolderId", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FolderParentId", id);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                folder.Files.Add(new Models.Profesor.File // Usar Profesor.File para especificar el tipo del namespace Profesor
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    FolderParentId = reader.GetInt32(4)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener la carpeta por ID", ex);
+            }
+
+            return folder;
+        }
+        #endregion
+
+        #region GetFolderById
+        public Folder GetFolderById(int id)
+        {
+            Folder folder = new Folder();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetFolderById", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                folder.Id = reader.GetInt32(0);
+                                folder.Name = reader.GetString(1);
+                                folder.Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
+                                folder.CreatedBy = reader.GetString(3);
+                            }
+                        }
+                    }
+
+                    folder.SubFolders = new List<Folder>();
+                    folder.Files = new List<Models.Profesor.File>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
+
+                    // Obtener subcarpetas
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE Id_Folders_level = @Id", sql))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                folder.SubFolders.Add(new Folder
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+                                    CreatedBy = reader.GetString(3)
+                                });
+                            }
+                        }
+                    }
+
+                    // Obtener archivos
+                    using (SqlCommand cmd = new SqlCommand("sp_GetFilesByFolderId", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FolderLevelId", id);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                folder.Files.Add(new Models.Profesor.File // Usar Profesor.File para especificar el tipo del namespace Profesor
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    FilePath = reader.GetString(2),
+                                    FolderLevelId = reader.GetInt32(3)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener la carpeta por ID", ex);
+            }
+
+            return folder;
+        }
+        #endregion
+
+        #region GetFolderById
+        public Folder GetsubFolderById(int id)
+        {
+            Folder folder = new Folder();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetSubFolderById", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                folder.Id = reader.GetInt32(0);
+                                folder.Name = reader.GetString(1);
+                                folder.ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
+                                folder.CreatedBy = reader.GetString(3);
+                            }
+                        }
+                    }
+
+                    folder.SubFolders = new List<Folder>();
+                    folder.Files = new List<Models.Profesor.File>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
+
+                    // Obtener subcarpetas
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE ParentFolderId = @Id", sql))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                folder.SubFolders.Add(new Folder
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+                                    CreatedBy = reader.GetString(3)
+                                });
+                            }
+                        }
+                    }
+
+                    // Obtener archivos
+                    using (SqlCommand cmd = new SqlCommand("sp_GetFilesBySubFolderId", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FolderParentId", id);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                folder.Files.Add(new Models.Profesor.File // Usar Profesor.File para especificar el tipo del namespace Profesor
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    FilePath = reader.GetString(2),
+                                    FolderParentId = reader.GetInt32(3)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener la carpeta por ID", ex);
+            }
+
+            return folder;
         }
         #endregion
 
@@ -479,6 +788,37 @@ namespace Pautas.Services.ProfesorService
             return folderCurso;
         }
 
+        public async Task<List<Folder>> GetSubFoldersByParentId(int parentFolderId)
+        {
+            var subFolders = new List<Folder>();
+
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+            {
+                var command = new SqlCommand("SELECT Id, Name, ParentFolderId, CreatedBy, CreatedAt, FolderLevel FROM Folders WHERE ParentFolderId = @ParentFolderId", sql);
+                command.Parameters.AddWithValue("@ParentFolderId", parentFolderId);
+
+                await sql.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        subFolders.Add(new Folder
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+                            CreatedBy = reader.GetString(3),
+                            CreatedAt = reader.GetDateTime(4),
+                            FolderLevel = reader.GetInt32(5)
+                        });
+                    }
+                }
+            }
+
+            return subFolders;
+        }
+
         // Método para obtener el Id_subfolders_curso
         public int? GetFolderCursoId(int folderLevelId)
         {
@@ -542,85 +882,6 @@ namespace Pautas.Services.ProfesorService
             }
 
             return rootFoldersCurso;
-        }
-        #endregion
-
-        #region GetFolderById
-        public Folder GetFolderById(int id)
-        {
-            Folder folder = new Folder();
-
-            try
-            {
-                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
-                {
-                    using (SqlCommand cmd = new SqlCommand("sp_GetFolderById", sql))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@Id_Folders_level", id);
-                        sql.Open();
-
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                folder.Id = reader.GetInt32(0);
-                                folder.Name = reader.GetString(1);
-                                folder.Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
-                            }
-                        }
-                    }
-
-                    folder.SubFolders = new List<Folder>();
-                    folder.Files = new List<Models.Profesor.File>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
-
-                    // Obtener subcarpetas
-                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE Id_Folders_level = @Id", sql))
-                    {
-                        cmd.Parameters.AddWithValue("@Id", id);
-
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                folder.SubFolders.Add(new Folder
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
-                                });
-                            }
-                        }
-                    }
-
-                    // Obtener archivos
-                    using (SqlCommand cmd = new SqlCommand("sp_GetFilesByFolderId", sql))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@FolderId", id);
-
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                folder.Files.Add(new Models.Profesor.File // Usar Profesor.File para especificar el tipo del namespace Profesor
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    FilePath = reader.GetString(2),
-                                    FolderId = reader.GetInt32(3)
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener la carpeta por ID", ex);
-            }
-
-            return folder;
         }
         #endregion
 

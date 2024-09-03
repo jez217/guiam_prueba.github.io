@@ -117,6 +117,7 @@ namespace Pautas.Services.Users
 
                         // Adding input parameters
                         cmd.Parameters.AddWithValue("@Name", model.Name);
+                        cmd.Parameters.AddWithValue("@Level", model.IdLevel);
                         cmd.Parameters.AddWithValue("@IdRol", model.IdRol);
                         cmd.Parameters.AddWithValue("@Id_status", model.IdStatus);
                         cmd.Parameters.AddWithValue("@Correo", model.Correo);
@@ -176,7 +177,8 @@ namespace Pautas.Services.Users
                         // Adding input parameters
                         cmd.Parameters.Add(new SqlParameter("@Id_user", model.idUser));
                         cmd.Parameters.Add(new SqlParameter("@Name", model.Name));
-                        //cmd.Parameters.Add(new SqlParameter("@IdRol", model.IdRol));
+                        cmd.Parameters.AddWithValue("@Level", model.IdLevel);
+                        cmd.Parameters.AddWithValue("@IdRol", model.IdRol);
                         //cmd.Parameters.Add(new SqlParameter("@Token", model.Token));
                         cmd.Parameters.Add(new SqlParameter("@Id_status", model.IdStatus));
                         cmd.Parameters.Add(new SqlParameter("@Correo", model.Correo));
@@ -287,12 +289,12 @@ namespace Pautas.Services.Users
         #endregion
 
         #region LevelSelect
-        public List<User> SP_LEVEL_SELECT()
+        public List<Level> SP_LEVEL_SELECT()
         {
-            List<User> olista = new List<User>();
+            List<Level> olista = new List<Level>();
             //try
             //{
-            using (SqlConnection sql = new SqlConnection(_connService.stringSqlPautaDb()))
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
             {
                 using (SqlCommand cmd = new SqlCommand("p_PT_LevelSelect", sql))
                 {
@@ -304,9 +306,9 @@ namespace Pautas.Services.Users
                     {
                         while (dr.Read())
                         {
-                            var obj = new User()
+                            var obj = new Level()
                             {
-                                IdLevel = dr.GetInt32Null(dr.GetOrdinal("Id_level")),
+                                Id_level = dr.GetInt32(dr.GetOrdinal("Id_level")),
                                 Name = dr.GetString(dr.GetOrdinal("Name")),
                             };
                             olista.Add(obj);
@@ -394,7 +396,7 @@ namespace Pautas.Services.Users
                 oList.Add(new SelectListItem
                 {
                     Text = Rl.Name,
-                    Value = Rl.IdLevel.ToString()
+                    Value = Rl.Id_level.ToString()
                 });
             }
 

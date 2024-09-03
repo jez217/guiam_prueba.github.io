@@ -11,7 +11,8 @@ namespace Pautas.Models.Profesor
         public string Path { get; set; }
         public string Type { get; set; }
 
-        public int FolderId { get; set; }
+        public int FolderParentId { get; set; }
+        public int FolderLevelId { get; set; }
         public DateTime UploadedAt { get; set; }
 
         public List<File> ListaFileImages { get; set; }

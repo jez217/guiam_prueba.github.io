@@ -473,6 +473,25 @@
 
                             </div>
                         </div>
+
+
+                        <div class="form-row">
+                            @*   <div class="form-group col-md-6">
+                            <label for="idStatus">Estado</label>
+                            <select class="form-control" id="idStatus" name="idStatus" required>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                            </select>
+
+                            </div> *@
+
+                            <div class="form-group col-md-6">
+                                <label for="idRol">Nivel</label>
+                                @Html.DropDownListFor(m => m.IdLevel, (List<SelectListItem>)Model.LEVELDROPDOWNS, new { @class = "form-control chosen-select", @required = "required", data_placeholder = "Seleccione el nivel", @autocomplete = "off" })
+
+                            </div>
+                        </div>
+
                         <div class="modal-footer">
                             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
                             <button class="btn btn-primary" type="submit">Guardar</button>

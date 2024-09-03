@@ -72,17 +72,16 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="createFolderForm" method="post" action="@Url.Action("CreateFolder", "Profesor")">
+                    <form id="createFolderForm" method="post" action="@Url.Action("CreateSubFolder", "Profesor")">
                         <div class="form-group">
                             <label for="folderName">Nombre de la Carpeta</label>
                             <input type="text" class="form-control" id="folderName" name="Name" required />
                         </div>
-                        <input type="hidden" name="ParentFolderId" value="@Model.Id" />
-@*                         <input type="hidden" name="Id_Folders_level" value="@Model.Id_Folders_level" />
- *@                        
- 
-                        <input type="hidden" name="Id_Folders_level" value="@ViewBag.Folder" />
+                        <input type="hidden" name="ParentFolderId" value="@ViewBag.ParentFolderId" id="ParentFolderId" />
+                        <input type="hidden" name="Id" value="@ViewBag.Id" id="Id" />
 
+@*                          <input type="hidden" name="Id_Folders_level" value="@Model.Id_Folders_level" />
+   *@                        
                         <button type="submit" class="btn btn-primary">Crear</button>
                     </form>
                 </div>
@@ -101,15 +100,14 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="uploadFileForm" method="post" action="@Url.Action("UploadFile", "Profesor")" enctype="multipart/form-data">
+                    <form id="uploadFileForm" method="post" action="@Url.Action("UploadSubFile", "Profesor")" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="fileName">Archivo</label>
                             <input type="file" class="form-control" id="fileName" name="file" required />
                         </div>
-                        <input type="hidden" name="ParentFolderId" value="@Model.Id" />
 
 
-                        <input type="hidden" name="id" value="@ViewBag.Folder" />
+                        <input type="hidden" id="Id" name="Id" value="@ViewBag.Id " />
 
 @*                         <input type="hidden" name="FolderId" value="@Model.Id" />
  *@                        <button type="submit" class="btn btn-primary">Subir</button>

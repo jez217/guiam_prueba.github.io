@@ -357,8 +357,26 @@
                                 @Html.DropDownListFor(m => m.IdRol, (List<SelectListItem>)Model.ROLDROPDOWNS, new { @class = "form-control chosen-select", @required = "required", data_placeholder = "Seleccione el rol", @autocomplete = "off" })
 
                             </div>
-                        </div> 
-                       @*  <a asp-controller="Home" asp-action="Index">
+                        </div>
+
+                        <div class="form-row">
+                          @*   <div class="form-group col-md-6">
+                                <label for="idStatus">Estado</label>
+                                <select class="form-control" id="idStatus" name="idStatus" required>
+                                    <option value="1">Activo</option>
+                                    <option value="0">Inactivo</option>
+                                </select>
+
+                            </div> *@
+
+                            <div class="form-group col-md-6">
+                                <label for="idRol">Rol</label>
+                                @Html.DropDownListFor(m => m.IdLevel, (List<SelectListItem>)Model.LEVELDROPDOWNS, new { @class = "form-control chosen-select", @required = "required", data_placeholder = "Seleccione el nivel", @autocomplete = "off" })
+
+                            </div>
+                        </div>
+
+                        @*  <a asp-controller="Home" asp-action="Index">
                             <i class="bi bi-arrow-left-circle-fill display-7" style="color:#fffbf4"></i>
                         </a> *@
                         <div class="modal-footer">

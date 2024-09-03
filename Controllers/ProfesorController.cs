@@ -85,16 +85,40 @@ FolderAccessService _profesorServices = new FolderAccessService();
         public IActionResult CreateFolder(Folder model)
         {
             string user = User.Identity.Name;
-
             model.CreatedBy = user;
+
             _profesorServices.CreateFolder(model);
 
-            // Actualizar la lista de carpetas y subcarpetas después de crear la carpeta
-            var rootFolders = _profesorServices.GetRootFolders(); // Asegúrate de obtener las carpetas correctamente
-            ViewBag.Folders = rootFolders;  // Pasa la lista de carpetas y subcarpetas al ViewBag
-
-            return RedirectToAction("Index");
+            // Redirigir a la acción de creación de subcarpetas
+            return RedirectToAction("View", new { parentId = model.Id_Folders_level });
         }
+
+        [HttpGet]
+        public IActionResult CreateSubFolder(int parentId)
+        {
+            var parentFolder = _profesorServices.GetSubFolderById(parentId);
+            ViewBag.ParentFolderName = parentFolder?.Name;
+
+            Folder model = new Folder
+            {
+                ParentFolderId = parentId,
+                CreatedBy = User.Identity.Name
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult CreateSubFolder(Folder model)
+        {
+            model.CreatedBy = User.Identity.Name;
+            _profesorServices.CreateSubFolder(model);
+
+            // Redirigir a la vista de la carpeta padre para ver la estructura completa
+            return RedirectToAction("SubView", new { id = model.Id });
+        }
+
+
 
         [HttpGet]
         public IActionResult CreateFolderCurso()
@@ -154,10 +178,8 @@ FolderAccessService _profesorServices = new FolderAccessService();
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadFile(IFormFile file, int folderId, Folder model)
+        public async Task<IActionResult> UploadFile(IFormFile file, int id)
         {
-
-
             if (file != null && file.Length > 0)
             {
                 try
@@ -177,7 +199,7 @@ FolderAccessService _profesorServices = new FolderAccessService();
                         await file.CopyToAsync(stream);
                     }
 
-                    _profesorServices.UploadFile(file.FileName, filePath, model);
+                    _profesorServices.UploadFile(file.FileName, filePath, id);
                 }
                 catch (Exception ex)
                 {
@@ -186,7 +208,41 @@ FolderAccessService _profesorServices = new FolderAccessService();
                 }
             }
 
-            return RedirectToAction("View", new { id = model.Id });
+            return RedirectToAction("View", new { id = id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadSubFile(IFormFile file, int Id)
+        {
+            if (file != null && file.Length > 0)
+            {
+                try
+                {
+                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+
+                    // Verificar si el directorio existe, si no existe, crearlo
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var filePath = Path.Combine(uploadsFolder, file.FileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    _profesorServices.UploadSubFile(file.FileName, filePath, Id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error al subir el archivo: {ex.Message}");
+                    ModelState.AddModelError("", "Ocurrió un error al subir el archivo.");
+                }
+            }
+
+            return RedirectToAction("SubView", new { id = Id });
         }
 
         //[HttpGet]
@@ -211,11 +267,58 @@ FolderAccessService _profesorServices = new FolderAccessService();
         //}
 
 
+        //[HttpGet]
+        //public IActionResult View(int id)
+        //{
+
+        //    var folder = _profesorServices.GetFolderById(id);
+        //    var file = _profesorServices.GetFilesByFolderId(id);
+
+        //    //if (folder.Id == 0)
+        //    //{
+        //    //    return NotFound();
+        //    //}
+
+        //    return View(folder);
+        //}
+
+
+        [HttpGet]
+        public IActionResult UploadFile(int id)
+        {
+            var folderLevel = _profesorServices.GetLevelFolderById(id);
+            ViewBag.Folder = folderLevel.Id_Folders_level;
+
+            //Folder model = new Folder
+            //{
+            //    ParentFolderId = parentId,
+            //    CreatedBy = User.Identity.Name
+            //};
+
+            return View();
+        }
+
         [HttpGet]
         public IActionResult View(int id)
         {
 
+            var folderLevel = _profesorServices.GetLevelFolderById(id);
+            ViewBag.Folder = folderLevel.Id_Folders_level;
+
             var folder = _profesorServices.GetFolderById(id);
+            ViewBag.name = folderLevel?.Name;
+
+
+            //var folderCurso = _profesorServices.GetFolderCursoById(id); // Método para obtener el curso por Id
+            //ViewBag.FolderCursoId = folderCurso?.Id; // Asignar el Id del curso al ViewBag
+
+            //var folderLevels = _profesorServices.GetFolderByLevel(id); // Método para obtener los niveles de la carpeta
+            //ViewBag.name = folderCurso?.Name;
+
+
+
+            //var folder = _profesorServices.GetFolderById(id);
+            //ViewBag.Folder = folder?.Id_Folders_level;
             var file = _profesorServices.GetFilesByFolderId(id);
 
             //if (folder.Id == 0)
@@ -224,7 +327,47 @@ FolderAccessService _profesorServices = new FolderAccessService();
             //}
 
             return View(folder);
+
+
         }
+
+        [HttpGet]
+        public IActionResult SubView(int id)
+        {
+
+
+            var folder = _profesorServices.GetSubFolderById(id);
+            ViewBag.Id = id;
+
+
+            var file = _profesorServices.GetFilesByFolderId(id);
+
+            //if (folder.Id == 0)
+            //{
+            //    return NotFound();
+            //}
+
+            return View(folder);
+
+
+        }
+
+        //[HttpGet]
+        //public IActionResult View(int id)
+        //{
+        //    var folder = _profesorServices.GetFolderById(id);
+        //    // var subFolders = _profesorServices.GetSubFoldersByParentId(id); // Método para obtener subcarpetas
+        //    var files = _profesorServices.GetFilesByFolderId(id);
+
+        //    //var model = new FolderViewModel
+        //    //{
+        //    //    Folder = folder,
+        //    //    SubFolders = subFolders,
+        //    //    Files = files
+        //    //};
+
+        //    return View(model);
+        //}
 
         [HttpPost]
         public IActionResult RenameFolder(int id, string name)

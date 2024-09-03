@@ -86,6 +86,7 @@ namespace Pautas.Controllers
 
             model.ROLDROPDOWNS = _adminservice.RolDropdown();
             model.ListaUserDetail = _adminservice.SP_USER_SELECT();
+            model.LEVELDROPDOWNS = _adminservice.LevelDropdown();
 
             return View(model);
         }
@@ -97,6 +98,7 @@ namespace Pautas.Controllers
             User user = new User();
             user.ROLDROPDOWNS = _adminservice.RolDropdown();
             user.LEVELDROPDOWNS = _adminservice.LevelDropdown();
+
             return View(user);
         }
         #endregion
@@ -137,6 +139,7 @@ namespace Pautas.Controllers
 
             User model = _adminservice.SP_USER_SELECT_BY_ONE(id);
             model.ROLDROPDOWNS = _adminservice.RolDropdown();
+            model.LEVELDROPDOWNS = _adminservice.LevelDropdown();
             return View(model);
         }
 
