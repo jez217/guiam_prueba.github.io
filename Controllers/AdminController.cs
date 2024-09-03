@@ -87,6 +87,7 @@ namespace Pautas.Controllers
             model.ROLDROPDOWNS = _adminservice.RolDropdown();
             model.ListaUserDetail = _adminservice.SP_USER_SELECT();
             model.LEVELDROPDOWNS = _adminservice.LevelDropdown();
+            model.CURSODROPDOWNS = _adminservice.CursoDropdown();
 
             return View(model);
         }

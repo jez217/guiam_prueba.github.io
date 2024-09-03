@@ -118,6 +118,7 @@ namespace Pautas.Services.Users
                         // Adding input parameters
                         cmd.Parameters.AddWithValue("@Name", model.Name);
                         cmd.Parameters.AddWithValue("@Level", model.IdLevel);
+                        cmd.Parameters.AddWithValue("@IdCurso", model.IdCurso);
                         cmd.Parameters.AddWithValue("@IdRol", model.IdRol);
                         cmd.Parameters.AddWithValue("@Id_status", model.IdStatus);
                         cmd.Parameters.AddWithValue("@Correo", model.Correo);
@@ -320,6 +321,38 @@ namespace Pautas.Services.Users
         }
         #endregion
 
+        #region CursoSelect
+        public List<Curso> SP_CURSO_SELECT()
+        {
+            List<Curso> olista = new List<Curso>();
+            //try
+            //{
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+            {
+                using (SqlCommand cmd = new SqlCommand("p_PT_CursoSelect", sql))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    sql.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            var obj = new Curso()
+                            {
+                                Id = dr.GetInt32(dr.GetOrdinal("Id")),
+                                Name = dr.GetString(dr.GetOrdinal("Name")),
+                            };
+                            olista.Add(obj);
+                        }
+                    }
+                }
+            }
+            return olista;
+        }
+        #endregion
+
         #region LevelUser
         public Student SP_GM_LEVEL_INSERT(int USERID, int LEVELID)
         {
@@ -381,7 +414,6 @@ namespace Pautas.Services.Users
 
             return oList;
         }
-
         #endregion
 
         #region LevelDropdown
@@ -402,7 +434,26 @@ namespace Pautas.Services.Users
 
             return oList;
         }
+        #endregion
 
+        #region LevelDropdown
+        public List<SelectListItem> CursoDropdown()
+        {
+            List<SelectListItem> oList = new List<SelectListItem>();
+
+            var listRl = SP_CURSO_SELECT();
+
+            foreach (var Rl in listRl)
+            {
+                oList.Add(new SelectListItem
+                {
+                    Text = Rl.Name,
+                    Value = Rl.Id.ToString()
+                });
+            }
+
+            return oList;
+        }
         #endregion
     }
 }

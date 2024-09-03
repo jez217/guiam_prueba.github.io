@@ -90,17 +90,18 @@ namespace Pautas.Controllers
 
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             var userLevelClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            var userCursoClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
 
-            if (userIdClaim == null || userLevelClaim == null)
+            if (userIdClaim == null || userCursoClaim == null)
             {
                 return Unauthorized();
             }
 
             string userId = userIdClaim.Value;
-            string userLevel = userLevelClaim.Value;
+            string userCurso = userCursoClaim.Value;
 
             // Obtener todos los folders para el nivel del estudiante
-            var allFolders = _adminService.GetFoldersByLevel(userLevel);
+            var allFolders = _adminService.GetFoldersByLevel(userCurso);
 
         
 

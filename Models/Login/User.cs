@@ -13,6 +13,7 @@ namespace Pautas.Models.Login
         public int? IdRol { get; set; }
         public int? IdStatus { get; set; }
         public int? IdLevel { get; set; }
+        public int? IdCurso { get; set; }
         public string? Name { get; set; }
         public string? LevelName { get; set; }
         public string? Clave { get; set; }
@@ -22,6 +23,7 @@ namespace Pautas.Models.Login
         public string Descripcion { get; set; }
 
         public List<SelectListItem> LEVELDROPDOWNS { get; set; }
+        public List<SelectListItem> CURSODROPDOWNS { get; set; }
         public List<SelectListItem> ROLDROPDOWNS { get; set; }
         public List<User> ListaUserDetail { get; set; }
         public List<User> Levels { get; set; }

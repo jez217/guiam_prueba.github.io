@@ -97,31 +97,30 @@ namespace Pautas.Services.ProfesorService
             return hasAccess;
         }
 
-        public List<Folder> GetFoldersByLevel(string folderLevel)
+        public List<FoldersCurso> GetFoldersByLevel(string folderCurso)
         {
-            List<Folder> folders = new List<Folder>();
+            List<FoldersCurso> folders = new List<FoldersCurso>();
 
             try
             {
                 using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
                 {
-                    using (SqlCommand command = new SqlCommand("sp_GetFoldersByLevel", sql))
+                    using (SqlCommand command = new SqlCommand("sp_GetFoldersByCurso", sql))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@UserLevel", folderLevel);
+                        command.Parameters.AddWithValue("@Id_folders_curso", folderCurso);
 
                         sql.Open();
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                folders.Add(new Folder
+                                folders.Add(new FoldersCurso
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                     Name = reader.GetString(reader.GetOrdinal("Name")),
-                                    ParentFolderId = reader.IsDBNull(reader.GetOrdinal("ParentFolderId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("ParentFolderId")),
-                                    CreatedBy = reader.GetString(reader.GetOrdinal("CreatedBy")),
-                                    FolderLevel = reader.GetInt32(reader.GetOrdinal("FolderLevel"))
+                      
+                                    //FolderLevel = reader.GetInt32(reader.GetOrdinal("FolderLevel"))
                                 });
                             }
                         }
