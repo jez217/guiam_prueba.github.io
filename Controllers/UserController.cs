@@ -34,7 +34,7 @@ namespace Pautas.Controllers
         {
             new Claim(ClaimTypes.Name, resp.Name),
             new Claim(ClaimTypes.NameIdentifier, resp.idUser.ToString()),
-            new Claim(ClaimTypes.Role, resp.IdRol.ToString()), // Add role claim
+            new Claim(ClaimTypes.Role, resp.IdCurso.ToString()), // Add role claim
         };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

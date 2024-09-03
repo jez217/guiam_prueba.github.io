@@ -22,7 +22,6 @@ namespace Pautas.Services.Users
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@Name", model.Name));
                         cmd.Parameters.Add(new SqlParameter("@Clave", model.Clave));
-                        //cmd.Parameters.Add(new SqlParameter("@Id_Rol", model.IdRol));
 
                         SqlParameter spUserId = new SqlParameter("@USERID", SqlDbType.Int);
                         spUserId.Direction = ParameterDirection.Output;
@@ -44,24 +43,28 @@ namespace Pautas.Services.Users
                         sp_mess.Direction = ParameterDirection.Output;
                         cmd.Parameters.Add(sp_mess);
 
+                        SqlParameter sp_curso = new SqlParameter("@Id_Curso", SqlDbType.Int);
+                        sp_curso.Direction = ParameterDirection.Output; // Corrección aquí
+                        cmd.Parameters.Add(sp_curso);
+
                         sql.Open();
                         cmd.ExecuteNonQuery();
 
                         resp.idUser = Convert.ToInt32(spUserId.Value);
-                        resp.Name = spUserName.Value.ToString(); 
-                        resp.Clave = model.Clave; // Asignar el valor de la contraseña 
-                        resp.IdRol = Convert.ToInt32(spRolId.Value); // Asignar el valor del rol 
+                        resp.Name = spUserName.Value.ToString();
+                        resp.Clave = model.Clave;
+                        resp.IdRol = Convert.ToInt32(spRolId.Value);
+                        resp.IdCurso = sp_curso.Value != DBNull.Value ? Convert.ToInt32(sp_curso.Value) : (int?)null; // Manejar el caso de NULL
 
                         resp.code = sp_resp.Value.ToString();
                         resp.message = sp_mess.Value.ToString();
-
                     }
                 }
             }
             catch (Exception ex)
             {
                 resp.code = "error";
-                resp.message = ex.Message; // Capturar el mensaje de la excepción
+                resp.message = ex.Message;
             }
             return resp;
         }
