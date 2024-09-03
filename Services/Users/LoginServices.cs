@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Pautas.Models.Login;
+using Pautas.Models.Profesor;
 using Pautas.Services.Conection;
 using System.Data;
 
@@ -69,5 +70,79 @@ namespace Pautas.Services.Users
             return resp;
         }
         #endregion
+
+        public FoldersCurso GetFolderCursoById(int id)
+        {
+            FoldersCurso folderCurso = null;
+
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+            {
+                sql.Open();
+
+                using (SqlCommand command = new SqlCommand("spGetFolderCursoById", sql))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            folderCurso = new FoldersCurso
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                // otros campos si es necesario
+                            };
+                        }
+                    }
+                }
+            }
+
+            return folderCurso;
+        }
+
+        #region GetFolderByLevel
+        public List<FoldersLevel> GetFolderByLevel(int id)
+        {
+            List<FoldersLevel> rootFoldersLevel = new List<FoldersLevel>();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetFoldersByLevel", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id_subfolders_curso", id);
+
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                rootFoldersLevel.Add(new FoldersLevel
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Id_Folders_level = reader.GetInt32(2),
+                                    Id_subfolders_curso = reader.GetInt32(3),
+
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las carpetas raíz", ex);
+            }
+
+            return rootFoldersLevel;
+        }
+        #endregion
+
     }
 }

@@ -1,4 +1,4 @@
-﻿@model List<Pautas.Models.Profesor.FoldersCurso>
+﻿@model List<Pautas.Models.Profesor.FoldersLevel>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -10,11 +10,11 @@
     <div id="wrapper" class="sidebar-toggled">
 
         <div class="container-fluid mt-1">
-
-            <div class="container mt-4">
-                <h2>Carpetas</h2>
-                <button class="btn btn-primary mb-3" onclick="openCreateFolderModal()">Crear Carpeta</button>
-            </div>
+            <h1>@ViewBag.name</h1>
+                <div class="container mt-4">
+            <h2>Carpetas</h2>
+            <button class="btn btn-primary mb-3" onclick="openCreateFolderModal()">Crear Carpeta</button>
+            </div> 
 
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
                 <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
@@ -109,7 +109,7 @@
                 {
                     <div class="col-xl-4 col-md-6 mb-4">
                         <div class="card border-left-primary shadow h-100 py-2">
-                            <a class="pl-3 pr-3" href="@Url.Action("Nivel", "Student", new { id = foldercurso.Id })">
+                            <a class="pl-3 pr-3" href="@Url.Action("View", "Profesor", new { id = foldercurso.Id_Folders_level })">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
@@ -140,14 +140,16 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form id="createFolderForm" method="post" action="@Url.Action("CreateFolderCurso", "Profesor")">
+                            <form id="createFolderForm" method="post" action="@Url.Action("CreateFolderLevel", "Profesor")">
                                 <div class="form-group">
                                     <label for="folderName">Nombre de la Carpeta</label>
                                     <input type="text" class="form-control" id="folderName" name="Name" required />
                                 </div>
-                                <input type="hidden" name="ParentFolderId" value="" id="parentFolderId" />
+                                <!-- Input oculto para el Id_subfolders_curso -->
+                                <input type="hidden" name="Id_subfolders_curso" value="@ViewBag.FolderCursoId" id="Id_subfolders_curso" />   
                                 <button type="submit" class="btn btn-primary">Crear</button>
                             </form>
+
                         </div>
                     </div>
                 </div>

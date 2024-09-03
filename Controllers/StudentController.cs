@@ -122,7 +122,17 @@ namespace Pautas.Controllers
             return View(folder);
         }
 
+        [HttpGet]
+        public IActionResult Nivel(int id)
+        {
+            var folderCurso = _adminService.GetFolderCursoById(id); // Método para obtener el curso por Id
+            ViewBag.FolderCursoId = folderCurso?.Id; // Asignar el Id del curso al ViewBag
 
+            var folderLevels = _adminService.GetFolderByLevel(id); // Método para obtener los niveles de la carpeta
+            ViewBag.name = folderCurso?.Name;
+
+            return View(folderLevels);
+        }
 
         //[Authorize]
         //public async Task<IActionResult> AccessFolder(int folderId)
