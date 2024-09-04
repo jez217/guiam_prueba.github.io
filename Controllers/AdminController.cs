@@ -141,6 +141,8 @@ namespace Pautas.Controllers
             User model = _adminservice.SP_USER_SELECT_BY_ONE(id);
             model.ROLDROPDOWNS = _adminservice.RolDropdown();
             model.LEVELDROPDOWNS = _adminservice.LevelDropdown();
+            model.CURSODROPDOWNS = _adminservice.CursoDropdown();
+
             return View(model);
         }
 

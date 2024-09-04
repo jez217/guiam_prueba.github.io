@@ -185,6 +185,7 @@ namespace Pautas.Services.Users
                         cmd.Parameters.Add(new SqlParameter("@Correo", model.Correo));
                         cmd.Parameters.Add(new SqlParameter("@Apellido", model.Apellido));
                         cmd.Parameters.Add(new SqlParameter("@Clave", model.Clave));
+                        cmd.Parameters.Add(new SqlParameter("@IdCurso", model.IdCurso));
 
                         // Adding output parameters
                         SqlParameter spMessage = new SqlParameter("@MESSAGE", SqlDbType.NVarChar, -1);

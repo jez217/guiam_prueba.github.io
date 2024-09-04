@@ -354,34 +354,27 @@
 
                             <div class="form-group col-md-6">
                                 <label for="idRol">Rol</label>
-                                @Html.DropDownListFor(m => m.IdRol, (List<SelectListItem>)Model.ROLDROPDOWNS, new { @class = "form-control chosen-select", @required = "required", data_placeholder = "Seleccione el rol", @autocomplete = "off" })
-
+                                @Html.DropDownListFor(m => m.IdRol, (List<SelectListItem>)Model.ROLDROPDOWNS, new { @class = "form-control chosen-select", @id = "IdRol", @required = "required", data_placeholder = "Seleccione el rol", @autocomplete = "off" })
                             </div>
                         </div>
 
-                        <div class="form-row">
-                          @*   <div class="form-group col-md-6">
-                                <label for="idStatus">Estado</label>
-                                <select class="form-control" id="idStatus" name="idStatus" required>
-                                    <option value="1">Activo</option>
-                                    <option value="0">Inactivo</option>
-                                </select>
 
-                            </div> *@
+                        <div class="form-row" id="cursoNivelSection" style="display: none;">
+                            <!-- Oculto por defecto -->
+                            <div class="form-group col-md-6">
+                                <label for="idCurso">Curso</label>
+                                @Html.DropDownListFor(m => m.IdCurso, (List<SelectListItem>)Model.CURSODROPDOWNS, new { @class = "form-control chosen-select", @id = "IdCurso", @required = "required", data_placeholder = "Seleccione el curso", @autocomplete = "off" })
+                            </div>
 
                             <div class="form-group col-md-6">
-                                <label for="idRol">Rol</label>
-                                @Html.DropDownListFor(m => m.IdLevel, (List<SelectListItem>)Model.LEVELDROPDOWNS, new { @class = "form-control chosen-select", @required = "required", data_placeholder = "Seleccione el nivel", @autocomplete = "off" })
-
+                                <label for="idLevel">Nivel</label>
+                                @Html.DropDownListFor(m => m.IdLevel, (List<SelectListItem>)Model.LEVELDROPDOWNS, new { @class = "form-control chosen-select", @id = "IdLevel", @required = "required", data_placeholder = "Seleccione el nivel", @autocomplete = "off" })
                             </div>
                         </div>
 
-                        @*  <a asp-controller="Home" asp-action="Index">
-                            <i class="bi bi-arrow-left-circle-fill display-7" style="color:#fffbf4"></i>
-                        </a> *@
                         <div class="modal-footer">
-                            <a asp-controller="Admin" asp-action="Admin" class=" btn btn-secondary" type="button" data-dismiss="modal">Cancelar</a>
-                            <button class="btn btn-primary" type="submit" href="@Url.Action("Edit", "Admin")">Guardar</button>
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                            <button class="btn btn-primary" type="submit">Guardar</button>
 
                         </div>
                     </form>
@@ -457,7 +450,28 @@
     <script src="~/plugins/sweetalert2/sweetalert2.all.min.js"></script>
     <script src="~/script/jquery.unobtrusive-ajax.js"></script>
 
+    <script>
+        $(document).ready(function () {
+            // Función para verificar y mostrar/ocultar campos
+            function toggleCursoNivel() {
+                var selectedRol = $('#IdRol').val(); // Obtiene el valor seleccionado de IdRol
 
+                if (selectedRol == '3') {
+                    $('#cursoNivelSection').show(); // Muestra los campos de Curso y Nivel
+                } else {
+                    $('#cursoNivelSection').hide(); // Oculta los campos de Curso y Nivel
+                }
+            }
+
+            // Llama a la función cuando se carga la página
+            toggleCursoNivel();
+
+            // Llama a la función cuando cambia el valor de IdRol
+            $('#IdRol').change(function () {
+                toggleCursoNivel();
+            });
+        });
+    </script>
     <!-- Script para manejar el clic en el botón y cargar el modal -->
     <script>
         $(document).ready(function () {
@@ -504,7 +518,7 @@
 
                             // Redirecciona a la página de edición si se hace clic en Aceptar
                             if (result.isConfirmed) {
-                                window.location.href = '@Url.Action("Edit", "Admin")?idUser=' + data.idUser;
+                                window.location.href = '@Url.Action("Edit", "Admin")';
                             }
                         });
                     },
