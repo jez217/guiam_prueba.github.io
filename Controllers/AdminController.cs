@@ -83,6 +83,10 @@ namespace Pautas.Controllers
         public IActionResult Admin()
         {
             User model = new User();
+            var userNameClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+            string username = userNameClaim.Value;
+
+            ViewBag.Name = username;
 
             model.ROLDROPDOWNS = _adminservice.RolDropdown();
             model.ListaUserDetail = _adminservice.SP_USER_SELECT();

@@ -38,6 +38,7 @@ else
     <link href="~/css/sb-admin-2.min.css" rel="stylesheet" />
     <link href="~/plugins/bootstrap/css/bootstrap-icons.min.css" rel="stylesheet" />
     <link href="~/plugins/bootstrap/css/bootstrap-icons.css" rel="stylesheet" />
+        <link href="~/plugins/chosen/chosen.css" rel="stylesheet" />
 
 </head>
 
@@ -389,10 +390,24 @@ else
     <script src="~/js/popper.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
     <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="~/plugins/chosen/chosen.jquery.js"></script>
 
     <!-- Core plugin JavaScript -->
     <script src="~/vendor/jquery-easing/jquery.easing.min.js"></script>
+        <script>
 
+
+
+            $('.chosen-select').chosen({
+                search_contains: true,
+                allow_single_deselect: true,
+                disable_search_threshold: 10,
+                no_results_text: 'Oops, no hay resultados!',
+                width: '100%' // Ajusta el ancho del chosen
+            });
+
+
+        </script>
     <!-- Custom scripts for all pages -->
     <script src="~/js/sb-admin-2.min.js"></script>
 

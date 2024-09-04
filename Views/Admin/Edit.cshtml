@@ -311,13 +311,12 @@
                     <p class="mb-2">
                         En esta seccion editaras tus usuarios de la Academia Guiam.
                     </p>
-                    <button class="btn btn-outline-primary mb-3" href="#" data-toggle="modal" data-target="#formModal">
-                        <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Crear
-                    </button>
+                
                     <!-- DataTales Example -->
 
-                    <form id="edit-form" method="post">
+                    <form id="edit-form" method="post" style="
+                          background: #1c6fc814;
+                          padding: 20px; border-radius: 10px">
                             @Html.HiddenFor(m => m.idUser )
 
                         <div class="form-row">

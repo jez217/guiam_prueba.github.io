@@ -33,7 +33,20 @@
 </head>
 
 <body id="page-top">
+    <style>
+        .bg-warning-custom {
+            background-color: #ffbd59; /* Amarillo */
+        }
 
+        .bg-success-custom {
+            background-color: #7ed957; /* Verde */
+        }
+
+        .bg-info-custom {
+            background-color: #38b6ff; /* Celeste */
+        }
+
+    </style>
     <!-- Page Wrapper -->
     <div id="wrapper">
 
@@ -77,7 +90,8 @@
                 <div id="collapseLibro" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Usuarios</h6>
-                        <a class="collapse-item" href="">Crear</a>
+                        <a class="collapse-item" href="#" data-toggle="modal" data-target="#formModal">Crear</a>
+
                         <a class="collapse-item" href="">Lista</a>
                     </div>
                 </div>
@@ -273,8 +287,8 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Jezreel Moreno</span>
-                                <img class="img-profile rounded-circle" src="img/jezreel.jpg">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">@ViewBag.Name</span>
+                                <i class="fas fa-user fa-sm fa-fw mr-2 g-success"></i>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -312,8 +326,8 @@
                         En esta seccion crearas tus usuarios de la Academia Guiam.<a target="_blank"
                                                                                      href="https://datatables.net">official DataTables documentation</a>.
                     </p>
-                    <button class="btn btn-outline-primary mb-3" href="#" data-toggle="modal" data-target="#formModal">
-                        <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
+                    <button class="btn btn-outline-success mb-3" href="#" data-toggle="modal" data-target="#formModal">
+                        <i class="fas fa-pen fa-sm fa-fw mr-2 "></i>
                         Crear
                     </button>
                     <!-- DataTales Example -->
@@ -335,27 +349,25 @@
                                             <th>Correo</th>
                                             <th></th>
                                             <th></th>
-
                                         </tr>
                                     </thead>
-                                    @*                                     <tfoot>
-                                    <tr>
-                                    <th>Name</th>
-                                    <th>Position</th>
-                                    <th>Office</th>
-                                    <th>Age</th>
-                                    <th>Start date</th>
-                                    <th>Salary</th>
-                                    </tr>
-                                    </tfoot> *@
+
                                     <tbody>
                                         @foreach (var item in Model.ListaUserDetail)
                                         {
-                                            <tr>
+                                            // Determinar la clase de la fila en función del rol
+                                            var rowClass = item.IdRol switch
+                                            {
+                                                1 => "bg-warning",
+                                                2 => "bg-success",
+                                                3 => "bg-info",
+                                                _ => ""
+                                            };
+
+                                            <tr class="@rowClass">
                                                 <td>
                                                     @Html.DisplayFor(m => item.idUser)
                                                 </td>
-                                              
                                                 <td>@Html.DisplayFor(m => item.Name)</td>
                                                 <td>@Html.DisplayFor(m => item.Apellido)</td>
                                                 <td>@Html.DisplayFor(m => item.Clave)</td>
@@ -363,34 +375,22 @@
                                                 <td>@Html.DisplayFor(m => item.IdStatus)</td>
                                                 <td>@Html.DisplayFor(m => item.Correo)</td>
                                                 <td>
-                                                   @*  <a href="@Url.Action("Update", "Admin", new { id = item.idUser })" class="btn btn-outline-primary mb-3" data-toggle="modal" data-target="#formModalEdit">
-                                                        <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        Editar
-                                                    </a> *@
-                                                    @* <button class="btn btn-outline-primary mb-3 edit-user" data-id="@item.idUser" data-toggle="modal" data-target="#formModalEdit">
-                                                        <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        Editar
-                                                    </button> *@
-                                                    
-                                                    <a data-bs-toggle="tooltip" title="Edita la pauta" class="btn btn-outline-primary mb-3" href="@Url.Action("Edit", "Admin", new { id = item.idUser })">
-                                                        <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
+                                                    <a data-bs-toggle="tooltip" title="Edita la pauta" class="btn btn-outline-warning mb-3" href="@Url.Action("Edit", "Admin", new { id = item.idUser })">
+                                                        <i class="fas fa-pen fa-sm fa-fw mr-2"></i>
                                                     </a>
                                                 </td>
-
                                                 <td>
                                                     <a onclick="confirmUserDeleted('@item.idUser')">
                                                         <i class="fas fa-fw fa-duotone fa-trash text-danger"></i>
                                                     </a>
                                                 </td>
-
-
                                             </tr>
                                         }
-
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+
                     </div>
 
                 </div>
@@ -473,15 +473,13 @@
                             </div>
                         </div>
 
-
                         <div class="form-row" id="cursoNivelSection" style="display: none;">
-                            <!-- Oculto por defecto -->
                             <div class="form-group col-md-6">
                                 <label for="idCurso">Curso</label>
                                 @Html.DropDownListFor(m => m.IdCurso, (List<SelectListItem>)Model.CURSODROPDOWNS, new { @class = "form-control chosen-select", @id = "IdCurso", @required = "required", data_placeholder = "Seleccione el curso", @autocomplete = "off" })
                             </div>
 
-                            <div class="form-group col-md-6">
+                            <div id="nivelField" class="form-group col-md-6" style="display: none;">
                                 <label for="idLevel">Nivel</label>
                                 @Html.DropDownListFor(m => m.IdLevel, (List<SelectListItem>)Model.LEVELDROPDOWNS, new { @class = "form-control chosen-select", @id = "IdLevel", @required = "required", data_placeholder = "Seleccione el nivel", @autocomplete = "off" })
                             </div>
@@ -489,7 +487,7 @@
 
                         <div class="modal-footer">
                             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                            <button class="btn btn-primary" type="submit">Guardar</button>
+                            <button class="btn btn-success" type="submit">Guardar</button>
 
                         </div>
                     </form>
@@ -550,9 +548,20 @@
                 var selectedRol = $('#IdRol').val(); // Obtiene el valor seleccionado de IdRol
 
                 if (selectedRol == '3') {
-                    $('#cursoNivelSection').show(); // Muestra los campos de Curso y Nivel
+                    $('#cursoNivelSection').show(); // Muestra el div que contiene Curso y Nivel
+                    $('#IdCurso').prop('disabled', false); // Habilita el DropDownList de IdCurso
+                    $('#IdLevel').prop('disabled', false); // Habilita el DropDownList de IdLevel
+                    $('#nivelField').show(); // Asegúrate de mostrar el campo de Nivel
+                } else if (selectedRol == '2') {
+                    $('#cursoNivelSection').show(); // Muestra el div que contiene Curso
+                    $('#IdCurso').prop('disabled', false); // Habilita el DropDownList de IdCurso
+                    $('#IdLevel').prop('disabled', true); // Desactiva el DropDownList de IdLevel
+                    $('#nivelField').hide(); // Asegúrate de ocultar el campo de Nivel
                 } else {
-                    $('#cursoNivelSection').hide(); // Oculta los campos de Curso y Nivel
+                    $('#cursoNivelSection').hide(); // Oculta el div que contiene Curso y Nivel
+                    $('#IdCurso').prop('disabled', true); // Desactiva el DropDownList de IdCurso
+                    $('#IdLevel').prop('disabled', true); // Desactiva el DropDownList de IdLevel
+                    $('#nivelField').hide(); // Asegúrate de ocultar el campo de Nivel
                 }
             }
 
@@ -565,6 +574,9 @@
             });
         });
     </script>
+
+
+
 
     <script>
         function confirmUserDeleted(id) {
@@ -617,8 +629,6 @@
         }
     </script>
 
-
-
     <!-- Script para manejar el clic en el botón y cargar el modal -->
     <script>
         $(document).ready(function () {
@@ -640,7 +650,6 @@
             });
         });
     </script>
-
 
     <script>
         $(document).ready(function () {
@@ -671,7 +680,6 @@
         });
 
     </script>
-
 
     <script>
         // Función para la acción de edición del formulario
@@ -713,7 +721,6 @@
             });
         });
     </script>
-
 
     <script>
         $(document).ready(function () {
