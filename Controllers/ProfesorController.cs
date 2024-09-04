@@ -118,8 +118,6 @@ FolderAccessService _profesorServices = new FolderAccessService();
             return RedirectToAction("SubView", new { id = model.Id });
         }
 
-
-
         [HttpGet]
         public IActionResult CreateFolderCurso()
         {

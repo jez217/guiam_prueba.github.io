@@ -45,8 +45,12 @@ namespace Pautas.Services.Users
                         cmd.Parameters.Add(sp_mess);
 
                         SqlParameter sp_curso = new SqlParameter("@Id_Curso", SqlDbType.Int);
-                        sp_curso.Direction = ParameterDirection.Output; // Corrección aquí
-                        cmd.Parameters.Add(sp_curso);
+                        sp_curso.Direction = ParameterDirection.Output; 
+                        cmd.Parameters.Add(sp_curso);           
+
+                        SqlParameter sp_level = new SqlParameter("@Id_Level", SqlDbType.Int);
+                        sp_level.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(sp_level);
 
                         sql.Open();
                         cmd.ExecuteNonQuery();
@@ -56,7 +60,7 @@ namespace Pautas.Services.Users
                         resp.Clave = model.Clave;
                         resp.IdRol = Convert.ToInt32(spRolId.Value);
                         resp.IdCurso = sp_curso.Value != DBNull.Value ? Convert.ToInt32(sp_curso.Value) : (int?)null; // Manejar el caso de NULL
-
+                        resp.IdLevel = sp_level.Value != DBNull.Value ? Convert.ToInt32(sp_level.Value) : (int?)null;
                         resp.code = sp_resp.Value.ToString();
                         resp.message = sp_mess.Value.ToString();
                     }

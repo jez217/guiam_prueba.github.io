@@ -84,24 +84,26 @@ namespace Pautas.Controllers
             return RedirectToAction("Login", "User");
         }
         #endregion
+
         public IActionResult Index()
         {
             // Obtener el ID y nivel del usuario desde los claims
 
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            var userLevelClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
-            var userCursoClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            var userLevelClaim = User.Claims.FirstOrDefault(c => c.Type == "Level");  // Reclamo personalizado para el nivel
+            var userCursoClaim = User.Claims.FirstOrDefault(c => c.Type == "Curso");  // Reclamo personalizado para el curso
 
-            if (userIdClaim == null || userCursoClaim == null)
+            if (userIdClaim == null || userLevelClaim == null || userCursoClaim == null)
             {
                 return Unauthorized();
             }
 
             string userId = userIdClaim.Value;
+            string userLevel = userLevelClaim.Value;
             string userCurso = userCursoClaim.Value;
 
             // Obtener todos los folders para el nivel del estudiante
-            var allFolders = _adminService.GetFoldersByLevel(userCurso);
+            var allFolders = _adminService.GetFoldersByCurso(userCurso);
 
         
 
@@ -109,29 +111,98 @@ namespace Pautas.Controllers
             return View(allFolders);
         }
 
-        public IActionResult View(int id)
-        {
-            Models.Profesor.Folder folder = _adminService.GetFolderById(id);
-            if (folder == null)
-            {
-                return NotFound();
-            }
-
-            folder.Listamages = _adminService.GetFilesByFolderId(id);
-
-            return View(folder);
-        }
-
         [HttpGet]
         public IActionResult Nivel(int id)
         {
+
+
+
+            var userLevelClaim = User.Claims.FirstOrDefault(c => c.Type == "Level");  // Reclamo personalizado para el nivel
+
+            string userLevel = userLevelClaim.Value;
+
+            var folderLevels = _adminService.GetFolderByLevelStudent(id, userLevel); // Método para obtener los niveles de la carpeta
+
+            // Obtener todos los folders para el nivel del estudiante
+
+
             var folderCurso = _adminService.GetFolderCursoById(id); // Método para obtener el curso por Id
             ViewBag.FolderCursoId = folderCurso?.Id; // Asignar el Id del curso al ViewBag
 
-            var folderLevels = _adminService.GetFolderByLevel(id); // Método para obtener los niveles de la carpeta
             ViewBag.name = folderCurso?.Name;
 
             return View(folderLevels);
+        }
+
+        [HttpGet]
+        public IActionResult View(int id)
+        {
+
+            var folderLevel = _adminService.GetLevelFolderById(id);
+            ViewBag.Folder = folderLevel.Id_Folders_level;
+
+            var folder = _adminService.GetFolderById(id);
+            ViewBag.name = folderLevel?.Name;
+
+
+            //var folderCurso = _profesorServices.GetFolderCursoById(id); // Método para obtener el curso por Id
+            //ViewBag.FolderCursoId = folderCurso?.Id; // Asignar el Id del curso al ViewBag
+
+            //var folderLevels = _profesorServices.GetFolderByLevel(id); // Método para obtener los niveles de la carpeta
+            //ViewBag.name = folderCurso?.Name;
+
+
+
+            //var folder = _profesorServices.GetFolderById(id);
+            //ViewBag.Folder = folder?.Id_Folders_level;
+            var file = _adminService.GetFilesByFolderId(id);
+
+            //if (folder.Id == 0)
+            //{
+            //    return NotFound();
+            //}
+
+            return View(folder);
+
+
+        }
+
+
+  
+        [HttpGet]
+        public IActionResult SubView(int id)
+        {
+
+
+            var folder = _adminService.GetSubFolderById(id);
+            ViewBag.Id = id;
+
+
+            var file = _adminService.GetFilesByFolderId(id);
+
+            //if (folder.Id == 0)
+            //{
+            //    return NotFound();
+            //}
+
+            return View(folder);
+
+
+        }
+
+        [HttpGet]
+        public IActionResult UploadFile(int id)
+        {
+            var folderLevel = _adminService.GetLevelFolderById(id);
+            ViewBag.Folder = folderLevel.Id_Folders_level;
+
+            //Folder model = new Folder
+            //{
+            //    ParentFolderId = parentId,
+            //    CreatedBy = User.Identity.Name
+            //};
+
+            return View();
         }
 
         //[Authorize]

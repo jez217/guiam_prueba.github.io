@@ -97,7 +97,7 @@ namespace Pautas.Services.ProfesorService
             return hasAccess;
         }
 
-        public List<FoldersCurso> GetFoldersByLevel(string folderCurso)
+        public List<FoldersCurso> GetFoldersByCurso(string folderCurso)
         {
             List<FoldersCurso> folders = new List<FoldersCurso>();
 
@@ -135,6 +135,46 @@ namespace Pautas.Services.ProfesorService
 
             return folders;
         }
+
+        public List<FoldersCurso> GetFoldersByLevel(string folderLevel)
+        {
+            List<FoldersCurso> folders = new List<FoldersCurso>();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand command = new SqlCommand("sp_GetFoldersByLevel", sql))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Id_folders_level", folderLevel);
+
+                        sql.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                folders.Add(new FoldersCurso
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    Name = reader.GetString(reader.GetOrdinal("Name")),
+
+                                    //FolderLevel = reader.GetInt32(reader.GetOrdinal("FolderLevel"))
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejo de excepciones
+                Console.WriteLine($"Error en GetFoldersByLevel: {ex.Message}");
+            }
+
+            return folders;
+        }
+
 
         public void RenameFolder(int id, string name)
         {
@@ -440,7 +480,7 @@ namespace Pautas.Services.ProfesorService
         }
         #endregion
 
-        #region GetFolderById
+        #region GetFolderLevelById
         public FoldersLevel GetLevelFolderById(int id)
         {
             FoldersLevel folder = new FoldersLevel();
@@ -637,86 +677,86 @@ namespace Pautas.Services.ProfesorService
         }
         #endregion
 
-        #region GetFolderById
-        public Folder GetsubFolderById(int id)
-        {
-            Folder folder = new Folder();
+        //#region GetFolderById
+        //public Folder GetsubFolderById(int id)
+        //{
+        //    Folder folder = new Folder();
 
-            try
-            {
-                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
-                {
-                    using (SqlCommand cmd = new SqlCommand("sp_GetSubFolderById", sql))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@Id", id);
-                        sql.Open();
+        //    try
+        //    {
+        //        using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+        //        {
+        //            using (SqlCommand cmd = new SqlCommand("sp_GetSubFolderById", sql))
+        //            {
+        //                cmd.CommandType = CommandType.StoredProcedure;
+        //                cmd.Parameters.AddWithValue("@Id", id);
+        //                sql.Open();
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                folder.Id = reader.GetInt32(0);
-                                folder.Name = reader.GetString(1);
-                                folder.ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
-                                folder.CreatedBy = reader.GetString(3);
-                            }
-                        }
-                    }
+        //                using (SqlDataReader reader = cmd.ExecuteReader())
+        //                {
+        //                    if (reader.Read())
+        //                    {
+        //                        folder.Id = reader.GetInt32(0);
+        //                        folder.Name = reader.GetString(1);
+        //                        folder.ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
+        //                        folder.CreatedBy = reader.GetString(3);
+        //                    }
+        //                }
+        //            }
 
-                    folder.SubFolders = new List<Folder>();
-                    folder.Files = new List<Models.Profesor.File>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
+        //            folder.SubFolders = new List<Folder>();
+        //            folder.Files = new List<Models.Profesor.File>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
 
-                    // Obtener subcarpetas
-                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE ParentFolderId = @Id", sql))
-                    {
-                        cmd.Parameters.AddWithValue("@Id", id);
+        //            // Obtener subcarpetas
+        //            using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE ParentFolderId = @Id", sql))
+        //            {
+        //                cmd.Parameters.AddWithValue("@Id", id);
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                folder.SubFolders.Add(new Folder
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
-                                    CreatedBy = reader.GetString(3)
-                                });
-                            }
-                        }
-                    }
+        //                using (SqlDataReader reader = cmd.ExecuteReader())
+        //                {
+        //                    while (reader.Read())
+        //                    {
+        //                        folder.SubFolders.Add(new Folder
+        //                        {
+        //                            Id = reader.GetInt32(0),
+        //                            Name = reader.GetString(1),
+        //                            ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+        //                            CreatedBy = reader.GetString(3)
+        //                        });
+        //                    }
+        //                }
+        //            }
 
-                    // Obtener archivos
-                    using (SqlCommand cmd = new SqlCommand("sp_GetFilesBySubFolderId", sql))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@FolderParentId", id);
+        //            // Obtener archivos
+        //            using (SqlCommand cmd = new SqlCommand("sp_GetFilesBySubFolderId", sql))
+        //            {
+        //                cmd.CommandType = CommandType.StoredProcedure;
+        //                cmd.Parameters.AddWithValue("@FolderParentId", id);
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                folder.Files.Add(new Models.Profesor.File // Usar Profesor.File para especificar el tipo del namespace Profesor
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    FilePath = reader.GetString(2),
-                                    FolderParentId = reader.GetInt32(3)
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener la carpeta por ID", ex);
-            }
+        //                using (SqlDataReader reader = cmd.ExecuteReader())
+        //                {
+        //                    while (reader.Read())
+        //                    {
+        //                        folder.Files.Add(new Models.Profesor.File // Usar Profesor.File para especificar el tipo del namespace Profesor
+        //                        {
+        //                            Id = reader.GetInt32(0),
+        //                            Name = reader.GetString(1),
+        //                            FilePath = reader.GetString(2),
+        //                            FolderParentId = reader.GetInt32(3)
+        //                        });
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error al obtener la carpeta por ID", ex);
+        //    }
 
-            return folder;
-        }
-        #endregion
+        //    return folder;
+        //}
+        //#endregion
 
         #region GetRootFoldersCurso
         public List<FoldersCurso> GetRootFoldersCurso()
@@ -884,6 +924,48 @@ namespace Pautas.Services.ProfesorService
         }
         #endregion
 
+        #region GetFolderByLevelStudent
+        public List<FoldersLevel> GetFolderByLevelStudent(int id, string userLevel)
+        {
+            List<FoldersLevel> rootFoldersLevel = new List<FoldersLevel>();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetFoldersByLevelStudent", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id_subfolders_curso", id);
+                        cmd.Parameters.AddWithValue("@Id_Folders_level", userLevel);
+
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                rootFoldersLevel.Add(new FoldersLevel
+                                {
+                                    Name = reader.GetString(0),
+                                    Id_Folders_level = reader.GetInt32(1),
+                                    Id_subfolders_curso = reader.GetInt32(2),
+
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las carpetas raíz", ex);
+            }
+
+            return rootFoldersLevel;
+        }
+        #endregion
+
         #region GetFolderByLevel
         public List<FoldersLevel> GetFolderByLevel(int id)
         {
@@ -906,10 +988,9 @@ namespace Pautas.Services.ProfesorService
                             {
                                 rootFoldersLevel.Add(new FoldersLevel
                                 {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Id_Folders_level = reader.GetInt32(2),
-                                    Id_subfolders_curso = reader.GetInt32(3),
+                                    Name = reader.GetString(0),
+                                    Id_Folders_level = reader.GetInt32(1),
+                                    Id_subfolders_curso = reader.GetInt32(2),
 
                                 });
                             }
@@ -925,7 +1006,5 @@ namespace Pautas.Services.ProfesorService
             return rootFoldersLevel;
         }
         #endregion
-
-
     }
 }
