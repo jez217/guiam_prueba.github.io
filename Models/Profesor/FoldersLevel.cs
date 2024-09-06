@@ -6,6 +6,7 @@ namespace Pautas.Models.Profesor
     {
         public int Id { get; set; }        
         public int Id_Folders_level { get; set; }
+        public int Id_level_reference { get; set; }
         public string? Name { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }

@@ -342,7 +342,8 @@ namespace Pautas.Services.ProfesorService
                         // Adding input parameters
                         cmd.Parameters.AddWithValue("@Name", model.Name);
                         cmd.Parameters.AddWithValue("@ParentFolderId", model.ParentFolderId.HasValue ? (object)model.ParentFolderId.Value : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Id_Folders_level", model.Id_Folders_level.HasValue ? (object)model.Id_Folders_level.Value : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Id_Folders_level", model.Id_Folders_level.HasValue ? (object)model.Id_Folders_level.Value : DBNull.Value);  
+                        cmd.Parameters.AddWithValue("@Id_level_reference", model.Id_level_reference.HasValue ? (object)model.Id_level_reference.Value : DBNull.Value);
                         cmd.Parameters.AddWithValue("@CreatedBy", model.CreatedBy);
 
                         sql.Open();
@@ -371,6 +372,7 @@ namespace Pautas.Services.ProfesorService
                         // Adding input parameters
                         cmd.Parameters.AddWithValue("@Name", model.Name);
                         cmd.Parameters.AddWithValue("@ParentFolderId", model.Id);
+                        cmd.Parameters.AddWithValue("@Id_level_reference", model.Id_level_reference);
                         cmd.Parameters.AddWithValue("@CreatedBy", model.CreatedBy);
 
                         sql.Open();
@@ -414,7 +416,7 @@ namespace Pautas.Services.ProfesorService
         #endregion
 
         #region UploadFile
-        public void UploadSubFile(string fileName, string filePath, int folderparentId)
+        public void UploadSubFile(string fileName, string filePath, int folderparentId, int idlevelreference)
         {
             try
             {
@@ -428,6 +430,7 @@ namespace Pautas.Services.ProfesorService
                         cmd.Parameters.AddWithValue("@Name", fileName);
                         cmd.Parameters.AddWithValue("@FilePath", filePath);
                         cmd.Parameters.AddWithValue("@FolderParentId", folderparentId);
+                        cmd.Parameters.AddWithValue("@Id_level_reference", idlevelreference);
 
                         sql.Open();
                         cmd.ExecuteNonQuery();
@@ -537,8 +540,9 @@ namespace Pautas.Services.ProfesorService
                             {
                                 folder.Id = reader.GetInt32(0);
                                 folder.Name = reader.GetString(1);
-                                folder.ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
-                                folder.CreatedBy = reader.GetString(3);
+                                folder.Id_level_reference = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
+                                folder.ParentFolderId = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6);
+                                folder.CreatedBy = reader.GetString(4);
                             }
                         }
                     }
@@ -559,8 +563,9 @@ namespace Pautas.Services.ProfesorService
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = reader.GetString(1),
-                                    ParentFolderId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
-                                    CreatedBy = reader.GetString(3)
+                                    Id_level_reference = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
+                                    ParentFolderId = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
+                                    CreatedBy = reader.GetString(4)
                                 });
                             }
                         }
@@ -617,8 +622,9 @@ namespace Pautas.Services.ProfesorService
                             {
                                 folder.Id = reader.GetInt32(0);
                                 folder.Name = reader.GetString(1);
-                                folder.Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
-                                folder.CreatedBy = reader.GetString(3);
+                                folder.Id_level_reference = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
+                                folder.Id_Folders_level = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3);
+                                folder.CreatedBy = reader.GetString(4);
                             }
                         }
                     }
@@ -639,8 +645,9 @@ namespace Pautas.Services.ProfesorService
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = reader.GetString(1),
-                                    Id_Folders_level = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2),
-                                    CreatedBy = reader.GetString(3)
+                                    Id_level_reference = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                                    Id_Folders_level = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                                    CreatedBy = reader.GetString(4)
                                 });
                             }
                         }
@@ -827,6 +834,39 @@ namespace Pautas.Services.ProfesorService
             return folderCurso;
         }
 
+        public FoldersLevel GetFolderLevelById(int id)
+        {
+            FoldersLevel folderLevel = null;
+
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+            {
+                sql.Open();
+
+                using (SqlCommand command = new SqlCommand("sp_GetFoldersByLevelId", sql))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@Id_Folders_level", id);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            folderLevel = new FoldersLevel
+                            {
+                                Name = reader.GetString(0),
+                                Id_Folders_level = reader.GetInt32(1),
+                                Id_level_reference = reader.GetInt32(3),
+                                // otros campos si es necesario
+                            };
+                        }
+                    }
+                }
+            }
+
+            return folderLevel;
+        }
+
+
         public async Task<List<Folder>> GetSubFoldersByParentId(int parentFolderId)
         {
             var subFolders = new List<Folder>();
@@ -991,6 +1031,7 @@ namespace Pautas.Services.ProfesorService
                                     Name = reader.GetString(0),
                                     Id_Folders_level = reader.GetInt32(1),
                                     Id_subfolders_curso = reader.GetInt32(2),
+                                    Id_level_reference = reader.GetInt32(3),
 
                                 });
                             }

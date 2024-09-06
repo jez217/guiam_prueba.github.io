@@ -12,6 +12,7 @@ namespace Pautas.Models.Profesor
         public string Type { get; set; }
 
         public int FolderParentId { get; set; }
+        public int Id_level_reference { get; set; }
         public int FolderLevelId { get; set; }
         public DateTime UploadedAt { get; set; }
 

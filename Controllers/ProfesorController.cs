@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Pautas.Models.Login;
 using Pautas.Services.Extensions;
 using Pautas.Services.Users;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace Pautas.Controllers
 {
@@ -59,6 +60,10 @@ FolderAccessService _profesorServices = new FolderAccessService();
             var folderLevels = _profesorServices.GetFolderByLevel(id); // Método para obtener los niveles de la carpeta
             ViewBag.name = folderCurso?.Name;
 
+           var folderLevel = _profesorServices.GetFolderLevelById(id); // Método para obtener los niveles de la carpeta
+            ViewBag.id_level = folderLevel.Id_level_reference;
+
+
             return View(folderLevels);
         }
 
@@ -90,18 +95,18 @@ FolderAccessService _profesorServices = new FolderAccessService();
             _profesorServices.CreateFolder(model);
 
             // Redirigir a la acción de creación de subcarpetas
-            return RedirectToAction("View", new { parentId = model.Id_Folders_level });
+            return RedirectToAction("View", new { id = model.Id_Folders_level, Nivel = model.Id_level_reference });
         }
 
         [HttpGet]
-        public IActionResult CreateSubFolder(int parentId)
+        public IActionResult CreateSubFolder(int id)
         {
-            var parentFolder = _profesorServices.GetSubFolderById(parentId);
+            var parentFolder = _profesorServices.GetSubFolderById(id);
             ViewBag.ParentFolderName = parentFolder?.Name;
 
             Folder model = new Folder
             {
-                ParentFolderId = parentId,
+                ParentFolderId = id,
                 CreatedBy = User.Identity.Name
             };
 
@@ -115,7 +120,7 @@ FolderAccessService _profesorServices = new FolderAccessService();
             _profesorServices.CreateSubFolder(model);
 
             // Redirigir a la vista de la carpeta padre para ver la estructura completa
-            return RedirectToAction("SubView", new { id = model.Id });
+            return RedirectToAction("SubView", new { id = model.Id, Nivel = model.Id_level_reference });
         }
 
         [HttpGet]
@@ -210,7 +215,7 @@ FolderAccessService _profesorServices = new FolderAccessService();
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadSubFile(IFormFile file, int Id)
+        public async Task<IActionResult> UploadSubFile(IFormFile file, int Id, int nivel)
         {
             if (file != null && file.Length > 0)
             {
@@ -231,7 +236,7 @@ FolderAccessService _profesorServices = new FolderAccessService();
                         await file.CopyToAsync(stream);
                     }
 
-                    _profesorServices.UploadSubFile(file.FileName, filePath, Id);
+                    _profesorServices.UploadSubFile(file.FileName, filePath, Id, nivel);
                 }
                 catch (Exception ex)
                 {
@@ -240,7 +245,7 @@ FolderAccessService _profesorServices = new FolderAccessService();
                 }
             }
 
-            return RedirectToAction("SubView", new { id = Id });
+            return RedirectToAction("SubView", new { id = Id, nivel = nivel });
         }
 
         //[HttpGet]
@@ -297,14 +302,17 @@ FolderAccessService _profesorServices = new FolderAccessService();
         }
 
         [HttpGet]
-        public IActionResult View(int id)
+        public IActionResult View(int id, int Nivel)
         {
+            ViewBag.id_level = Nivel;
+            ViewBag.Id_Folders_level = id;
 
             var folderLevel = _profesorServices.GetLevelFolderById(id);
             ViewBag.Folder = folderLevel.Id_Folders_level;
 
             var folder = _profesorServices.GetFolderById(id);
             ViewBag.name = folderLevel?.Name;
+            //ViewBag.Id_level_reference = folder?.Id_level_reference;
 
 
             //var folderCurso = _profesorServices.GetFolderCursoById(id); // Método para obtener el curso por Id
@@ -330,13 +338,14 @@ FolderAccessService _profesorServices = new FolderAccessService();
         }
 
         [HttpGet]
-        public IActionResult SubView(int id)
+        public IActionResult SubView(int id, int Nivel)
         {
 
 
             var folder = _profesorServices.GetSubFolderById(id);
             ViewBag.Id = id;
-
+            ViewBag.id_level = Nivel;
+            ViewBag.Id_level_reference = folder?.Id_level_reference;
 
             var file = _profesorServices.GetFilesByFolderId(id);
 
