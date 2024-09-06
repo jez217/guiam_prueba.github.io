@@ -17,16 +17,19 @@ namespace Pautas.Controllers
 {
     [Authorize]
     public class ProfesorController : Controller
-    {        
-FolderAccessService _profesorServices = new FolderAccessService();
-
+    {
         private readonly ILogger<ProfesorController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly FolderAccessService _profesorServices;
 
-        public ProfesorController(ILogger<ProfesorController> logger, IWebHostEnvironment webHostEnvironment)
+        public ProfesorController(
+            ILogger<ProfesorController> logger,
+            IWebHostEnvironment webHostEnvironment,
+            FolderAccessService folderAccessService)
         {
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;
+            _profesorServices = folderAccessService;
         }
         public IActionResult Index()
         {
@@ -384,7 +387,7 @@ FolderAccessService _profesorServices = new FolderAccessService();
             {
                 _profesorServices.RenameFile(id, name);
                 var folder = _profesorServices.GetFileId(id); // Obtener la carpeta actualizada
-                return Json(new { success = true, message = "Carpeta renombrada exitosamente", folderName = folder.Name });
+                return Json(new { success = true, message = "Archivo renombrado exitosamente", folderName = folder.Name });
             }
             catch (Exception ex)
             {

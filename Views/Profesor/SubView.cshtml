@@ -67,9 +67,18 @@
         <div class="row">
             @foreach (var file in Model.Files)
             {
+
+                string borderColorClass = @ViewBag.id_level switch
+                {
+                    1 => "border-left-warning",   // Amarillo nivel 1
+                    2 => "border-left-success",   // Verde nivel 2
+                    3 => "border-left-info",      // Celeste nivel 3
+
+                    _ => "border-left-secondary"  // Color predeterminado si Id no coincide
+                };
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="card h-100">
-                        <div class="card-header">
+                        <div class="card-header  @borderColorClass ">
                             <div class="row">
                                 <div class="col">
                                     <p class="text-dark" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;font-weight: 700;text-transform: uppercase;font-size: 14px;">
@@ -82,7 +91,7 @@
                                     <i class="bi-three-dots-vertical " id="dropdownMenuButton@subFolder.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer; font-size: 20px;"></i>
 
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton@subFolder.Id">
-                                        <a class="dropdown-item" onclick="openRenameFolderModal(@file.Id, '@file.Name')">Renombrar</a>
+                                        <a class="dropdown-item" onclick="openRenameFileModal(@file.Id, '@file.Name')">Renombrar</a>
                                         <a class="dropdown-item" onclick="deleteFolder(@file.Id, @ViewBag.id_level)">Eliminar</a>
                                     </div>
 
@@ -121,6 +130,7 @@
                                     <video controls width="100%" height="200px">
                                         <source src="@Url.Content("~/uploads/" + file.Name)" type="video/mp4" />
                                         <source src="@Url.Content("~/uploads/" + file.Name)" type="video/webm" />
+                                        <source src="@Url.Content("~/uploads/" + file.Name)" type="video/mkv" />
                                         Tu navegador no soporta la reproducción de videos.
                                     </video>
                                
@@ -129,7 +139,9 @@
                                 else
                                 {
                                     <!-- Mostrar imagen con un modal al hacer clic -->
-                                    <img class="text-center justify-content-center d-flex mx-auto" style="width: 50%; cursor: pointer;" src="~/uploads/@file.Name" data-toggle="modal" data-target="#imageModal_@file.Id">
+                                    <img class="text-center justify-content-center d-flex mx-auto" style="width: 50%; cursor: pointer;"
+                                         src="~/uploads/@Uri.EscapeDataString(file.Name)" data-toggle="modal" data-target="#imageModal_@file.Id">
+
 
                                 }
                             </div>
@@ -138,7 +150,7 @@
                             @if (file.Name.EndsWith(".jpeg") || file.Name.EndsWith(".png") || file.Name.EndsWith(".jpg"))
                             {
                                 <i class="bi bi-image pr-2 text-danger" style="font-size: 20px;"></i>
-                                <a href="~/uploads/@file.Name" class="btn btn-primary" target="_blank"><i class="bi bi-eye-fill"></i></a>
+                                <a href="~/uploads/@Uri.EscapeDataString(file.Name)" class="btn btn-primary" target="_blank"><i class="bi bi-eye-fill"></i></a>
                                 <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
                             }
                             @if (file.Name.EndsWith(".pdf"))
@@ -231,7 +243,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <img src="~/uploads/@file.Name" class="img-fluid" />
+                                <img src="~/uploads/@Uri.EscapeDataString(file.Name)" class="img-fluid" />
                             </div>
                         </div>
                     </div>
@@ -299,7 +311,31 @@
         </div>
     </div>
 
-    <!-- Modal para renombrar carpeta -->
+    <!-- Modal para renombrar file -->
+    <div class="modal fade" id="renameFileModal" tabindex="-1" role="dialog" aria-labelledby="renameFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="renameFileModalLabel">Renombrar archivo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="renameFileForm">
+                        <input type="hidden" id="renameFileId" name="id" />
+                        <input type="hidden" id="nivel" name="nivel" value="@ViewBag.id_level" />
+                        <div class="form-group">
+                            <label for="renameFolderName">Nuevo Nombre</label>
+                            <input type="text" class="form-control" id="renameFileName" name="name" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Renombrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal para renombrar carpeta -->
     <div class="modal fade" id="renameFolderModal" tabindex="-1" role="dialog" aria-labelledby="renameFolderModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -345,6 +381,12 @@
             $('#renameFolderId').val(folderId);
             $('#renameFolderName').val(folderName);
             $('#renameFolderModal').modal('show');
+        }
+
+        function openRenameFileModal(fileId, fileName) {
+            $('#renameFileId').val(fileId);
+            $('#renameFileName').val(fileName);
+            $('#renameFileModal').modal('show');
         }
 
         function DeleteFile(fileId, nivel) {
@@ -434,13 +476,6 @@
             }
         }
 
-        // Función para abrir el modal y configurar los valores
-        function openRenameFolderModal(folderId, folderName) {
-            $('#renameFolderId').val(folderId);
-            $('#renameFolderName').val(folderName);
-            $('#renameFolderModal').modal('show');
-        }
-
         // Función para manejar el envío del formulario
         $('#renameFolderForm').submit(function (event) {
             event.preventDefault();
@@ -479,6 +514,59 @@
                         icon: 'error',
                         title: 'Error',
                         text: 'Ocurrió un error al intentar renombrar la carpeta.'
+                    });
+                }
+            });
+        });
+
+        // Función para manejar el envío del formulario
+        $('#renameFileForm').submit(function (event) {
+            event.preventDefault();
+
+            $.ajax({
+                url: '@Url.Action("RenameFile", "Profesor")',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: response.message
+                        }).then(function () {
+                            // Obtener el ID del archivo y el nuevo nombre
+                            var fileId = $('#renameFileId').val();
+                            var newName = $('#renameFileName').val();
+
+                            // Actualizar el nombre en la vista
+                            $('#file-name-' + fileId).text(newName); // Asegúrate de que el ID en el DOM sea correcto
+
+                            // Cerrar el modal
+                            $('#renameFileModal').modal('hide');
+
+                            // Actualizar la URL con el parámetro nivel y recargar la página
+                            var url = new URL(window.location.href);
+
+                            // Asegúrate de que el campo oculto #nivel tenga el valor adecuado
+                            var nivel = $('#nivel').val();
+                            url.searchParams.set('Nivel', nivel);
+
+                            // Recargar la página con la nueva URL
+                            window.location.href = url.toString();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ocurrió un error al intentar renombrar el archivo.'
                     });
                 }
             });

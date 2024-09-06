@@ -23,9 +23,11 @@ namespace Pautas.Controllers
     {
         AdminService _adminservice = new AdminService();
         LoginServices _loginService = new LoginServices();
+        private readonly FolderAccessService _profesorServices;
 
         private readonly ILogger<AdminController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        FolderAccessService folderAccessService;
 
         public AdminController(ILogger<AdminController> logger, IWebHostEnvironment webHostEnvironment)
         {
@@ -52,6 +54,7 @@ namespace Pautas.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, resp.Name),
+                    new Claim("IdRol", resp.IdRol.ToString()), // Tipo de reclamo personalizado
                     // Agrega otros claims según sea necesario
                 };
 
@@ -199,8 +202,10 @@ namespace Pautas.Controllers
         public IActionResult Privacy()
         {
             User userAuth = HttpContext.Session.GetObject<User>("Name");
+            User rolAuth = HttpContext.Session.GetObject<User>("IdRol");
 
-            if (userAuth == null)
+
+            if (userAuth == null || rolAuth == null)
             {
                 return RedirectToAction("Login", "User");
             }

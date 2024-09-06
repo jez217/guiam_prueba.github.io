@@ -28,7 +28,7 @@
                 {
 
                     // Determinar el color del borde basado en el Id
-                    string borderColorClass = subFolder.Id_Folders_level switch
+                    string borderColorClass = @ViewBag.id_level switch
                     {
                         1 => "border-left-warning",   // Amarillo nivel 1
                         2 => "border-left-success",   // Verde nivel 2
@@ -75,7 +75,7 @@
 
                 @foreach (var file in Model.Files)
                 {
-                    string borderColorClass = Model.Id_Folders_level switch
+                    string borderColorClass = @ViewBag.id_level switch
                     {
                         1 => "border-left-warning",   // Amarillo nivel 1
                         2 => "border-left-success",   // Verde nivel 2

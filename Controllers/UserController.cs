@@ -34,6 +34,7 @@ namespace Pautas.Controllers
         {
             new Claim(ClaimTypes.Name, resp.Name),
             new Claim(ClaimTypes.NameIdentifier, resp.idUser.ToString()),
+            new Claim("IdRol", resp.IdRol.ToString()),
             new Claim("Curso", resp.IdCurso.ToString()), // Tipo de reclamo personalizado
             new Claim("Level", resp.IdLevel.ToString()), // Tipo de reclamo personalizado
         };

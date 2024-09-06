@@ -6,12 +6,21 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Pautas.Models.Login;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Pautas.Services.ProfesorService
 {
     public class FolderAccessService
     {
-        ConnectionDb _connService = new ConnectionDb();
+        private readonly ConnectionDb _connService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public FolderAccessService(ConnectionDb connService, IWebHostEnvironment webHostEnvironment)
+        {
+            _connService = connService;
+            _webHostEnvironment = webHostEnvironment;
+        }
+
 
         public List<Models.Profesor.ImageModel> GetFilesByFolderId(int folderId)
         {
@@ -201,30 +210,66 @@ namespace Pautas.Services.ProfesorService
             }
         }
 
-        public void RenameFile(int id, string name)
+        public void RenameFile(int id, string newName)
         {
+            if (string.IsNullOrEmpty(newName))
+            {
+                throw new ArgumentException("El nuevo nombre del archivo no puede ser nulo o vacío.", nameof(newName));
+            }
+
             try
             {
-                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
-                {
-                    using (SqlCommand cmd = new SqlCommand("SP_RENAME_FILE", sql))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@Id", id);
-                        cmd.Parameters.AddWithValue("@Name", name);
+                // Obtener la información del archivo desde la base de datos
+                var file = GetFileId(id); // Asegúrate de implementar GetFileId para obtener el archivo por su ID
 
-                        sql.Open();
-                        cmd.ExecuteNonQuery();
-                        sql.Close();
+                if (file != null && !string.IsNullOrEmpty(file.Name))
+                {
+                    string oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", file.Name);
+                    string newFilePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", newName);
+
+                    // Actualizar el nombre en la base de datos
+                    using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                    {
+                        using (SqlCommand cmd = new SqlCommand("SP_RENAME_FILE", sql))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@Id", id);
+                            cmd.Parameters.AddWithValue("@Name", newName);
+
+                            sql.Open();
+                            cmd.ExecuteNonQuery();
+                        }
                     }
+
+                    // Renombrar el archivo en el sistema de archivos
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        // Si ya existe un archivo con el nuevo nombre, lo eliminamos
+                        if (System.IO.File.Exists(newFilePath))
+                        {
+                            System.IO.File.Delete(newFilePath);
+                        }
+
+                        // Renombrar el archivo en el sistema de archivos
+                        System.IO.File.Move(oldFilePath, newFilePath);
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException("El archivo que se intenta renombrar no existe.", oldFilePath);
+                    }
+                }
+                else
+                {
+                    throw new Exception("No se encontró el archivo con el ID proporcionado o el nombre del archivo es nulo o vacío.");
                 }
             }
             catch (Exception ex)
             {
                 // Manejar la excepción, por ejemplo, registrar el error
-                throw new Exception("Error al renombrar la carpeta: " + ex.Message);
+                throw new Exception("Error al renombrar el archivo: " + ex.Message);
             }
         }
+
 
 
         public void DeleteFolder(int id)
@@ -897,36 +942,29 @@ namespace Pautas.Services.ProfesorService
 
         public Files GetFileId(int id)
         {
-            Files file = new Files();
-
-            try
+            // Implementa la lógica para obtener el archivo desde la base de datos usando la id
+            // Ejemplo de implementación:
+            using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
             {
-                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                using (SqlCommand cmd = new SqlCommand("SELECT Name FROM Files WHERE Id = @Id", sql))
                 {
-                    using (SqlCommand cmd = new SqlCommand("sp_GetFolderById", sql))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@Id", id);
-                        sql.Open();
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    sql.Open();
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
                         {
-                            if (reader.Read())
+                            return new Files
                             {
-                                file.Id = reader.GetInt32(0);
-                     
-                            }
+                                Name = reader["Name"].ToString()
+                            };
                         }
                     }
                 }
             }
 
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener la carpeta por ID", ex);
-            }
-
-            return file;
+            return null; // Retorna null si no se encuentra el archivo
         }
 
 
