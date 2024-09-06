@@ -37,20 +37,6 @@ FolderAccessService _profesorServices = new FolderAccessService();
             return View(rootFoldersCurso);
         }
 
-        [HttpPost]
-        public IActionResult DeleteFile(int id)
-        {
-            try
-            {
-                _profesorServices.DeleteFile(id); // Asegúrate de que este método existe en tu servicio
-                return Json(new { success = true, message = "¡Archivo eliminado correctamente!" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"Error al eliminar el archivo: {ex.Message}" });
-            }
-        }
-
         [HttpGet]
         public IActionResult Nivel(int id)
         {
@@ -392,6 +378,21 @@ FolderAccessService _profesorServices = new FolderAccessService();
         }
 
         [HttpPost]
+        public IActionResult RenameFile(int id, string name)
+        {
+            try
+            {
+                _profesorServices.RenameFile(id, name);
+                var folder = _profesorServices.GetFileId(id); // Obtener la carpeta actualizada
+                return Json(new { success = true, message = "Carpeta renombrada exitosamente", folderName = folder.Name });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error al renombrar la carpeta: " + ex.Message });
+            }
+        }
+
+        [HttpPost]
         public IActionResult DeleteFolder(int id)
         {
             try
@@ -402,6 +403,20 @@ FolderAccessService _profesorServices = new FolderAccessService();
             catch (Exception ex)
             {
                 return Json(new { success = false, message = $"Error al eliminar la carpeta: {ex.Message}" });
+            }
+        }
+
+        public IActionResult DeleteFile(int id)
+        {
+            try
+            {
+                _profesorServices.DeleteFile(id); // Asegúrate de que este método existe en tu servicio
+                return Json(new { success = true, message = "¡Archivo eliminado correctamente!" });
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error al eliminar el archivo: {ex.Message}" });
             }
         }
 

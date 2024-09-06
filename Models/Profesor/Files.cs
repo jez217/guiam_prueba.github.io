@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Pautas.Models.Profesor
 {
-    public class File
+    public class Files
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -16,7 +16,7 @@ namespace Pautas.Models.Profesor
         public int FolderLevelId { get; set; }
         public DateTime UploadedAt { get; set; }
 
-        public List<File> ListaFileImages { get; set; }
+        public List<Files> ListaFileImages { get; set; }
 
 
     }

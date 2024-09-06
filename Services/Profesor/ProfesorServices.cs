@@ -201,6 +201,32 @@ namespace Pautas.Services.ProfesorService
             }
         }
 
+        public void RenameFile(int id, string name)
+        {
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SP_RENAME_FILE", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        cmd.Parameters.AddWithValue("@Name", name);
+
+                        sql.Open();
+                        cmd.ExecuteNonQuery();
+                        sql.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción, por ejemplo, registrar el error
+                throw new Exception("Error al renombrar la carpeta: " + ex.Message);
+            }
+        }
+
+
         public void DeleteFolder(int id)
         {
             try
@@ -548,7 +574,7 @@ namespace Pautas.Services.ProfesorService
                     }
 
                     folder.SubFolders = new List<Folder>();
-                    folder.Files = new List<Models.Profesor.File>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
+                    folder.Files = new List<Models.Profesor.Files>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
 
                     // Obtener subcarpetas
                     using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE ParentFolderId = @Id", sql))
@@ -581,7 +607,7 @@ namespace Pautas.Services.ProfesorService
                         {
                             while (reader.Read())
                             {
-                                folder.Files.Add(new Models.Profesor.File // Usar Profesor.File para especificar el tipo del namespace Profesor
+                                folder.Files.Add(new Models.Profesor.Files // Usar Profesor.File para especificar el tipo del namespace Profesor
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = reader.GetString(1),
@@ -630,7 +656,7 @@ namespace Pautas.Services.ProfesorService
                     }
 
                     folder.SubFolders = new List<Folder>();
-                    folder.Files = new List<Models.Profesor.File>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
+                    folder.Files = new List<Models.Profesor.Files>(); // Usar Profesor.File para especificar el tipo del namespace Profesor
 
                     // Obtener subcarpetas
                     using (SqlCommand cmd = new SqlCommand("SELECT * FROM Folders WHERE Id_Folders_level = @Id", sql))
@@ -663,7 +689,7 @@ namespace Pautas.Services.ProfesorService
                         {
                             while (reader.Read())
                             {
-                                folder.Files.Add(new Models.Profesor.File // Usar Profesor.File para especificar el tipo del namespace Profesor
+                                folder.Files.Add(new Models.Profesor.Files // Usar Profesor.File para especificar el tipo del namespace Profesor
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = reader.GetString(1),
@@ -683,6 +709,8 @@ namespace Pautas.Services.ProfesorService
             return folder;
         }
         #endregion
+
+
 
         //#region GetFolderById
         //public Folder GetsubFolderById(int id)
@@ -867,6 +895,41 @@ namespace Pautas.Services.ProfesorService
         }
 
 
+        public Files GetFileId(int id)
+        {
+            Files file = new Files();
+
+            try
+            {
+                using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_GetFolderById", sql))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        sql.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                file.Id = reader.GetInt32(0);
+                     
+                            }
+                        }
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener la carpeta por ID", ex);
+            }
+
+            return file;
+        }
+
+
         public async Task<List<Folder>> GetSubFoldersByParentId(int parentFolderId)
         {
             var subFolders = new List<Folder>();
@@ -924,6 +987,7 @@ namespace Pautas.Services.ProfesorService
 
             return folderCursoId;
         }
+
 
         #region GetRootFoldersLevel
         public List<FoldersLevel> GetRootFoldersLevel()

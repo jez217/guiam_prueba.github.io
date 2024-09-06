@@ -11,7 +11,7 @@ namespace Pautas.Models.Profesor
         public DateTime CreatedAt { get; set; }
         public List<FoldersCurso> SubFolders { get; set; } = new List<FoldersCurso>();
 
-        public List<File> Files { get; set; } = new List<File>();
+        public List<Files> Files { get; set; } = new List<Files>();
 
         public List<ImageModel> Listamages { get; set; }
 

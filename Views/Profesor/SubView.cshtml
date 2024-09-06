@@ -52,7 +52,8 @@
 
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton@subFolder.Id">
                                         <a class="dropdown-item" onclick="openRenameFolderModal(@subFolder.Id, '@subFolder.Name')">Renombrar</a>
-                                        <a class="dropdown-item" onclick="deleteFolder(@subFolder.Id)">Eliminar</a>
+                                        <a href="#" onclick="deleteFolder(@subFolder.Id); return false;" class="dropdown-item">Eliminar</a>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -68,10 +69,30 @@
             {
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="card h-100">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col">
+                                    <p class="text-dark" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;font-weight: 700;text-transform: uppercase;font-size: 14px;">
+                                        @file.Name
+                                    </p>
+                                </div>
+                                <div class="dropdown col text-right ">
 
-                        <p class="card-header text-dark" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;font-weight: 700;text-transform: uppercase;font-size: 14px;">
-                            @file.Name
-                        </p>
+                                    <!-- Icono de 3 puntos como activador del dropdown -->
+                                    <i class="bi-three-dots-vertical " id="dropdownMenuButton@subFolder.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer; font-size: 20px;"></i>
+
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton@subFolder.Id">
+                                        <a class="dropdown-item" onclick="openRenameFolderModal(@file.Id, '@file.Name')">Renombrar</a>
+                                        <a class="dropdown-item" onclick="deleteFolder(@file.Id, @ViewBag.id_level)">Eliminar</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                       
+                        </div>
+                      
+                       
+
                         <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 200px;">
                             <div class="text-center">
                                 @if (file.Name.EndsWith(".pdf"))
@@ -149,7 +170,10 @@
                             {
                                 <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #5e8d49"></i>
                                 <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                                <a href="#" onclick="DeleteFile(@file.Id); return false;" class="ml-2 btn btn-danger">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+
 
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#videoModal_@file.Id">
                                     Ver video
@@ -275,28 +299,31 @@
     </div>
 
     <!-- Modal para renombrar carpeta -->
-    <div id="renameFolderModal" class="modal fade" tabindex="-1" role="dialog">
+    <!-- Modal para renombrar carpeta -->
+    <div class="modal fade" id="renameFolderModal" tabindex="-1" role="dialog" aria-labelledby="renameFolderModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Renombrar Carpeta</h5>
+                    <h5 class="modal-title" id="renameFolderModalLabel">Renombrar Carpeta</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="renameFolderForm" method="post">
+                    <form id="renameFolderForm">
+                        <input type="hidden" id="renameFolderId" name="id" />
+                        <input type="hidden" id="nivel" name="nivel" value="@ViewBag.id_level" />
                         <div class="form-group">
-                            <label for="renameFolderName">Nuevo Nombre de la Carpeta</label>
-                            <input type="text" class="form-control" id="renameFolderName" name="Name" required />
+                            <label for="renameFolderName">Nuevo Nombre</label>
+                            <input type="text" class="form-control" id="renameFolderName" name="name" required />
                         </div>
-                        <input type="hidden" name="Id" id="renameFolderId" />
                         <button type="submit" class="btn btn-primary">Renombrar</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
 
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/bootstrap.bundle.min.js"></script>
@@ -319,39 +346,94 @@
             $('#renameFolderModal').modal('show');
         }
 
-        function deleteFolder(folderId) {
-            if (confirm("¿Está seguro de que desea eliminar esta carpeta?")) {
-                $.post('@Url.Action("DeleteFolder", "Profesor")', { id: folderId }, function (result) {
-                    if (result.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: '¡Éxito!',
-                            text: result.message
-                        }).then(function () {
-                            // Actualizar la lista de subcarpetas sin recargar la página
-                            $('#folder-name-' + folderId).text(result.newName); // Actualizar el nombre en la vista
-                            $('#renameFolderModal').modal('hide'); // Cerrar el modal
+        function DeleteFile(fileId, nivel) {
+            if (confirm("¿Está seguro de que desea eliminar este archivo?")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteFile", "Profesor")',
+                    data: { id: fileId },
+                    success: function (result) {
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: result.message
+                            }).then(function () {
+                                // Eliminar el elemento correspondiente del DOM
+                                $('#file-row-' + fileId).remove();
 
-                            // Limpiar el fragmento de la URL
-                            history.pushState("", document.title, window.location.pathname);
-                        });
-                    } else {
+                                // Actualizar la URL y recargar la página
+                                var url = new URL(window.location.href);
+                                url.searchParams.set('nivel', @ViewBag.id_level); // Usa el parámetro nivel pasado a la función
+                                window.location.href = url.toString(); // Recargar la página con la nueva URL
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message
+                            });
+                        }
+                    },
+                    error: function () {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: result.message
+                            text: 'Ocurrió un error al intentar eliminar el archivo.'
                         });
                     }
-                }).fail(function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Ocurrió un error al intentar eliminar la carpeta.'
-                    });
                 });
             }
         }
 
+        function deleteFolder(folderId, nivel) {
+            if (confirm("¿Está seguro de que desea eliminar esta carpeta?")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteFolder", "Profesor")',
+                    data: { id: folderId },
+                    success: function (result) {
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: result.message
+                            }).then(function () {
+                                // Eliminar el elemento correspondiente del DOM
+                                $('#folder-row-' + folderId).remove(); // Actualizar el DOM eliminando la fila de la carpeta
+
+                                // Actualizar la URL con el parámetro nivel y recargar la página
+                                var url = new URL(window.location.href);
+                                url.searchParams.set('Nivel', @ViewBag.id_level); // Usa el parámetro nivel pasado a la función
+                                window.location.href = url.toString(); // Recargar la página con la nueva URL
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ocurrió un error al intentar eliminar la carpeta.'
+                        });
+                    }
+                });
+            }
+        }
+
+        // Función para abrir el modal y configurar los valores
+        function openRenameFolderModal(folderId, folderName) {
+            $('#renameFolderId').val(folderId);
+            $('#renameFolderName').val(folderName);
+            $('#renameFolderModal').modal('show');
+        }
+
+        // Función para manejar el envío del formulario
         $('#renameFolderForm').submit(function (event) {
             event.preventDefault();
             $.ajax({
@@ -371,8 +453,10 @@
                             $('#folder-name-' + folderId).text(newName); // Actualizar el nombre en la vista
                             $('#renameFolderModal').modal('hide'); // Cerrar el modal
 
-                            // Limpiar el fragmento de la URL
-                            history.pushState("", document.title, window.location.pathname);
+                            // Actualizar la URL con el nuevo parámetro nivel y recargar la página
+                            var url = new URL(window.location.href);
+                            url.searchParams.set('Nivel', $('#nivel').val()); // Usa el parámetro nivel desde el campo oculto
+                            window.location.href = url.toString(); // Recargar la página con la nueva URL
                         });
                     } else {
                         Swal.fire({
