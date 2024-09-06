@@ -64,105 +64,154 @@
 
         <h3>Archivos</h3>
         <div class="row">
-                @foreach (var file in Model.Files)
-                {
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100">
-                           
-                            <p class="card-header text-dark" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;font-weight: 700;text-transform: uppercase;font-size: 14px;">
-                                @file.Name
-                            </p>
-                            <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 200px;">
-                                <div class="text-center">
+            @foreach (var file in Model.Files)
+            {
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100">
 
-                                    @if (file.Name.EndsWith(".pdf"))
-                                    {
-                                        <!-- Mostrar PDF incrustado con vista previa -->
-                                        <embed src="~/uploads/@file.Name" type="application/pdf" width="100%" height="200px" />
-                                    }
-                                    else if (file.Name.EndsWith(".docx") || file.Name.EndsWith(".doc"))
-                                    {
-                                        <!-- Mostrar ícono de archivo de Word -->
-                                        <i class="bi bi-filetype-doc" style="font-size: 80px; color: #004aad"></i>
-                                    }
-                                    else if (file.Name.EndsWith(".pptx") || file.Name.EndsWith(".ppt"))
-                                    {
-                                        <!-- Mostrar ícono de archivo de Word -->
-                                        <i class="bi bi-filetype-ppt" style="font-size: 80px; color: #fd5050"></i>
-                                    }
-                                    else if (file.Name.EndsWith(".xlsx") || file.Name.EndsWith(".xls"))
-                                    {
-                                        <!-- Mostrar ícono de archivo de Word -->
-                                        <i class="bi bi-filetype-xls" style="font-size: 80px; color: #5e8d49"></i>
-                                    }
-                                    else
-                                    {
-                                        <!-- Mostrar imagen con un modal al hacer clic -->
-                                        <img class="text-center justify-content-center d-flex mx-auto" style="width: 50%; cursor: pointer;" src="~/uploads/@file.Name" data-toggle="modal" data-target="#imageModal_@file.Id">
-
-                                    }
-                                </div>
-
-                            </div>
-                            <div class="card-footer">
-                                @if (file.Name.EndsWith(".jpeg") || file.Name.EndsWith(".png") || file.Name.EndsWith(".jpg"))
-                                {
-                                    <i class="bi bi-image pr-2 text-danger" style="font-size: 20px;"></i>
-                                    <a href="~/uploads/@file.Name" class="btn btn-primary" target="_blank"><i class="bi bi-eye-fill"></i></a>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                }
+                        <p class="card-header text-dark" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;font-weight: 700;text-transform: uppercase;font-size: 14px;">
+                            @file.Name
+                        </p>
+                        <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                            <div class="text-center">
                                 @if (file.Name.EndsWith(".pdf"))
                                 {
-                                    <i class="bi bi-file-earmark-text-fill pr-2 text-danger" style="font-size: 20px;"></i>
-                            
-                                    <!-- Mostrar el botón Ver Completo para PDF y Word -->
-                                    <a href="~/uploads/@file.Name" class="btn btn-primary" target="_blank"><i class="bi bi-eye-fill"></i></a>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                    <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                                    <!-- Mostrar PDF incrustado con vista previa -->
+                                    <embed src="~/uploads/@file.Name" type="application/pdf" width="100%" height="200px" />
+                                }
+                                else if (file.Name.EndsWith(".docx") || file.Name.EndsWith(".doc"))
+                                {
+                                    <!-- Mostrar ícono de archivo de Word -->
+                                    <i class="bi bi-filetype-doc" style="font-size: 80px; color: #004aad"></i>
+                                }
+                                else if (file.Name.EndsWith(".pptx") || file.Name.EndsWith(".ppt"))
+                                {
+                                    <!-- Mostrar ícono de archivo de PowerPoint -->
+                                    <i class="bi bi-filetype-ppt" style="font-size: 80px; color: #fd5050"></i>
+                                }
+                                else if (file.Name.EndsWith(".xlsx") || file.Name.EndsWith(".xls"))
+                                {
+                                    <!-- Mostrar ícono de archivo de Excel -->
+                                    <i class="bi bi-filetype-xls" style="font-size: 80px; color: #5e8d49"></i>
+                                }
+                                else if (file.Name.EndsWith(".mp4") || file.Name.EndsWith(".mov") || file.Name.EndsWith(".avi") || file.Name.EndsWith(".mkv"))
+                                {
+                                    <!-- Mostrar reproductor de video con vista previa -->
+                                    <video controls width="100%" height="200px">
+                                        <source src="@Url.Content("~/uploads/" + file.Name)" type="video/mp4" />
+                                        <source src="@Url.Content("~/uploads/" + file.Name)" type="video/webm" />
+                                        Tu navegador no soporta la reproducción de videos.
+                                    </video>
+                               
+                                   
+                                }
+                                else
+                                {
+                                    <!-- Mostrar imagen con un modal al hacer clic -->
+                                    <img class="text-center justify-content-center d-flex mx-auto" style="width: 50%; cursor: pointer;" src="~/uploads/@file.Name" data-toggle="modal" data-target="#imageModal_@file.Id">
 
-                                }
-                                @if (file.Name.EndsWith(".docx") || file.Name.EndsWith(".doc"))
-                                {
-                                    <!-- Mostrar ícono de archivo de Word -->
-                                    <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #004aad"></i>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                    <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
-                                }
-                                @if (file.Name.EndsWith(".pptx") || file.Name.EndsWith(".ppt"))
-                                {
-                                    <!-- Mostrar ícono de archivo de Word -->
-                                    <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #fd5050"></i>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                    <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
-                                }
-                                @if (file.Name.EndsWith(".xlsx") || file.Name.EndsWith(".xls"))
-                                {
-                                    <!-- Mostrar ícono de archivo de Word -->
-                                    <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #5e8d49"></i>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                    <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
                                 }
                             </div>
                         </div>
-                    </div>
+                        <div class="card-footer">
+                            @if (file.Name.EndsWith(".jpeg") || file.Name.EndsWith(".png") || file.Name.EndsWith(".jpg"))
+                            {
+                                <i class="bi bi-image pr-2 text-danger" style="font-size: 20px;"></i>
+                                <a href="~/uploads/@file.Name" class="btn btn-primary" target="_blank"><i class="bi bi-eye-fill"></i></a>
+                                <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                            }
+                            @if (file.Name.EndsWith(".pdf"))
+                            {
+                                <i class="bi bi-file-earmark-text-fill pr-2 text-danger" style="font-size: 20px;"></i>
+                                <a href="~/uploads/@file.Name" class="btn btn-primary" target="_blank"><i class="bi bi-eye-fill"></i></a>
+                                <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                            }
+                            @if (file.Name.EndsWith(".docx") || file.Name.EndsWith(".doc"))
+                            {
+                                <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #004aad"></i>
+                                <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                            }
+                            @if (file.Name.EndsWith(".pptx") || file.Name.EndsWith(".ppt"))
+                            {
+                                <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #fd5050"></i>
+                                <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                            }
+                            @if (file.Name.EndsWith(".xlsx") || file.Name.EndsWith(".xls"))
+                            {
+                                <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #5e8d49"></i>
+                                <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                            }
+                            @if (file.Name.EndsWith(".mp4") || file.Name.EndsWith(".mov") || file.Name.EndsWith(".avi") || file.Name.EndsWith(".mkv"))
+                            {
+                                <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #5e8d49"></i>
+                                <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
 
-                    <!-- Modal para previsualizar imagen -->
-                    <div class="modal fade" id="imageModal_@file.Id" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel_@file.Id" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="imageModalLabel_@file.Id">@file.Name</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <img src="~/uploads/@file.Name" class="img-fluid" />
-                                </div>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#videoModal_@file.Id">
+                                    Ver video
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            
+
+                <div class="modal fade" id="videoModal_@file.Id" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel_@file.Id" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="videoModalLabel_@file.Id">@file.Name</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <video controls width="100%">
+                                    <source src="@Url.Content("~/uploads/" + file.Name)" type="video/mp4" />
+                                    Tu navegador no soporta la reproducción de videos.
+                                </video>
                             </div>
                         </div>
                     </div>
-                }
+                </div>
+
+                <script>
+                    $(document).ready(function () {
+                        // Reproducir el video al abrir el modal
+                        $('#videoModal_@file.Id').on('shown.bs.modal', function () {
+                            var video = $(this).find('video')[0];
+                            video.play();
+                        });
+
+                        // Pausar y reiniciar el video al cerrar el modal
+                        $('#videoModal_@file.Id').on('hidden.bs.modal', function () {
+                            var video = $(this).find('video')[0];
+                            video.pause();
+                            video.currentTime = 0;
+                        });
+                    });
+                </script>
+                <!-- Modal para previsualizar imagen -->
+                <div class="modal fade" id="imageModal_@file.Id" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel_@file.Id" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="imageModalLabel_@file.Id">@file.Name</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <img src="~/uploads/@file.Name" class="img-fluid" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 
@@ -252,7 +301,7 @@
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-
+    <script></script>
     <script>
         function openCreateFolderModal(parentFolderId) {
             $('#parentFolderId').val(parentFolderId);
