@@ -170,9 +170,10 @@
                             {
                                 <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #5e8d49"></i>
                                 <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                <a href="#" onclick="DeleteFile(@file.Id); return false;" class="ml-2 btn btn-danger">
+                                <a href="#" onclick="DeleteFile(@file.Id, @ViewBag.id_level); return false;" class="ml-2 btn btn-danger">
                                     <i class="bi bi-trash-fill"></i>
                                 </a>
+
 
 
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#videoModal_@file.Id">
@@ -364,8 +365,15 @@
 
                                 // Actualizar la URL y recargar la página
                                 var url = new URL(window.location.href);
-                                url.searchParams.set('nivel', @ViewBag.id_level); // Usa el parámetro nivel pasado a la función
-                                window.location.href = url.toString(); // Recargar la página con la nueva URL
+
+                                // Eliminar el parámetro 'nivel' si existe
+                                url.searchParams.delete('nivel');
+
+                                // Establecer o actualizar el parámetro 'Nivel'
+                                url.searchParams.set('Nivel', nivel);
+
+                                // Recargar la página con la nueva URL
+                                window.location.href = url.toString();
                             });
                         } else {
                             Swal.fire({
