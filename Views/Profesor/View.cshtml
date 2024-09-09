@@ -18,9 +18,13 @@
 
         <div class="container-fluid mt-1">
             <h1>@ViewBag.name</h1>
-         
-            <div class="d-sm-flex align-items-center mb-4">
-                <button class="btn btn-primary mb-3" onclick="openCreateFolderModal(@Model.Id)">Crear Subcarpeta</button>
+
+            <div class="d-sm-flex align-items-center justify-content-left mb-4">
+                <a class="mr-3" asp-action="Index" asp-controller="Profesor">
+                    <i class="bi bi-arrow-left-circle-fill" style="color: #7271a7; font-size: 30px;"></i>
+                </a>
+                <button class="btn btn-primary" onclick="openCreateFolderModal()">Crear Carpeta</button>
+
             </div>
 
             <div class="row justify-content-center text-center">
@@ -69,7 +73,7 @@
                 }
             </div>
 
-            <h3>Archivos</h3>
+            <div class="border-top my-3"></div>
 
             <div class="row">
 
@@ -200,7 +204,6 @@
                                 <label for="folderName">Nombre de la Carpeta</label>
                                 <input type="text" class="form-control" id="folderName" name="Name" required />
                             </div>
-                            <input type="hidden" name="ParentFolderId" value="@Model.Id" />
                             <input type="hidden" name="Id_Folders_level" value="@ViewBag.Id_Folders_level" id="Id_Folders_level" />
                             <input type="hidden" name="Id_level_reference" value="@ViewBag.id_level" id="Id_level_reference" />
 
@@ -287,39 +290,92 @@
             $('#renameFolderModal').modal('show');
         }
 
-        function deleteFolder(folderId) {
-            if (confirm("¿Está seguro de que desea eliminar esta carpeta?")) {
-                $.post('@Url.Action("DeleteFolder", "Profesor")', { id: folderId }, function (result) {
-                    if (result.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: '¡Éxito!',
-                            text: result.message
-                        }).then(function () {
-                            // Actualizar la lista de subcarpetas sin recargar la página
-                            $('#folder-name-' + folderId).text(result.newName); // Actualizar el nombre en la vista
-                            $('#renameFolderModal').modal('hide'); // Cerrar el modal
+        function DeleteFile(fileId, nivel) {
+            if (confirm("¿Está seguro de que desea eliminar este archivo?")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteFile", "Profesor")',
+                    data: { id: fileId },
+                    success: function (result) {
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: result.message
+                            }).then(function () {
+                                // Eliminar el elemento correspondiente del DOM
+                                $('#file-row-' + fileId).remove();
 
-                            // Limpiar el fragmento de la URL
-                            history.pushState("", document.title, window.location.pathname);
-                        });
-                    } else {
+                                // Actualizar la URL y recargar la página
+                                var url = new URL(window.location.href);
+
+                                // Eliminar el parámetro 'nivel' si existe
+                                url.searchParams.delete('nivel');
+
+                                // Establecer o actualizar el parámetro 'Nivel'
+                                url.searchParams.set('Nivel', nivel);
+
+                                // Recargar la página con la nueva URL
+                                window.location.href = url.toString();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message
+                            });
+                        }
+                    },
+                    error: function () {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: result.message
+                            text: 'Ocurrió un error al intentar eliminar el archivo.'
                         });
                     }
-                }).fail(function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Ocurrió un error al intentar eliminar la carpeta.'
-                    });
                 });
             }
         }
 
+        function deleteFolder(folderId, nivel) {
+            if (confirm("¿Está seguro de que desea eliminar esta carpeta?")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteFolder", "Profesor")',
+                    data: { id: folderId },
+                    success: function (result) {
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: result.message
+                            }).then(function () {
+                                // Eliminar el elemento correspondiente del DOM
+                                $('#folder-row-' + folderId).remove(); // Actualizar el DOM eliminando la fila de la carpeta
+
+                                // Actualizar la URL con el parámetro nivel y recargar la página
+                                var url = new URL(window.location.href);
+                                url.searchParams.set('Nivel', @ViewBag.id_level); // Usa el parámetro nivel pasado a la función
+                                window.location.href = url.toString(); // Recargar la página con la nueva URL
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ocurrió un error al intentar eliminar la carpeta.'
+                        });
+                    }
+                });
+            }
+        }
         // Función para manejar el envío del formulario
         $('#renameFolderForm').submit(function (event) {
             event.preventDefault();

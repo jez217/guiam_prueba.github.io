@@ -329,9 +329,14 @@ namespace Pautas.Controllers
         [HttpGet]
         public IActionResult SubView(int id, int Nivel)
         {
+            ViewBag.PreviousId = id; // Guardar el ID para usarlo al regresar
 
+            var folderLevel = _profesorServices.GetFolderById(id);
+            ViewBag.Id_Folders_level = folderLevel?.Id_Folders_level;
 
-            var folder = _profesorServices.GetSubFolderById(id);
+            var folder = _profesorServices.GetSubFolderById(id);            
+            ViewBag.name = folderLevel?.Name;
+
             ViewBag.Id = id;
             ViewBag.id_level = Nivel;
             ViewBag.Id_level_reference = folder?.Id_level_reference;
