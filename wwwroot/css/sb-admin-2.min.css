@@ -88,7 +88,7 @@ section {
         font-weight: 700;
         text-transform: uppercase;
         font-size: 11px;
-        max-width: 129px; /* Define el ancho máximo del texto */
+        max-width: 96px; /* Define el ancho máximo del texto */
         display: inline-block; /* Asegúrate de que se aplique el ancho */
     }
 
