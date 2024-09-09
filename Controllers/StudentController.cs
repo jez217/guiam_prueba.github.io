@@ -16,6 +16,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Pautas.Models.Profesor;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace Pautas.Controllers
 {
@@ -114,35 +115,36 @@ namespace Pautas.Controllers
         [HttpGet]
         public IActionResult Nivel(int id)
         {
-
-
-
             var userLevelClaim = User.Claims.FirstOrDefault(c => c.Type == "Level");  // Reclamo personalizado para el nivel
 
             string userLevel = userLevelClaim.Value;
 
-            var folderLevels = _adminService.GetFolderByLevelStudent(id, userLevel); // Método para obtener los niveles de la carpeta
+            var folders = _folderAccessService.GetFolderByLevelStudent(id, userLevel);
 
-            // Obtener todos los folders para el nivel del estudiante
+            var filteredFolders = folders.Where(f => f.Id_level_reference <= Convert.ToUInt16(userLevel)).ToList();
 
+            var folderCurso = _adminService.GetFolderCursoById(id); 
+            ViewBag.FolderCursoId = folderCurso?.Id; 
 
-            var folderCurso = _adminService.GetFolderCursoById(id); // Método para obtener el curso por Id
-            ViewBag.FolderCursoId = folderCurso?.Id; // Asignar el Id del curso al ViewBag
-
+            var folderLevels = _adminService.GetFolderByLevel(id); 
             ViewBag.name = folderCurso?.Name;
-
-            return View(folderLevels);
+            return View(filteredFolders);
         }
 
+
+
         [HttpGet]
-        public IActionResult View(int id)
+        public IActionResult View(int id, int Nivel)
         {
+            ViewBag.id_level = Nivel;
+            ViewBag.Id_Folders_level = id;
 
             var folderLevel = _adminService.GetLevelFolderById(id);
             ViewBag.Folder = folderLevel.Id_Folders_level;
 
             var folder = _adminService.GetFolderById(id);
             ViewBag.name = folderLevel?.Name;
+            //ViewBag.Id_level_reference = folder?.Id_level_reference;
 
 
             //var folderCurso = _profesorServices.GetFolderCursoById(id); // Método para obtener el curso por Id
@@ -167,16 +169,15 @@ namespace Pautas.Controllers
 
         }
 
-
-  
         [HttpGet]
-        public IActionResult SubView(int id)
+        public IActionResult SubView(int id, int Nivel)
         {
 
 
             var folder = _adminService.GetSubFolderById(id);
             ViewBag.Id = id;
-
+            ViewBag.id_level = Nivel;
+            ViewBag.Id_level_reference = folder?.Id_level_reference;
 
             var file = _adminService.GetFilesByFolderId(id);
 

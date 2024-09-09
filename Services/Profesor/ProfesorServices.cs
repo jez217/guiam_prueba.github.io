@@ -1092,6 +1092,7 @@ namespace Pautas.Services.ProfesorService
                                     Name = reader.GetString(0),
                                     Id_Folders_level = reader.GetInt32(1),
                                     Id_subfolders_curso = reader.GetInt32(2),
+                                    Id_level_reference = reader.GetInt32(3)
 
                                 });
                             }

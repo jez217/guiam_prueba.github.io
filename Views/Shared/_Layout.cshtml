@@ -75,48 +75,6 @@ else
                 <!-- Divider -->
                 <hr class="sidebar-divider my-0">
 
-                <!-- Nav Item - Dashboard -->
-@*                 @foreach (var folder in folders ?? Enumerable.Empty<Pautas.Models.Profesor.Folder>())
-                {
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" href="@Url.Action("View", "Profesor", new { id = folder.Id })">
-                            <i class="fas fa-fw fa-folder"></i>
-                            <span>@folder.Name</span>
-                        </a>
-                        <ul id="collapse" class="collapse list-unstyled">
-                            @if (folder.SubFolders != null && folder.SubFolders.Any())
-                            {
-                                @foreach (var subfolder in folder.SubFolders)
-                                {
-                                    <li>
-                                        <a class="nav-link" href="@Url.Action("View", "Profesor", new { id = subfolder.Id })">@subfolder.Name</a>
-                                    </li>
-                                }
-                            }
-                        </ul>
-                    </li> 
-                } *@
-
-@*                 @foreach (var foldercurso in foldersCurso ?? Enumerable.Empty<Pautas.Models.Profesor.FoldersCurso>())
-                {
-                    <li class="nav-item">
-                        <a class="nav-link collapsed" href="@Url.Action("View", "Profesor", new { id = foldercurso.Id })">
-                            <i class="fas fa-fw fa-folder"></i>
-                            <span>@foldercurso.Name</span>
-                        </a>
-                        <ul id="collapse" class="collapse list-unstyled">
-                            @if (foldercurso.SubFolders != null && foldercurso.SubFolders.Any())
-                            {
-                                @foreach (var subfolder in foldercurso.SubFolders)
-                                {
-                                    <li>
-                                        <a class="nav-link" href="@Url.Action("View", "Profesor", new { id = subfolder.Id })">@subfolder.Name</a>
-                                    </li>
-                                }
-                            }
-                        </ul>
-                    </li>
-                } *@
 
                 <!-- Divider -->
                 <hr class="sidebar-divider">

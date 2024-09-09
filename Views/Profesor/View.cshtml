@@ -241,22 +241,23 @@
         </div>
 
         <!-- Modal para renombrar carpeta -->
-        <div id="renameFolderModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal fade" id="renameFolderModal" tabindex="-1" role="dialog" aria-labelledby="renameFolderModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Renombrar Carpeta</h5>
+                        <h5 class="modal-title" id="renameFolderModalLabel">Renombrar Carpeta</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="renameFolderForm" method="post">
+                        <form id="renameFolderForm">
+                            <input type="hidden" id="renameFolderId" name="id" />
+                            <input type="hidden" id="nivel" name="nivel" value="@ViewBag.id_level" />
                             <div class="form-group">
-                                <label for="renameFolderName">Nuevo Nombre de la Carpeta</label>
-                                <input type="text" class="form-control" id="renameFolderName" name="Name" required />
+                                <label for="renameFolderName">Nuevo Nombre</label>
+                                <input type="text" class="form-control" id="renameFolderName" name="name" required />
                             </div>
-                            <input type="hidden" name="Id" id="renameFolderId" />
                             <button type="submit" class="btn btn-primary">Renombrar</button>
                         </form>
                     </div>
@@ -319,6 +320,7 @@
             }
         }
 
+        // Función para manejar el envío del formulario
         $('#renameFolderForm').submit(function (event) {
             event.preventDefault();
             $.ajax({
@@ -338,8 +340,10 @@
                             $('#folder-name-' + folderId).text(newName); // Actualizar el nombre en la vista
                             $('#renameFolderModal').modal('hide'); // Cerrar el modal
 
-                            // Limpiar el fragmento de la URL
-                            history.pushState("", document.title, window.location.pathname);
+                            // Actualizar la URL con el nuevo parámetro nivel y recargar la página
+                            var url = new URL(window.location.href);
+                            url.searchParams.set('Nivel', $('#nivel').val()); // Usa el parámetro nivel desde el campo oculto
+                            window.location.href = url.toString(); // Recargar la página con la nueva URL
                         });
                     } else {
                         Swal.fire({
@@ -358,7 +362,62 @@
                 }
             });
         });
-    </script>
+
+        // Función para manejar el envío del formulario
+        $('#renameFileForm').submit(function (event) {
+            event.preventDefault();
+
+            $.ajax({
+                url: '@Url.Action("RenameFile", "Profesor")',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: response.message
+                        }).then(function () {
+                            // Obtener el ID del archivo y el nuevo nombre
+                            var fileId = $('#renameFileId').val();
+                            var newName = $('#renameFileName').val();
+
+                            // Actualizar el nombre en la vista
+                            $('#file-name-' + fileId).text(newName); // Asegúrate de que el ID en el DOM sea correcto
+
+                            // Cerrar el modal
+                            $('#renameFileModal').modal('hide');
+
+                            // Actualizar la URL con el parámetro nivel y recargar la página
+                            var url = new URL(window.location.href);
+
+                            // Asegúrate de que el campo oculto #nivel tenga el valor adecuado
+                            var nivel = $('#nivel').val();
+                            url.searchParams.set('Nivel', nivel);
+
+                            // Recargar la página con la nueva URL
+                            window.location.href = url.toString();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ocurrió un error al intentar renombrar el archivo.'
+                    });
+                }
+            });
+        });
+        
+                            
+                            </script>
 
 </body>
 </html>
