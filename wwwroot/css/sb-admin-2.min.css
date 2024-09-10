@@ -70,7 +70,9 @@ section {
     width: 100%;
     height: 200px;
 }
-
+.display-5 {
+    font-size: 40px;
+}
 
 @media only screen and (min-width: 320px) and (max-width: 768px) {
     .card-body {
@@ -95,7 +97,9 @@ section {
     #responsive-video {
         height: 75px;
     }
-
+    .display-5-cell {
+        font-size: 30px;
+    }
 }
 
 body {

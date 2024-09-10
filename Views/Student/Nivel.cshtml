@@ -7,88 +7,82 @@
     <title>Gestión de Carpetas y Archivos</title>
 </head>
 <body>
-    <div id="wrapper" class="sidebar-toggled">
 
-        <div class="container-fluid mt-1">
-            <h1>@ViewBag.name</h1>
-            <div class="container mt-4">
-            </div>
-
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <button class="btn btn-primary mb-3" onclick="openCreateFolderModal()">Crear Carpeta</button>
-
-            </div>
+    <div class="container-fluid mt-1">
+        <h1>@ViewBag.name</h1>
+        <div class="container mt-4">
+        </div>
 
 
-            <div class="row justify-content-center text-center">
 
-                @foreach (var foldercurso in Model)
+        <div class="row justify-content-center text-center">
+
+            @foreach (var foldercurso in Model)
+            {
+                // Determinar el color del borde basado en el Id
+                string borderColorClass = foldercurso.Id_level_reference switch
                 {
-                    // Determinar el color del borde basado en el Id
-                    string borderColorClass = foldercurso.Id_level_reference switch
-                    {
-                        1 => "border-left-warning",   // Amarillo nivel 1
-                        2 => "border-left-success",   // Verde nivel 2
-                        3 => "border-left-info",      // Celeste nivel 3
+                    1 => "border-left-warning",   // Amarillo nivel 1
+                    2 => "border-left-success",   // Verde nivel 2
+                    3 => "border-left-info",      // Celeste nivel 3
 
-                        _ => "border-left-secondary"  // Color predeterminado si Id no coincide
-                    };
+                    _ => "border-left-secondary"  // Color predeterminado si Id no coincide
+                };
 
-                    string folderColorClass = foldercurso.Id_level_reference switch
-                    {
-                        1 => "text-warning",   // Amarillo nivel 1
-                        2 => "text-success",   // Verde nivel 2
-                        3 => "text-info",      // Celeste nivel 3
+                string folderColorClass = foldercurso.Id_level_reference switch
+                {
+                    1 => "text-warning",   // Amarillo nivel 1
+                    2 => "text-success",   // Verde nivel 2
+                    3 => "text-info",      // Celeste nivel 3
 
-                        _ => "text-secondary"  // Color predeterminado si Id no coincide
-                    };
+                    _ => "text-secondary"  // Color predeterminado si Id no coincide
+                };
 
-                    <div class="col-xl-4 col-md-6 mb-4">
-                        <div class="card @borderColorClass shadow h-100 py-2">
-                            <a class="pl-3 pr-3" href="@Url.Action("View", "Student", new { id = foldercurso.Id_Folders_level, Nivel = foldercurso.Id_level_reference })">
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card @borderColorClass shadow h-100 py-2">
+                        <a class="pl-3 pr-3" style="text-decoration: none;" href="@Url.Action("View", "Student", new { id = foldercurso.Id_Folders_level, Nivel = foldercurso.Id_level_reference })">
 
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="font-weight-bold text-primary text-uppercase mb-1">
-                                                @foldercurso.Name
-                                            </div>
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="font-weight-bold text-primary text-uppercase mb-1">
+                                            @foldercurso.Name
                                         </div>
-                                        <div class="col">
-                                            <i class="bi bi-folder-fill @folderColorClass display-4"></i>
-                                        </div>
-
                                     </div>
+                                    <div class="col">
+                                        <i class="bi bi-folder-fill @folderColorClass display-4"></i>
+                                    </div>
+
                                 </div>
-                            </a>
-                        </div>
+                            </div>
+                        </a>
                     </div>
-                }
-            </div>
+                </div>
+            }
+        </div>
 
-            <!-- Modal para crear carpeta -->
-            <div id="createFolderModal" class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Crear Carpeta</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="createFolderForm" method="post" action="@Url.Action("CreateFolderLevel", "Profesor")">
-                                <div class="form-group">
-                                    <label for="folderName">Nombre de la Carpeta</label>
-                                    <input type="text" class="form-control" id="folderName" name="Name" required />
-                                </div>
-                                <!-- Input oculto para el Id_subfolders_curso -->
-                                <input type="hidden" name="Id_subfolders_curso" value="@ViewBag.FolderCursoId" id="Id_subfolders_curso" />
-                                <input type="hidden" name="Id_level_reference" value="@ViewBag.FolderCursoId" id="Id_subfolders_curso" />
-                                <button type="submit" class="btn btn-primary">Crear</button>
-                            </form>
+        <!-- Modal para crear carpeta -->
+        <div id="createFolderModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Crear Carpeta</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body ">
+                        <form id="createFolderForm" method="post" action="@Url.Action("CreateFolderLevel", "Student")">
+                            <div class="form-group">
+                                <label for="folderName">Nombre de la Carpeta</label>
+                                <input type="text" class="form-control" id="folderName" name="Name" required />
+                            </div>
+                            <!-- Input oculto para el Id_subfolders_curso -->
+                            <input type="hidden" name="Id_subfolders_curso" value="@ViewBag.FolderCursoId" id="Id_subfolders_curso" />
+                            <input type="hidden" name="Id_level_reference" value="@ViewBag.FolderCursoId" id="Id_subfolders_curso" />
+                            <button type="submit" class="btn btn-primary">Crear</button>
+                        </form>
 
-                        </div>
                     </div>
                 </div>
             </div>

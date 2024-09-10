@@ -54,8 +54,9 @@ namespace Pautas.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, resp.Name),
-                    new Claim("IdRol", resp.IdRol.ToString()), // Tipo de reclamo personalizado
-                    // Agrega otros claims según sea necesario
+                    new Claim("IdRol", resp.IdRol.ToString()),             
+                    new Claim("Curso", resp.IdCurso.ToString())
+
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -203,6 +204,7 @@ namespace Pautas.Controllers
         {
             User userAuth = HttpContext.Session.GetObject<User>("Name");
             User rolAuth = HttpContext.Session.GetObject<User>("IdRol");
+            User cursoAuth = HttpContext.Session.GetObject<User>("Curso");
 
 
             if (userAuth == null || rolAuth == null)

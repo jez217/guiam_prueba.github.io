@@ -19,6 +19,14 @@
         <div class="container-fluid mt-1">
             <h1>@ViewBag.name</h1>
 
+            <div class="d-sm-flex align-items-center justify-content-left mb-4">
+                <a class="mr-3" asp-action="Index" asp-controller="Student">
+                    <i class="bi bi-arrow-left-circle-fill" style="color: #7271a7; font-size: 30px;"></i>
+                </a>
+ 
+
+            </div>
+
             <div class="row justify-content-center text-center">
                 @foreach (var subFolder in Model.SubFolders)
                 {
@@ -32,31 +40,32 @@
 
                         _ => "border-left-secondary"  // Color predeterminado si Id no coincide
                     };
+                    string backgroundColorClass = ViewBag.id_level switch
+                    {
+                        1 => "text-warning",   // Amarillo nivel 1
+                        2 => "text-success",   // Verde nivel 2
+                        3 => "text-info",      // Celeste nivel 3
 
+                        _ => "text-secondary"  // Color predeterminado si Id no coincide
+                    };
                     <div class="col-xl-4 col-md-6 mb-4">
                         <div class="card @borderColorClass shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col">
-                                        <i class="bi bi-folder-fill display-4"></i>
+                                        <i class="bi bi-folder-fill display-4 @backgroundColorClass"></i>
                                     </div>
-                                    <a class="pl-3 pr-3" href="@Url.Action("SubView", "Student", new { id = subFolder.Id, Nivel = @ViewBag.id_level })">
+                                    <a class="pl-3 pr-3" style="text-decoration: none;" href="@Url.Action("SubView", "Student", new { id = subFolder.Id, Nivel = @ViewBag.id_level })">
                                         <div class="col mr-2">
-                                            <div class="font-weight-bold text-primary text-uppercase mb-1" id="@subFolder.Id">
+                                            <div class="font-weight-bold text-secondary text-uppercase mb-1" id="@subFolder.Id">
                                                 @subFolder.Name
                                             </div>
 
                                         </div>
                                     </a>
 
-                                    <div class="col dropdown text-right">
-                                        <!-- Icono de 3 puntos como activador del dropdown -->
-                                        <i class="bi-three-dots-vertical " id="dropdownMenuButton@subFolder.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer; font-size: 20px;"></i>
-
-                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton@subFolder.Id">
-                                            <a class="dropdown-item" onclick="openRenameFolderModal(@subFolder.Id, '@subFolder.Name')">Renombrar</a>
-                                            <a class="dropdown-item" onclick="deleteFolder(@subFolder.Id)">Eliminar</a>
-                                        </div>
+                                    <div class="col">
+                                       
                                     </div>
                                 </div>
                             </div>
@@ -65,7 +74,7 @@
                 }
             </div>
 
-            <h3>Archivos</h3>
+            <div class="border-top my-3"></div>
 
             <div class="row">
 
@@ -122,7 +131,7 @@
                                 {
                                     <i class="bi bi-image pr-2 text-danger" style="font-size: 20px;"></i>
                                     <a href="~/uploads/@file.Name" class="btn btn-primary" target="_blank"><i class="bi bi-eye-fill"></i></a>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                    <a href="@Url.Action("DownloadFile", "Student", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
                                 }
                                 @if (file.Name.EndsWith(".pdf"))
                                 {
@@ -130,30 +139,30 @@
 
                                     <!-- Mostrar el botón Ver Completo para PDF y Word -->
                                     <a href="~/uploads/@file.Name" class="btn btn-primary" target="_blank"><i class="bi bi-eye-fill"></i></a>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                    <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                                    <a href="@Url.Action("DownloadFile", "Student", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                    <a href="@Url.Action("DeleteFile", "Student", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
 
                                 }
                                 @if (file.Name.EndsWith(".docx") || file.Name.EndsWith(".doc"))
                                 {
                                     <!-- Mostrar ícono de archivo de Word -->
                                     <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #004aad"></i>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                    <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                                    <a href="@Url.Action("DownloadFile", "Student", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                    <a href="@Url.Action("DeleteFile", "Student", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
                                 }
                                 @if (file.Name.EndsWith(".pptx") || file.Name.EndsWith(".ppt"))
                                 {
                                     <!-- Mostrar ícono de archivo de Word -->
                                     <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #fd5050"></i>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                    <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                                    <a href="@Url.Action("DownloadFile", "Student", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                    <a href="@Url.Action("DeleteFile", "Student", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
                                 }
                                 @if (file.Name.EndsWith(".xlsx") || file.Name.EndsWith(".xls"))
                                 {
                                     <!-- Mostrar ícono de archivo de Word -->
                                     <i class="bi bi-file-earmark-text-fill" style="font-size: 20px; color: #5e8d49"></i>
-                                    <a href="@Url.Action("DownloadFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
-                                    <a href="@Url.Action("DeleteFile", "Profesor", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                                    <a href="@Url.Action("DownloadFile", "Student", new { id = file.Id })" class="ml-2 btn btn-secondary"><i class="bi bi-download"></i></a>
+                                    <a href="@Url.Action("DeleteFile", "Student", new { id = file.Id })" class="ml-2 btn btn-danger"><i class="bi bi-trash-fill"></i></a>
                                 }
                             </div>
                         </div>
@@ -191,12 +200,11 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="createFolderForm" method="post" action="@Url.Action("CreateFolder", "Profesor")">
+                        <form id="createFolderForm" method="post" action="@Url.Action("CreateFolder", "Student")">
                             <div class="form-group">
                                 <label for="folderName">Nombre de la Carpeta</label>
                                 <input type="text" class="form-control" id="folderName" name="Name" required />
                             </div>
-                            <input type="hidden" name="ParentFolderId" value="@Model.Id" />
                             <input type="hidden" name="Id_Folders_level" value="@ViewBag.Id_Folders_level" id="Id_Folders_level" />
                             <input type="hidden" name="Id_level_reference" value="@ViewBag.id_level" id="Id_level_reference" />
 
@@ -218,7 +226,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="uploadFileForm" method="post" action="@Url.Action("UploadFile", "Profesor")" enctype="multipart/form-data">
+                        <form id="uploadFileForm" method="post" action="@Url.Action("UploadFile", "Student")" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="fileName">Archivo</label>
                                 <input type="file" class="form-control" id="fileName" name="file" required />
@@ -260,6 +268,7 @@
                 </div>
             </div>
         </div>
+
     </div>
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/bootstrap.bundle.min.js"></script>
@@ -282,44 +291,97 @@
             $('#renameFolderModal').modal('show');
         }
 
-        function deleteFolder(folderId) {
-            if (confirm("¿Está seguro de que desea eliminar esta carpeta?")) {
-                $.post('@Url.Action("DeleteFolder", "Profesor")', { id: folderId }, function (result) {
-                    if (result.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: '¡Éxito!',
-                            text: result.message
-                        }).then(function () {
-                            // Actualizar la lista de subcarpetas sin recargar la página
-                            $('#folder-name-' + folderId).text(result.newName); // Actualizar el nombre en la vista
-                            $('#renameFolderModal').modal('hide'); // Cerrar el modal
+        function DeleteFile(fileId, nivel) {
+            if (confirm("¿Está seguro de que desea eliminar este archivo?")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteFile", "Student")',
+                    data: { id: fileId },
+                    success: function (result) {
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: result.message
+                            }).then(function () {
+                                // Eliminar el elemento correspondiente del DOM
+                                $('#file-row-' + fileId).remove();
 
-                            // Limpiar el fragmento de la URL
-                            history.pushState("", document.title, window.location.pathname);
-                        });
-                    } else {
+                                // Actualizar la URL y recargar la página
+                                var url = new URL(window.location.href);
+
+                                // Eliminar el parámetro 'nivel' si existe
+                                url.searchParams.delete('nivel');
+
+                                // Establecer o actualizar el parámetro 'Nivel'
+                                url.searchParams.set('Nivel', nivel);
+
+                                // Recargar la página con la nueva URL
+                                window.location.href = url.toString();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message
+                            });
+                        }
+                    },
+                    error: function () {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: result.message
+                            text: 'Ocurrió un error al intentar eliminar el archivo.'
                         });
                     }
-                }).fail(function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Ocurrió un error al intentar eliminar la carpeta.'
-                    });
                 });
             }
         }
 
+        function deleteFolder(folderId, nivel) {
+            if (confirm("¿Está seguro de que desea eliminar esta carpeta?")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteFolder", "Student")',
+                    data: { id: folderId },
+                    success: function (result) {
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: result.message
+                            }).then(function () {
+                                // Eliminar el elemento correspondiente del DOM
+                                $('#folder-row-' + folderId).remove(); // Actualizar el DOM eliminando la fila de la carpeta
+
+                                // Actualizar la URL con el parámetro nivel y recargar la página
+                                var url = new URL(window.location.href);
+                                url.searchParams.set('Nivel', @ViewBag.id_level); // Usa el parámetro nivel pasado a la función
+                                window.location.href = url.toString(); // Recargar la página con la nueva URL
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ocurrió un error al intentar eliminar la carpeta.'
+                        });
+                    }
+                });
+            }
+        }
         // Función para manejar el envío del formulario
         $('#renameFolderForm').submit(function (event) {
             event.preventDefault();
             $.ajax({
-                url: '@Url.Action("RenameFolder", "Profesor")',
+                url: '@Url.Action("RenameFolder", "Student")',
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function (response) {
@@ -363,7 +425,7 @@
             event.preventDefault();
 
             $.ajax({
-                url: '@Url.Action("RenameFile", "Profesor")',
+                url: '@Url.Action("RenameFile", "Student")',
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function (response) {
@@ -387,8 +449,8 @@
                             var url = new URL(window.location.href);
 
                             // Asegúrate de que el campo oculto #nivel tenga el valor adecuado
-                            var Nivel = $('#Nivel').val();
-                            url.searchParams.set('Nivel', @ViewBag.id_level);
+                            var nivel = $('#nivel').val();
+                            url.searchParams.set('Nivel', nivel);
 
                             // Recargar la página con la nueva URL
                             window.location.href = url.toString();
@@ -409,8 +471,10 @@
                     });
                 }
             });
-        });    
-        </script>
+        });
+
+
+    </script>
 
 </body>
 </html>

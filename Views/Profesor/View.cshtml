@@ -40,17 +40,24 @@
 
                         _ => "border-left-secondary"  // Color predeterminado si Id no coincide
                     };
+                    string backgroundColorClass = ViewBag.id_level switch
+                    {
+                        1 => "text-warning",   // Amarillo nivel 1
+                        2 => "text-success",   // Verde nivel 2
+                        3 => "text-info",      // Celeste nivel 3
 
+                        _ => "text-secondary"  // Color predeterminado si Id no coincide
+                    };
                     <div class="col-xl-4 col-md-6 mb-4">
                         <div class="card @borderColorClass shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col">
-                                        <i class="bi bi-folder-fill display-4"></i>
+                                        <i class="bi bi-folder-fill display-4 @backgroundColorClass"></i>
                                     </div>
-                                    <a class="pl-3 pr-3" href="@Url.Action("SubView", "Profesor", new { id = subFolder.Id, Nivel = @ViewBag.id_level })">
+                                    <a class="pl-3 pr-3" style="text-decoration: none;" href="@Url.Action("SubView", "Profesor", new { id = subFolder.Id, Nivel = @ViewBag.id_level })">
                                         <div class="col mr-2">
-                                            <div class="font-weight-bold text-primary text-uppercase mb-1" id="@subFolder.Id">
+                                            <div class="font-weight-bold text-secondary text-uppercase mb-1" id="@subFolder.Id">
                                                 @subFolder.Name
                                             </div>
 
@@ -61,9 +68,9 @@
                                         <!-- Icono de 3 puntos como activador del dropdown -->
                                         <i class="bi-three-dots-vertical " id="dropdownMenuButton@subFolder.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer; font-size: 20px;"></i>
 
-                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton@subFolder.Id">
-                                            <a class="dropdown-item" onclick="openRenameFolderModal(@subFolder.Id, '@subFolder.Name')">Renombrar</a>
-                                            <a class="dropdown-item" onclick="deleteFolder(@subFolder.Id)">Eliminar</a>
+                                        <div class="dropdown-menu dropdown-menu-right " aria-labelledby="dropdownMenuButton@subFolder.Id">
+                                            <a class="dropdown-item @borderColorClass" onclick="openRenameFolderModal(@subFolder.Id, '@subFolder.Name')"><i class="bi bi-pencil-fill text-secondarys pr-2"></i>Renombrar</a>
+                                            <a class="dropdown-item @borderColorClass" onclick="deleteFolder(@subFolder.Id)"><i class="bi bi-trash-fill text-danger pr-2"></i>Eliminar</a>
                                         </div>
                                     </div>
                                 </div>

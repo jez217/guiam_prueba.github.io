@@ -32,11 +32,11 @@ namespace Pautas.Controllers
             {
                 var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, resp.Name),
+            new Claim(ClaimTypes.Name, resp.Name), 
             new Claim(ClaimTypes.NameIdentifier, resp.idUser.ToString()),
             new Claim("IdRol", resp.IdRol.ToString()),
-            new Claim("Curso", resp.IdCurso.ToString()), // Tipo de reclamo personalizado
-            new Claim("Level", resp.IdLevel.ToString()), // Tipo de reclamo personalizado
+            new Claim("Curso", resp.IdCurso.ToString()), 
+            new Claim("Level", resp.IdLevel.ToString()), 
         };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
