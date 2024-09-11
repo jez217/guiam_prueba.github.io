@@ -119,13 +119,13 @@ namespace Pautas.Controllers
             GenericResponse resp = new GenericResponse();
             resp = _adminservice.CreateUser(model);
 
-            if (resp.Resp)
+            if (resp.code == "success")
             {
-                return Json(new { resp.id, resp.message });
+                return Json(new { message = resp.message, code = resp.code });
             }
             else
             {
-                return RedirectToAction("CreateUser");
+                return Json(new { message = resp.message, code = resp.code });
             }
         }
         #endregion

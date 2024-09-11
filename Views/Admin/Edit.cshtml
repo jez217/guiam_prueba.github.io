@@ -372,7 +372,8 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                            <a class="btn btn-secondary" asp-action="Admin" asp-controller="Admin"  type="button" data-dismiss="modal">Cancelar</a>
+                           
                             <button class="btn btn-primary" type="submit">Guardar</button>
 
                         </div>
@@ -498,12 +499,12 @@
         // Funcion para accion del edit del formulario
         $(document).ready(function () {
             // Captura el evento submit del formulario
-            $('#edit-form').submit(function (event) {
+            $('#create-form').submit(function (event) {
 
                 event.preventDefault();
 
                 $.ajax({
-                    url: '@Url.Action("Edit", "Admin")',
+                    url: '@Url.Action("Create", "Admin")',
                     type: 'POST',
                     data: $(this).serialize(),
                     success: function (data) {

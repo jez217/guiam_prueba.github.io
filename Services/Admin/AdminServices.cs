@@ -9,6 +9,7 @@ using Pautas.Services.Extensions;
 using System.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Pautas.Models;
+using Azure;
 
 namespace Pautas.Services.Users
 {
@@ -116,49 +117,41 @@ namespace Pautas.Services.Users
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         // Adding input parameters
-                        cmd.Parameters.AddWithValue("@Name", model.Name);
-                        cmd.Parameters.AddWithValue("@Level", model.IdLevel);
-                        cmd.Parameters.AddWithValue("@IdCurso", model.IdCurso);
-                        cmd.Parameters.AddWithValue("@IdRol", model.IdRol);
-                        cmd.Parameters.AddWithValue("@Id_status", model.IdStatus);
-                        cmd.Parameters.AddWithValue("@Correo", model.Correo);
-                        cmd.Parameters.AddWithValue("@Apellido", model.Apellido);
-                        cmd.Parameters.AddWithValue("@Clave", model.Clave);
+                        cmd.Parameters.AddWithValue("@Name", model.Name ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Level", model.IdLevel ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@IdCurso", model.IdCurso ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@IdRol", model.IdRol ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Id_status", model.IdStatus ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Correo", model.Correo ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Apellido", model.Apellido ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Clave", model.Clave ?? (object)DBNull.Value);
 
-                        // Adding output parameters
-                        SqlParameter spUserId = new SqlParameter("@Id_user", SqlDbType.Int);
-                        spUserId.Direction = ParameterDirection.Output;
-                        cmd.Parameters.Add(spUserId);
+                        // Output parameters
+                        SqlParameter userIdParam = new SqlParameter("@Id_user", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                        SqlParameter messageParam = new SqlParameter("@MESSAGE", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
+                        SqlParameter responseParam = new SqlParameter("@RESPONSE", SqlDbType.Bit) { Direction = ParameterDirection.Output };
 
-                        SqlParameter spMessage = new SqlParameter("@MESSAGE", SqlDbType.NVarChar, -1);
-                        spMessage.Direction = ParameterDirection.Output;
-                        cmd.Parameters.Add(spMessage);
-
-                        SqlParameter spResponse = new SqlParameter("@RESPONSE", SqlDbType.Bit);
-                        spResponse.Direction = ParameterDirection.Output;
-                        cmd.Parameters.Add(spResponse);
+                        cmd.Parameters.Add(userIdParam);
+                        cmd.Parameters.Add(messageParam);
+                        cmd.Parameters.Add(responseParam);
 
                         sql.Open();
                         cmd.ExecuteNonQuery();
 
-                        // Check if output parameters are DBNull and handle accordingly
-                        if (spUserId.Value != DBNull.Value)
-                        {
-                            UserId = Convert.ToInt32(spUserId.Value);
-                        }
+                        // Retrieving output parameter values
+                         UserId = (int)cmd.Parameters["@Id_user"].Value;
 
-                        resp.id = UserId;
-                        resp.message = spMessage.Value != DBNull.Value ? spMessage.Value.ToString() : string.Empty;
-                        resp.Resp = Convert.ToBoolean(spResponse.Value);
+                        resp.message = messageParam.Value.ToString();
+                        resp.code = Convert.ToBoolean(responseParam.Value) ? "success" : "error";
                     }
                 }
             }
             catch (Exception ex)
             {
-                resp.Resp = false;
                 resp.code = "error";
-                resp.message = ex.Message;
+                resp.message = ex.Message; // Capture exception message
             }
+
             return resp;
         }
         #endregion

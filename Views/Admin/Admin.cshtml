@@ -30,6 +30,9 @@
     <!-- Custom styles for this page -->
     <link href="~/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
+    <link href="~/css/datatables/datatables.datatables.css" rel="stylesheet" />
+    <link href="~/css/datatables/fixedheader.datatables.css" rel="stylesheet" />
+    <link href="~/css/datatables/responsive.datatables.css" rel="stylesheet" />
 </head>
 
 <body id="page-top">
@@ -331,13 +334,17 @@
                         Crear
                     </button>
                     <!-- DataTales Example -->
+
                     <div class="card shadow mb-4">
+
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Registro de Usuarios</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
                         </div>
+
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
+                                <table id="example" class="display nowrap" style="width:100%">
                                     <thead>
                                         <tr>
                                             <th>Id</th>
@@ -347,27 +354,24 @@
                                             <th>Rol</th>
                                             <th>Estado</th>
                                             <th>Correo</th>
-                                            <th></th>
-                                            <th></th>
+                                            <th>Editar</th>
+                                            <th>Eliminar</th>
                                         </tr>
                                     </thead>
-
                                     <tbody>
                                         @foreach (var item in Model.ListaUserDetail)
                                         {
                                             // Determinar la clase de la fila en función del rol
                                             var rowClass = item.IdRol switch
                                             {
-                                                1 => "bg-warning",
-                                                2 => "bg-success",
-                                                3 => "bg-info",
-                                                _ => ""
+                                                1 => "bg-warning", // Rol 1: Color de fondo amarillo
+                                                2 => "bg-success", // Rol 2: Color de fondo verde
+                                                3 => "bg-info",    // Rol 3: Color de fondo azul
+                                                _ => ""            // Otros roles: Sin color de fondo específico
                                             };
 
-                                            <tr class="@rowClass">
-                                                <td>
-                                                    @Html.DisplayFor(m => item.idUser)
-                                                </td>
+                                            <tr class="">
+                                                <td>@Html.DisplayFor(m => item.idUser)</td>
                                                 <td>@Html.DisplayFor(m => item.Name)</td>
                                                 <td>@Html.DisplayFor(m => item.Apellido)</td>
                                                 <td>@Html.DisplayFor(m => item.Clave)</td>
@@ -375,7 +379,7 @@
                                                 <td>@Html.DisplayFor(m => item.IdStatus)</td>
                                                 <td>@Html.DisplayFor(m => item.Correo)</td>
                                                 <td>
-                                                    <a data-bs-toggle="tooltip" title="Edita la pauta" class="btn btn-outline-warning mb-3" href="@Url.Action("Edit", "Admin", new { id = item.idUser })">
+                                                    <a data-bs-toggle="tooltip" title="Edita la pauta" class="btn btn-outline-success  mb-3" href="@Url.Action("Edit", "Admin", new { id = item.idUser })">
                                                         <i class="fas fa-pen fa-sm fa-fw mr-2"></i>
                                                     </a>
                                                 </td>
@@ -386,12 +390,17 @@
                                                 </td>
                                             </tr>
                                         }
+
+
                                     </tbody>
                                 </table>
+
                             </div>
+
                         </div>
 
                     </div>
+
 
                 </div>
                 <!-- /.container-fluid -->
@@ -534,15 +543,29 @@
 
     <!-- Custom scripts for all pages-->
     <script src="~/js/sb-admin-2.min.js"></script>
+    <script src="~/js/datatables/datatables.js"></script>
+    <!-- DataTables Fixed Header -->
+    <script src="~/js/datatables/datatables.fixedheader.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="~/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="~/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/datatables/fixedheader.datatables.js"></script>
+    <!-- DataTables Responsive -->
+    <script src="~/js/datatables/datatables.responsive.js"></script>
+    <script src="~/js/datatables/responsive.datatables.js"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="~/js/demo/datatables-demo.js"></script>
+
+
+
     <script src="~/plugins/sweetalert2/sweetalert2.all.min.js"></script>
     <script src="~/script/jquery.unobtrusive-ajax.js"></script>
+
+
+    <script>
+        $('#example').DataTable({
+            responsive: true
+        });
+
+    </script>
+
     <script>
         $(document).ready(function () {
             // Función para verificar y mostrar/ocultar campos
@@ -726,59 +749,47 @@
 
     <script>
         $(document).ready(function () {
-            $('#create-form').on('submit', function (event) {
-                event.preventDefault(); // Previene el envío del formulario normal
+            // Funcion para accion del edit del formulario
+            $(document).ready(function () {
+                // Captura el evento submit del formulario
+                $('#create-form').submit(function (event) {
 
-                // SweetAlert2 para confirmar el envío
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esto!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, enviar!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Enviar el formulario usando AJAX
-                        $.ajax({
-                            url: '@Url.Action("Create", "Admin")', // Cambia "Admin" por el nombre de tu controlador
-                            type: 'POST',
-                            data: $('#create-form').serialize(),
-                            success: function (response) {
-                                if (response.resp == true) {
-                                    Swal.fire({
-                                        title: '¡Éxito!',
-                                        text: response.message,
-                                        icon: 'success',
-                                        confirmButtonText: 'OK'
-                                    }).then(() => {
-                                        // Recargar la página
-                                        location.reload();
-                                    });
-                                } else {
-                                    Swal.fire(
-                                        'Error',
-                                        response.message,
-                                        'error'
-                                    );
+                    event.preventDefault();
+
+                    $.ajax({
+                        url: '@Url.Action("Create", "Admin")',
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function (data) {
+
+                            Swal.fire({
+                                title: 'Éxito',
+                                text: data.message,
+                                icon: 'success',
+                                confirmButtonText: 'Aceptar'
+                            }).then((result) => {
+
+                                // Redirecciona a la página de edición si se hace clic en Aceptar
+                                if (result.isConfirmed) {
+                                    window.location.href = '@Url.Action("Admin", "Admin")';
                                 }
-                            },
-                            error: function () {
-                                Swal.fire(
-                                    'Error',
-                                    'Ha ocurrido un error al procesar tu solicitud.',
-                                    'error'
-                                );
-                            }
-                        });
-                    }
+                            });
+                        },
+                        error: function () {
+                            // Muestra un Sweet Alert con un mensaje de error
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Hubo un error al procesar la solicitud',
+                                icon: 'error',
+                                confirmButtonText: 'Aceptar'
+                            });
+                        }
+                    });
                 });
             });
+
         });
     </script>
-
-
 
 @*     <script LANGUAGE="javascript">
         alert("Inicio Exitoso");
