@@ -574,7 +574,28 @@
         });
     </script>
 
+    <script>
+        $(document).ready(function () {
+            // Función para verificar y mostrar/ocultar campos
+            function toggleCursoNivel() {
+                var selectedRol = $('#IdRol').val(); // Obtiene el valor seleccionado de IdRol
 
+                if (selectedRol == '3') {
+                    $('#cursoNivelSection').show(); // Muestra los campos de Curso y Nivel
+                } else {
+                    $('#cursoNivelSection').hide(); // Oculta los campos de Curso y Nivel
+                }
+            }
+
+            // Llama a la función cuando se carga la página
+            toggleCursoNivel();
+
+            // Llama a la función cuando cambia el valor de IdRol
+            $('#IdRol').change(function () {
+                toggleCursoNivel();
+            });
+        });
+    </script>
 
 
 
