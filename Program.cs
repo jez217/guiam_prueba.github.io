@@ -45,10 +45,15 @@ var app = builder.Build();
 // Configurar el pipeline de solicitud HTTP
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // El valor HSTS predeterminado es de 30 días. Puedes cambiarlo según tus escenarios de producción.
-    app.UseHsts();
+    app.UseExceptionHandler("/Home/Error"); // Página de errores personalizada
+    app.UseHsts(); // Habilita HSTS para producción
 }
+else
+{
+    app.UseDeveloperExceptionPage(); // Mostrar detalles de los errores solo en desarrollo
+}
+
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

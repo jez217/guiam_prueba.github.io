@@ -5,7 +5,7 @@
 @using System.Globalization
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
 
@@ -38,7 +38,7 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
@@ -305,7 +305,9 @@
                 <!-- End of Topbar -->
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-
+                    <a class="mr-3" asp-action="Admin" asp-controller="Admin">
+                        <i class="bi bi-arrow-left-circle-fill" style="color: #7271a7; font-size: 30px;"></i>
+                    </a>
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Usuarios</h1>
                     <p class="mb-2">
