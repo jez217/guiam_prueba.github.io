@@ -428,16 +428,24 @@ namespace Pautas.Controllers
             }
         }
 
-        //public IActionResult DownloadFile(int id)
-        //{
-        //    var file = _profesorServices.GetFileById(id);
-        //    if (file == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public IActionResult DownloadFile(int id)
+        {
+            var file = _profesorServices.GetFileId(id);
+            if (file == null || string.IsNullOrEmpty(file.FilePath))
+            {
+                return NotFound("El archivo no existe o la ruta es inválida.");
+            }
 
-        //    var fileBytes = System.IO.File.ReadAllBytes(file.FilePath);
-        //    return File(fileBytes, "application/octet-stream", file.Name);
-        //}
+            try
+            {
+                var fileBytes = System.IO.File.ReadAllBytes(file.FilePath);
+                return File(fileBytes, "application/octet-stream", file.Name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al descargar el archivo: {ex.Message}");
+                return NotFound("Hubo un problema al descargar el archivo.");
+            }
+        }
     }
 }

@@ -942,11 +942,9 @@ namespace Pautas.Services.ProfesorService
 
         public Files GetFileId(int id)
         {
-            // Implementa la lógica para obtener el archivo desde la base de datos usando la id
-            // Ejemplo de implementación:
             using (SqlConnection sql = new SqlConnection(_connService.stringSqlUserDb()))
             {
-                using (SqlCommand cmd = new SqlCommand("SELECT Name FROM Files WHERE Id = @Id", sql))
+                using (SqlCommand cmd = new SqlCommand("SELECT Name, FilePath FROM Files WHERE Id = @Id", sql))
                 {
                     cmd.Parameters.AddWithValue("@Id", id);
                     sql.Open();
@@ -957,7 +955,8 @@ namespace Pautas.Services.ProfesorService
                         {
                             return new Files
                             {
-                                Name = reader["Name"].ToString()
+                                Name = reader["Name"].ToString(),
+                                FilePath = reader["FilePath"].ToString()
                             };
                         }
                     }
@@ -966,6 +965,7 @@ namespace Pautas.Services.ProfesorService
 
             return null; // Retorna null si no se encuentra el archivo
         }
+
 
 
         public async Task<List<Folder>> GetSubFoldersByParentId(int parentFolderId)
