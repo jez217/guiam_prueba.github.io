@@ -558,46 +558,22 @@
     <script src="~/script/jquery.unobtrusive-ajax.js"></script>
 
 
+
     <script>
         $('#example').DataTable({
-            responsive: true
-        });
+            responsive: true,
+            language: {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron resultados",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros en total)",
+                "search": "Buscar:",
 
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            // Función para verificar y mostrar/ocultar campos
-            function toggleCursoNivel() {
-                var selectedRol = $('#IdRol').val(); // Obtiene el valor seleccionado de IdRol
-
-                if (selectedRol == '3') {
-                    $('#cursoNivelSection').show(); // Muestra el div que contiene Curso y Nivel
-                    $('#IdCurso').prop('disabled', false); // Habilita el DropDownList de IdCurso
-                    $('#IdLevel').prop('disabled', false); // Habilita el DropDownList de IdLevel
-                    $('#nivelField').show(); // Asegúrate de mostrar el campo de Nivel
-                } else if (selectedRol == '2') {
-                    $('#cursoNivelSection').show(); // Muestra el div que contiene Curso
-                    $('#IdCurso').prop('disabled', false); // Habilita el DropDownList de IdCurso
-                    $('#IdLevel').prop('disabled', true); // Desactiva el DropDownList de IdLevel
-                    $('#nivelField').hide(); // Asegúrate de ocultar el campo de Nivel
-                } else {
-                    $('#cursoNivelSection').hide(); // Oculta el div que contiene Curso y Nivel
-                    $('#IdCurso').prop('disabled', true); // Desactiva el DropDownList de IdCurso
-                    $('#IdLevel').prop('disabled', true); // Desactiva el DropDownList de IdLevel
-                    $('#nivelField').hide(); // Asegúrate de ocultar el campo de Nivel
-                }
             }
-
-            // Llama a la función cuando se carga la página
-            toggleCursoNivel();
-
-            // Llama a la función cuando cambia el valor de IdRol
-            $('#IdRol').change(function () {
-                toggleCursoNivel();
-            });
         });
     </script>
+
 
 
 
