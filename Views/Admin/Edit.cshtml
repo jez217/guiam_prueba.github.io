@@ -366,7 +366,7 @@
                                 @Html.DropDownListFor(m => m.IdCurso, (List<SelectListItem>)Model.CURSODROPDOWNS, new { @class = "form-control chosen-select", @id = "IdCurso", @required = "required", data_placeholder = "Seleccione el curso", @autocomplete = "off" })
                             </div>
 
-                            <div id="nivelField" class="form-group col-md-6" style="display: none;">
+                            <div class="form-group col-md-6">
                                 <label for="idLevel">Nivel</label>
                                 @Html.DropDownListFor(m => m.IdLevel, (List<SelectListItem>)Model.LEVELDROPDOWNS, new { @class = "form-control chosen-select", @id = "IdLevel", @required = "required", data_placeholder = "Seleccione el nivel", @autocomplete = "off" })
                             </div>
