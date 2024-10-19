@@ -30,10 +30,26 @@
     <!-- Custom styles for this page -->
     <link href="~/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
+    <link href="~/css/datatables/datatables.datatables.css" rel="stylesheet" />
+    <link href="~/css/datatables/fixedheader.datatables.css" rel="stylesheet" />
+    <link href="~/css/datatables/responsive.datatables.css" rel="stylesheet" />
 </head>
 
 <body id="page-top">
+    <style>
+        .bg-warning-custom {
+            background-color: #ffbd59; /* Amarillo */
+        }
 
+        .bg-success-custom {
+            background-color: #7ed957; /* Verde */
+        }
+
+        .bg-info-custom {
+            background-color: #38b6ff; /* Celeste */
+        }
+
+    </style>
     <!-- Page Wrapper -->
     <div id="wrapper">
 
@@ -41,7 +57,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" asp-action="Admin" asp-controller="Admin" >
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="Admin">
                 <div class="sidebar-brand-icon">
                     <img src="~/img/Guian_negro.jpg" alt="" style="border-radius: 50%;" width="50px">
                 </div>
@@ -53,37 +69,16 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" asp-action="Admin" asp-controller="Admin">
+                <a class="nav-link" href="Admin">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Panel GUIAM</span>
                 </a>
             </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Nivel
-            </div>
+          
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLibro"
-                   aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-book"></i>
-                    <span>Usuarios</span>
-
-                </a>
-                <div id="collapseLibro" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Usuarios</h6>
-                        <a class="collapse-item" href="">Crear</a>
-                        <a class="collapse-item" href="">Lista</a>
-                    </div>
-                </div>
-            </li>
-
+    
+           
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -108,7 +103,6 @@
             <!-- Main Content -->
             <div id="content">
 
-                <!-- Topbar -->
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
@@ -304,98 +298,14 @@
                     </ul>
 
                 </nav>
-                <!-- End of Topbar -->                <!-- End of Topbar -->
+                <!-- End of Topbar -->
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
-                 
-                    <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Usuarios</h1>
-                    <p class="mb-2">
-                        En esta seccion editaras tus usuarios de la Academia Guiam.
-                    </p>
-                
-                    <!-- DataTales Example -->
-
-                    <form id="edit-form" method="post" style="
-                          background: #1c6fc814;
-                          padding: 20px; border-radius: 10px">
-                            @Html.HiddenFor(m => m.idUser )
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="name">Name</label>
-                                @Html.TextBoxFor(m => m.Name, new { @type = "text", @id = "name", @name = "name", @maxlength = "50", @class = "form-control", @required = "required" })
-
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="apellido">Apellido</label>
-                                @Html.TextBoxFor(m => m.Apellido, new { @type = "text", @id = "apellido", @apellido = "apellido", @maxlength = "50", @class = "form-control", @required = "required" })
-                            </div>
-
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="clave">Contraseña</label>
-                                @Html.TextBoxFor(m => m.Clave, new { @type = "password", @id = "clave", @apellido = "clave", @maxlength = "50", @class = "form-control", @required = "required" })
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="correo">Correo</label>
-                                @Html.TextBoxFor(m => m.Correo, new { @type = "email", @id = "correo", @apellido = "correo", @maxlength = "50", @class = "form-control", @required = "required" })
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="idStatus">Estado</label>
-                                <select class="form-control" id="idStatus" name="idStatus" required>
-                                    <option value="1">Activo</option>
-                                    <option value="0">Inactivo</option>
-                                </select>
-
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label for="idRol">Rol</label>
-                                @Html.DropDownListFor(m => m.IdRol, (List<SelectListItem>)Model.ROLDROPDOWNS, new { @class = "form-control chosen-select", @id = "IdRol", @required = "required", data_placeholder = "Seleccione el rol", @autocomplete = "off" })
-                            </div>
-                        </div>
+                <div class="container-fluid text-center">
 
 
-                        <div class="form-row" id="cursoNivelSection" style="display: none;">
-                            <div class="form-group col-md-6">
-                                <label for="idCurso">Curso</label>
-                                @Html.DropDownListFor(m => m.IdCurso, (List<SelectListItem>)Model.CURSODROPDOWNS, new { @class = "form-control chosen-select", @id = "IdCurso", @required = "required", data_placeholder = "Seleccione el curso", @autocomplete = "off" })
-                            </div>
-
-                            <div id="nivelField" class="form-group col-md-6" style="display: none;">
-                                <label for="idLevel">Nivel</label>
-                                @Html.DropDownListFor(m => m.IdLevel, (List<SelectListItem>)Model.LEVELDROPDOWNS, new { @class = "form-control chosen-select", @id = "IdLevel", @required = "required", data_placeholder = "Seleccione el nivel", @autocomplete = "off" })
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label for="name">Avanze %(0 - 100)</label>
-                                @Html.TextBoxFor(m => m.Porcentaje, new { @type = "text", @id = "porcentaje", @name = "porcentaje", @maxlength = "50", @class = "form-control", @required = "required" })
-
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="apellido">Por Pagar</label>
-                                @Html.TextBoxFor(m => m.Pagar, new { @type = "text", @id = "pagar", @apellido = "pagar", @maxlength = "50", @class = "form-control", @required = "required" })
-                            </div>
-
-                        </div>
+                    <h3>EN CONSTRUCCION...</h3>
 
 
-
-
-
-
-                        <div class="modal-footer">
-                            <a class="btn btn-secondary" asp-action="Admin" asp-controller="Admin"  type="button" data-dismiss="modal">Cancelar</a>
-                           
-                            <button class="btn btn-primary" type="submit">Guardar</button>
-
-                        </div>
-                    </form>
-                    
                 </div>
                 <!-- /.container-fluid -->
 
@@ -422,28 +332,7 @@
     </a>
 
 
-    <!-- Scroll to Top Button-->
-
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Listo para irte?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="@Url.Action("Login", "User")">Logout</a>
-                </div>
-            </div>
-        </div>
-    </div>
+  
 
     <!-- Bootstrap core JavaScript-->
     <script src="~/vendor/jquery/jquery.min.js"></script>
@@ -457,119 +346,23 @@
 
     <!-- Custom scripts for all pages-->
     <script src="~/js/sb-admin-2.min.js"></script>
+    <script src="~/js/datatables/datatables.js"></script>
+    <!-- DataTables Fixed Header -->
+    <script src="~/js/datatables/datatables.fixedheader.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="~/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="~/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/datatables/fixedheader.datatables.js"></script>
+    <!-- DataTables Responsive -->
+    <script src="~/js/datatables/datatables.responsive.js"></script>
+    <script src="~/js/datatables/responsive.datatables.js"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="~/js/demo/datatables-demo.js"></script>
+
+
+
     <script src="~/plugins/sweetalert2/sweetalert2.all.min.js"></script>
     <script src="~/script/jquery.unobtrusive-ajax.js"></script>
 
-    <script>
-        $(document).ready(function () {
-            // Función para verificar y mostrar/ocultar campos
-            function toggleCursoNivel() {
-                var selectedRol = $('#IdRol').val(); // Obtiene el valor seleccionado de IdRol
-
-                if (selectedRol == '3') {
-                    $('#cursoNivelSection').show(); // Muestra los campos de Curso y Nivel
-                } else {
-                    $('#cursoNivelSection').hide(); // Oculta los campos de Curso y Nivel
-                }
-            }
-
-            // Llama a la función cuando se carga la página
-            toggleCursoNivel();
-
-            // Llama a la función cuando cambia el valor de IdRol
-            $('#IdRol').change(function () {
-                toggleCursoNivel();
-            });
-        });
-    </script>
-    <!-- Script para manejar el clic en el botón y cargar el modal -->
-    <script>
-        $(document).ready(function () {
-            $('#editUserModalButton').click(function () {
-                var userId = $(this).data('id');
-
-                $.ajax({
-                    url: '@Url.Action("Update", "Admin")',
-                    type: 'GET',
-                    data: { idUser: userId },
-                    success: function (data) {
-                        $('#editUserModalContainer').html(data);
-                        $('#formModalEdit').modal('show');
-                    },
-                    error: function () {
-                        // Manejar errores si es necesario
-                    }
-                });
-            });
-        });
-    </script>
 
 
- 
-    <script>
-        $(document).ready(function () {
-            // Funcion para accion del edit del formulario
-            $(document).ready(function () {
-                // Captura el evento submit del formulario
-                $('#edit-form').submit(function (event) {
-
-                    event.preventDefault();
-
-                    $.ajax({
-                        url: '@Url.Action("Edit", "Admin")',
-                        type: 'POST',
-                        data: $(this).serialize(),
-                        success: function (data) {
-
-                            Swal.fire({
-                                title: 'Éxito',
-                                text: data.message,
-                                icon: 'success',
-                                confirmButtonText: 'Aceptar'
-                            }).then((result) => {
-
-                                // Redirecciona a la página de edición si se hace clic en Aceptar
-                                if (result.isConfirmed) {
-                                    window.location.href = '@Url.Action("Admin", "Admin")';
-                                }
-                            });
-                        },
-                        error: function () {
-                            // Muestra un Sweet Alert con un mensaje de error
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Hubo un error al procesar la solicitud',
-                                icon: 'error',
-                                confirmButtonText: 'Aceptar'
-                            });
-                        }
-                    });
-                });
-            });
-
-        });
-    </script>
-    
-
-@* 
-    <script LANGUAGE="javascript">
-        alert("Inicio Exitoso");
-    </script>
-
-    <script>
-        document.getElementById('open-edit-modal').addEventListener('click', function (event) {
-            event.preventDefault();
-            $('#formEditModal').modal('show');
-        });
-    </script>
- *@
 </body>
 
 </html>

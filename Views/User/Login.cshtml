@@ -11,7 +11,8 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- Mobile Metas -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- Site Metas -->
     <meta name="keywords" content="" />
     <meta name="description" content="" />
@@ -36,7 +37,6 @@
             width: 99%;
             padding: -2.625rem 0.75rem;
         }</style>
-    <div class="">
         <header class="header_section">
             <div class="">
                 <div class="row">
@@ -83,7 +83,7 @@
                                             <a class="nav-link" href="contact.html">Contactanos</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="login.html">
+                                            <a class="nav-link" asp-action="Login" asp-controller="User">
                                                 <button type="button" class="btn btn-info">Login</button>
                                             </a>
                                         </li>
@@ -104,7 +104,7 @@
                 <div class="container ">
                     <div class="row gx-lg-5 align-items-center">
                         <div class="col-lg-5 mb-5 mb-lg-0">
-                            <h3 class="text-info p-3">GUIAM Students</h3>
+                            <h3 class="text-info p-3">GUIAM STUDENTS</h3>
 
                             <div class="card">
                                 <div class="card-body py-5 px-md-5">
@@ -138,12 +138,11 @@
             </div>
         </section>
 
-        <section class="container-fluid footer_section">
+        <section class="footer_section">
             <div class="container">
                 <p>&copy; 2024 All Rights Reserved By <a href="https://html.design/">Digitjez</a></p>
             </div>
         </section>
-</div>
         <!-- Scripts -->
         <script src="~/js/jquery.min.js"></script>
         <script src="~/js/bootstrap.bundle.min.js"></script>
@@ -198,7 +197,6 @@
                 });
             });
         </script>
-    </div>
 </body>
 
 </html>

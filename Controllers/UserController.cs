@@ -28,7 +28,7 @@ namespace Pautas.Controllers
         {
             var resp = _loginService.ValidateAccess(model);
 
-            if (resp.code == "True")
+            if (resp.code == "success")
             {
                 var claims = new List<Claim>
         {
@@ -36,7 +36,9 @@ namespace Pautas.Controllers
             new Claim(ClaimTypes.NameIdentifier, resp.idUser.ToString()),
             new Claim("IdRol", resp.IdRol.ToString()),
             new Claim("Curso", resp.IdCurso.ToString()), 
-            new Claim("Level", resp.IdLevel.ToString()), 
+            new Claim("Level", resp.IdLevel.ToString()),             
+            new Claim("Porcentaje", resp.Porcentaje.ToString()), 
+            new Claim("Pagar", resp.Pagar.ToString()), 
         };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

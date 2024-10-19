@@ -9,7 +9,9 @@
 
     string userAuth = User.Identity.IsAuthenticated ? User.Identity.Name : null;
     string rolAuth = User.FindFirst("IdRol")?.Value; // Aquí capturas el rol
-    string cursoAuth = User.FindFirst("Curso")?.Value; // Aquí capturas el rol
+    string cursoAuth = User.FindFirst("Curso")?.Value; // Aquí capturas el curso
+    string porcentajeAuth = User.FindFirst("Porcentaje")?.Value; 
+    string pagarAuth = User.FindFirst("Pagar")?.Value; 
 
     string roleColorClass = "";
     string buttonRoleColorClass = "";
@@ -88,7 +90,7 @@ else
 
                 <!-- Nav Item - Dashboard -->
                 <li class="nav-item active">
-                    <a class="nav-link" asp-action="Index" asp-controller="Profesor">
+                    <a class="nav-link" asp-action="Index">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
@@ -367,7 +369,7 @@ else
                                 </h6>
                                 <a class="dropdown-item d-flex align-items-center" href="#">
                                     <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle" src="~/img/undraw_profile_2.svg" alt="...">
+                                            <img class="rounded-circle" src="~/img/Guian_negro.jpg" alt="...">
                                         <div class="status-indicator bg-success"></div>
                                     </div>
                                     <div class="font-weight-bold">

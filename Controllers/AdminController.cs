@@ -100,6 +100,13 @@ namespace Pautas.Controllers
             return View(model);
         }
 
+
+        public IActionResult Calendario()
+        {
+
+            return View();
+        }
+
         #region Create User GET
         [HttpGet]
         public IActionResult Create()

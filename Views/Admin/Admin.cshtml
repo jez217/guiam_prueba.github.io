@@ -57,9 +57,9 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="Admin">
                 <div class="sidebar-brand-icon">
-                    <img src="img/Guian_negro.jpg" alt="" style="border-radius: 50%;" width="50px">
+                    <img src="~/img/Guian_negro.jpg" alt="" style="border-radius: 50%;" width="50px">
                 </div>
                 <div class="sidebar-brand-text mx-3">Academy <sup>1</sup></div>
             </a>
@@ -69,7 +69,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" href="Admin">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Panel GUIAM</span>
                 </a>
@@ -99,7 +99,23 @@
                     </div>
                 </div>
             </li>
-
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+                    <i class="fas fa-fw fa-calendar"></i>
+                    <span>Eventos</span>
+                </a>
+                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Eventos Guiam:</h6>
+                        <a class="collapse-item" asp-action="Calendario" asp-controller="Admin">
+                            Eventos<i class="fas fa-fw fa-calendar text-primary"></i>
+                        </a>
+                        @*         <a class="collapse-item" href="utilities-border.html">Borders</a>
+                        <a class="collapse-item" href="utilities-animation.html">Animations</a>
+                        <a class="collapse-item" href="utilities-other.html">Other</a> *@
+                    </div>
+                </div>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -360,22 +376,26 @@
                                     <tbody>
                                         @foreach (var item in Model.ListaUserDetail)
                                         {
-                                            // Determinar la clase de la fila en función del rol
-                                            var rowClass = item.IdRol switch
+                                            var IdRol = item.IdRol switch
                                             {
-                                                1 => "bg-warning", // Rol 1: Color de fondo amarillo
-                                                2 => "bg-success", // Rol 2: Color de fondo verde
-                                                3 => "bg-info",    // Rol 3: Color de fondo azul
-                                                _ => ""            // Otros roles: Sin color de fondo específico
+                                                1 => "Administrador", 
+                                                2 => "Profesor",
+                                                3 => "Estudiante",   
+                                                _ => ""       
                                             };
-
+                                            var IdStatus = item.IdStatus switch
+                                            {
+                                                1 => "Activo",
+                                                0 => "Inactivo",
+                                                _ => ""           
+                                            };
                                             <tr class="">
                                                 <td>@Html.DisplayFor(m => item.idUser)</td>
                                                 <td>@Html.DisplayFor(m => item.Name)</td>
                                                 <td>@Html.DisplayFor(m => item.Apellido)</td>
                                                 <td>@Html.DisplayFor(m => item.Clave)</td>
-                                                <td>@Html.DisplayFor(m => item.IdRol)</td>
-                                                <td>@Html.DisplayFor(m => item.IdStatus)</td>
+                                                <td>@Html.DisplayFor(m => IdRol)</td>
+                                                <td>@Html.DisplayFor(m => IdStatus)</td>
                                                 <td>@Html.DisplayFor(m => item.Correo)</td>
                                                 <td>
                                                     <a data-bs-toggle="tooltip" title="Edita la pauta" class="btn btn-outline-success  mb-3" href="@Url.Action("Edit", "Admin", new { id = item.idUser })">
@@ -487,12 +507,23 @@
                                 @Html.DropDownListFor(m => m.IdCurso, (List<SelectListItem>)Model.CURSODROPDOWNS, new { @class = "form-control chosen-select", @id = "IdCurso", @required = "required", data_placeholder = "Seleccione el curso", @autocomplete = "off" })
                             </div>
 
-                            <div id="nivelField" class="form-group col-md-6" style="display: none;">
+                            <div class="form-group col-md-6" >
                                 <label for="idLevel">Nivel</label>
                                 @Html.DropDownListFor(m => m.IdLevel, (List<SelectListItem>)Model.LEVELDROPDOWNS, new { @class = "form-control chosen-select", @id = "IdLevel", @required = "required", data_placeholder = "Seleccione el nivel", @autocomplete = "off" })
                             </div>
-                        </div>
+ 
+                                <div class="form-group col-md-6">
+                                    <label for="name">Avanze %(0 - 100)</label>
+                                    @Html.TextBoxFor(m => m.Porcentaje, new { @type = "text", @id = "porcentaje", @name = "porcentaje", @maxlength = "50", @class = "form-control", @required = "required" })
 
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="apellido">Por Pagar</label>
+                                    @Html.TextBoxFor(m => m.Pagar, new { @type = "text", @id = "pagar", @apellido = "pagar", @maxlength = "50", @class = "form-control", @required = "required" })
+                                </div>
+
+                        </div>
+                        
                         <div class="modal-footer">
                             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
                             <button class="btn btn-success" type="submit">Guardar</button>

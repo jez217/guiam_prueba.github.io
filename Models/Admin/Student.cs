@@ -7,7 +7,8 @@ namespace Pautas.Models.Admin
         public int Id_student { get; set; }
         public string Name { get; set; }
         public int Id_level { get; set; }
-
+        public int Porcentaje { get; set; }
+        public int Pagar { get; set; }
 
     }
 }

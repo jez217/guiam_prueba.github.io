@@ -15,6 +15,18 @@
             padding: 0rem;
         }
 
+        .spinner {
+            width: 40px; /* Ajusta el tamaño del spinner */
+            height: 40px; /* Ajusta el tamaño del spinner */
+            border: 5px solid #f3f3f3; /* Color de fondo del spinner */
+            border-top: 5px solid #3498db; /* Color del borde superior */
+            border-radius: 50%; /* Forma circular */
+            animation: spin 1s linear infinite; /* Animación de giro */
+            margin: 0 auto; /* Centrar el spinner */
+        }
+
+
+
 
   </style>
         <div class="container-fluid mt-1">
@@ -23,9 +35,8 @@
 
         <!-- Contenedor que no se vea solo para Telefonos y Tablets -->
         <div class="d-none d-md-flex align-items-center mb-4">
-            <a class="mr-3" asp-action="Index" asp-controller="Profesor">
-                <i class="bi bi-arrow-left-circle-fill" style="color: #7271a7; font-size: 30px;"></i>
-            </a>
+            <a class="mr-3" onclick="window.history.back()"><i class="bi bi-arrow-left-circle-fill" style="color: #7271a7; font-size: 30px;"></i></a>
+
 
             <button class="btn btn-primary" onclick="openCreateFolderModal(@Model.Id)">
                 Crear Subcarpeta                <i class="bi bi-folder-plus mr-2"></i>
@@ -396,18 +407,21 @@
                             <label for="fileName">Archivo</label>
                             <input type="file" class="form-control" id="fileName" name="file" required />
                         </div>
-
-
-                        <input type="hidden" id="Id" name="Id" value="@ViewBag.Id " />
+                        <input type="hidden" id="Id" name="Id" value="@ViewBag.Id" />
                         <input type="hidden" id="nivel" name="nivel" value="@ViewBag.id_level" />
-
-@*                         <input type="hidden" name="FolderId" value="@Model.Id" />
- *@                        <button type="submit" class="btn btn-primary">Subir</button>
+                        <button type="submit" class="btn btn-primary">Subir</button>
                     </form>
+
+                    <!-- Indicador de Carga -->
+                    <div id="loadingSpinner" style="display: none; text-align: center; margin-top: 20px;">
+                        <div class="spinner"></div>
+                        <p>Subiendo archivo, por favor espere...</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Modal para renombrar file -->
     <div class="modal fade" id="renameFileModal" tabindex="-1" role="dialog" aria-labelledby="renameFileModalLabel" aria-hidden="true">
@@ -435,35 +449,50 @@
     </div>
 
     <!-- Modal para renombrar carpeta -->
-    <div class="modal fade" id="renameFolderModal" tabindex="-1" role="dialog" aria-labelledby="renameFolderModalLabel" aria-hidden="true">
+    <div id="uploadFileModal" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="renameFolderModalLabel">Renombrar Carpeta</h5>
+                    <h5 class="modal-title">Subir Archivo</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="renameFolderForm">
-                        <input type="hidden" id="renameFolderId" name="id" />
-                        <input type="hidden" id="nivel" name="nivel" value="@ViewBag.id_level" />
+                    <form id="uploadFileForm" method="post" action="@Url.Action("UploadSubFile", "Profesor")" enctype="multipart/form-data">
                         <div class="form-group">
-                            <label for="renameFolderName">Nuevo Nombre</label>
-                            <input type="text" class="form-control" id="renameFolderName" name="name" required />
+                            <label for="fileName">Archivo</label>
+                            <input type="file" class="form-control" id="fileName" name="file" required />
                         </div>
-                        <button type="submit" class="btn btn-primary">Renombrar</button>
+                        <input type="hidden" id="Id" name="Id" value="@ViewBag.Id" />
+                        <input type="hidden" id="nivel" name="nivel" value="@ViewBag.id_level" />
+                        <button type="submit" class="btn btn-primary">Subir</button>
                     </form>
+
+                    <!-- Indicador de Carga -->
+                    <div id="loadingSpinner" style="display: none; text-align: center; margin-top: 20px;">
+                        <div class="spinner"></div>
+                        <p>Subiendo archivo, por favor espere...</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
 
+
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-    <script></script>
+    <script>
+        $(document).ready(function () {
+            $('#uploadFileForm').on('submit', function () {
+                $('#loadingSpinner').show(); // Mostrar el loader cuando se envía el formulario
+            });
+        });
+
+
+    </script>
     <script>
         function openCreateFolderModal(parentFolderId) {
             $('#parentFolderId').val(parentFolderId);

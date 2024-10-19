@@ -20,9 +20,10 @@
             <h1>@ViewBag.name</h1>
 
             <div class="d-sm-flex align-items-center justify-content-left mb-4">
-                <a class="mr-3" asp-action="Index" asp-controller="Profesor">
+                @* <a class="mr-3" asp-action="Index" asp-controller="Profesor">
                     <i class="bi bi-arrow-left-circle-fill" style="color: #7271a7; font-size: 30px;"></i>
-                </a>
+                </a> *@
+                <a class="mr-3" onclick="window.history.back()"><i class="bi bi-arrow-left-circle-fill" style="color: #7271a7; font-size: 30px;"></i></a>
                 <button class="btn btn-primary" onclick="openCreateFolderModal()">Crear Carpeta</button>
 
             </div>

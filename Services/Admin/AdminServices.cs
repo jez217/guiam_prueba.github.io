@@ -47,7 +47,10 @@ namespace Pautas.Services.Users
                                     IdStatus = dr.GetInt32Null(dr.GetOrdinal("Id_status")),
                                     Correo = dr.GetStringNull(dr.GetOrdinal("Correo")),
                                     Apellido = dr.GetStringNull(dr.GetOrdinal("Apellido")),
-                                    Clave = dr.GetStringNull(dr.GetOrdinal("Clave"))
+                                    Clave = dr.GetStringNull(dr.GetOrdinal("Clave")),
+                                    Porcentaje = dr.GetInt32(dr.GetOrdinal("Porcentaje")),
+                                    Pagar = dr.GetInt32(dr.GetOrdinal("Pagar"))
+
                                 };
                                 user = obj;
                             }
@@ -125,7 +128,8 @@ namespace Pautas.Services.Users
                         cmd.Parameters.AddWithValue("@Correo", model.Correo ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@Apellido", model.Apellido ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@Clave", model.Clave ?? (object)DBNull.Value);
-
+                        cmd.Parameters.AddWithValue("@Porcentaje", model.Porcentaje ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Pagar", model.Pagar ?? (object)DBNull.Value);
                         // Output parameters
                         SqlParameter userIdParam = new SqlParameter("@Id_user", SqlDbType.Int) { Direction = ParameterDirection.Output };
                         SqlParameter messageParam = new SqlParameter("@MESSAGE", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
@@ -179,7 +183,8 @@ namespace Pautas.Services.Users
                         cmd.Parameters.Add(new SqlParameter("@Apellido", model.Apellido));
                         cmd.Parameters.Add(new SqlParameter("@Clave", model.Clave));
                         cmd.Parameters.Add(new SqlParameter("@IdCurso", model.IdCurso));
-
+                        cmd.Parameters.Add(new SqlParameter("@Porcentaje", model.Porcentaje));
+                        cmd.Parameters.Add(new SqlParameter("@Pagar", model.Pagar));
                         // Adding output parameters
                         SqlParameter spMessage = new SqlParameter("@MESSAGE", SqlDbType.NVarChar, -1);
                         spMessage.Direction = ParameterDirection.Output;

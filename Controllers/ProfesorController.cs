@@ -350,7 +350,6 @@ namespace Pautas.Controllers
 
             return View(folder);
 
-
         }
 
         //[HttpGet]
@@ -418,9 +417,25 @@ namespace Pautas.Controllers
         {
             try
             {
-                _profesorServices.DeleteFile(id); // Asegúrate de que este método existe en tu servicio
-                return Json(new { success = true, message = "¡Archivo eliminado correctamente!" });
+                var file = _profesorServices.GetFileId(id); // Obtener el archivo por ID
+                if (file == null)
+                {
+                    return Json(new { success = false, message = "El archivo no se encontró." });
+                }
 
+                // Eliminar el archivo del sistema de archivos
+                if (!string.IsNullOrEmpty(file.FilePath))
+                {
+                    if (System.IO.File.Exists(file.FilePath))
+                    {
+                        System.IO.File.Delete(file.FilePath); // Eliminar archivo del sistema de archivos
+                    }
+                }
+
+                // Luego eliminar el registro de la base de datos
+                _profesorServices.DeleteFile(id); // Asegúrate de que este método existe en tu servicio
+
+                return Json(new { success = true, message = "¡Archivo eliminado correctamente!" });
             }
             catch (Exception ex)
             {

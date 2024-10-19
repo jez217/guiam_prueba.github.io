@@ -11,10 +11,11 @@
         <div class="container-fluid mt-1">
             <h1>@ViewBag.name</h1>
                 <div class="container mt-4">
-            </div> 
+            </div>
+
 
             <div class="d-sm-flex align-items-center justify-content-left mb-4">
- 
+            <a class="mr-3" onclick="window.history.back()"><i class="bi bi-arrow-left-circle-fill" style="color: #7271a7; font-size: 30px;"></i></a>
                 <button class="btn btn-primary" onclick="openCreateFolderModal()">Crear Carpeta</button>
                
             </div>
@@ -93,13 +94,14 @@
                 </div>
             </div>
         </div>
-    <script src="~/js/jquery.min.js"></script>
-    <script src="~/js/bootstrap.bundle.min.js"></script>
+
     <script>
         function openCreateFolderModal(parentFolderId = null) {
             $('#parentFolderId').val(parentFolderId);
             $('#createFolderModal').modal('show');
         }
     </script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

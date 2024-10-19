@@ -1,12 +1,17 @@
 ﻿@model List<Pautas.Models.Profesor.FoldersCurso>
-
+@{
+    string porcentajeAuth = User.FindFirst("Porcentaje")?.Value;
+    string pagarAuth = User.FindFirst("Pagar")?.Value;
+}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <title>Gestión de Carpetas y Archivos</title>
 </head>
-<body>
+<body onload="mostrarFechaActual()">
+
+  
     <div id="wrapper" class="sidebar-toggled">
 
         <div class="container-fluid mt-1">
@@ -26,9 +31,9 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Earnings (Monthly)
+                                        Fecha Actual
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="fechaActual"></div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -61,11 +66,11 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                        Tasks
+                                        Porcentaje de avance
                                     </div>
                                     <div class="row no-gutters align-items-center">
                                         <div class="col-auto">
-                                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@ViewBag.userPorcentaje%</div>
                                         </div>
                                         <div class="col">
                                             <div class="progress progress-sm mr-2">
@@ -87,9 +92,9 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                        Earnings (Annual)
+                                       Por Pagar
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">$@ViewBag.userPagar</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -180,6 +185,19 @@
         function openCreateFolderModal(parentFolderId = null) {
             $('#parentFolderId').val(parentFolderId);
             $('#createFolderModal').modal('show');
+        }
+    </script>
+    <script>
+        function mostrarFechaActual() {
+            var fecha = new Date();
+            var dia = fecha.getDate();
+            var mes = fecha.getMonth() + 1; // Los meses comienzan desde 0
+            var año = fecha.getFullYear();
+
+            // Formato: dd/mm/yyyy
+            var fechaActual = (dia < 10 ? '0' : '') + dia + '/' + (mes < 10 ? '0' : '') + mes + '/' + año;
+
+            document.getElementById("fechaActual").textContent = fechaActual;
         }
     </script>
 </body>

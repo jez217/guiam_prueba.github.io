@@ -89,12 +89,13 @@ namespace Pautas.Controllers
         public IActionResult Index()
         {
             // Obtener el ID y nivel del usuario desde los claims
-
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             var userLevelClaim = User.Claims.FirstOrDefault(c => c.Type == "Level");  // Reclamo personalizado para el nivel
             var userCursoClaim = User.Claims.FirstOrDefault(c => c.Type == "Curso");  // Reclamo personalizado para el curso
+            var userPorcentajeClaim = User.Claims.FirstOrDefault(c => c.Type == "Porcentaje");  
+            var userPagarClaim = User.Claims.FirstOrDefault(c => c.Type == "Pagar");  
 
-            if (userIdClaim == null || userLevelClaim == null || userCursoClaim == null)
+            if (userIdClaim == null || userLevelClaim == null || userCursoClaim == null || userPorcentajeClaim == null || userPagarClaim == null)
             {
                 return Unauthorized();
             }
@@ -102,12 +103,15 @@ namespace Pautas.Controllers
             string userId = userIdClaim.Value;
             string userLevel = userLevelClaim.Value;
             string userCurso = userCursoClaim.Value;
+            string userPorcentaje = userPorcentajeClaim.Value;
+            string userPagar = userPagarClaim.Value;
+
+            ViewBag.userPorcentaje = userPorcentaje;
+            ViewBag.userPagar = userPagar;
+
 
             // Obtener todos los folders para el nivel del estudiante
             var allFolders = _adminService.GetFoldersByCurso(userCurso);
-
-        
-
 
             return View(allFolders);
         }

@@ -21,7 +21,8 @@ namespace Pautas.Models.Login
         public string? Apellido { get; set; }
         public string Token { get; set; }
         public string Descripcion { get; set; }
-
+        public int? Porcentaje { get; set; }
+        public int? Pagar { get; set; }
         public List<SelectListItem> LEVELDROPDOWNS { get; set; }
         public List<SelectListItem> CURSODROPDOWNS { get; set; }
         public List<SelectListItem> ROLDROPDOWNS { get; set; }

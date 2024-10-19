@@ -45,35 +45,63 @@ namespace Pautas.Services.Users
                         cmd.Parameters.Add(sp_mess);
 
                         SqlParameter sp_curso = new SqlParameter("@Id_Curso", SqlDbType.Int);
-                        sp_curso.Direction = ParameterDirection.Output; 
-                        cmd.Parameters.Add(sp_curso);           
+                        sp_curso.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(sp_curso);
 
                         SqlParameter sp_level = new SqlParameter("@Id_Level", SqlDbType.Int);
                         sp_level.Direction = ParameterDirection.Output;
                         cmd.Parameters.Add(sp_level);
 
+                        SqlParameter sp_porc = new SqlParameter("@Porcentaje", SqlDbType.Int);
+                        sp_porc.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(sp_porc);
+
+                        SqlParameter sp_pagar = new SqlParameter("@Pagar", SqlDbType.Int);
+                        sp_pagar.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(sp_pagar);
+
                         sql.Open();
                         cmd.ExecuteNonQuery();
 
-                        resp.idUser = Convert.ToInt32(spUserId.Value);
-                        resp.Name = spUserName.Value.ToString();
-                        resp.Clave = model.Clave;
-                        resp.IdRol = Convert.ToInt32(spRolId.Value);
-                        resp.IdCurso = sp_curso.Value != DBNull.Value ? Convert.ToInt32(sp_curso.Value) : (int?)null; // Manejar el caso de NULL
-                        resp.IdLevel = sp_level.Value != DBNull.Value ? Convert.ToInt32(sp_level.Value) : (int?)null;
-                        resp.code = sp_resp.Value.ToString();
-                        resp.message = sp_mess.Value.ToString();
+                        // Solo asignar valores si RESP es true
+                        bool isSuccess = Convert.ToBoolean(sp_resp.Value);
+                        resp.code = isSuccess ? "success" : "error";
+                        resp.message = sp_mess.Value != DBNull.Value ? sp_mess.Value.ToString() : "Error desconocido";
+
+                        if (isSuccess)
+                        {
+                            // Asignar valores solo si RESP es exitoso
+                            resp.idUser = spUserId.Value != DBNull.Value ? Convert.ToInt32(spUserId.Value) : (int?)null;
+                            resp.Name = spUserName.Value != DBNull.Value ? spUserName.Value.ToString() : null;
+                            resp.IdRol = spRolId.Value != DBNull.Value ? Convert.ToInt32(spRolId.Value) : (int?)null;
+                            resp.IdCurso = sp_curso.Value != DBNull.Value ? Convert.ToInt32(sp_curso.Value) : (int?)null;
+                            resp.IdLevel = sp_level.Value != DBNull.Value ? Convert.ToInt32(sp_level.Value) : (int?)null;
+                            resp.Porcentaje = sp_porc.Value != DBNull.Value ? Convert.ToInt32(sp_porc.Value) : (int?)null;
+                            resp.Pagar = sp_pagar.Value != DBNull.Value ? Convert.ToInt32(sp_pagar.Value) : (int?)null;
+                        }
+                        else
+                        {
+                            // Asignar valores nulos o vacíos en caso de fallo
+                            resp.idUser = null;
+                            resp.Name = null;
+                            resp.IdRol = null;
+                            resp.IdCurso = null;
+                            resp.IdLevel = null;
+                            resp.Porcentaje = null;
+                            resp.Pagar = null;
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 resp.code = "error";
-                resp.message = ex.Message;
+                resp.message = ex.Message; // Asignar mensaje de excepción en caso de error
             }
             return resp;
         }
         #endregion
+
 
         public FoldersCurso GetFolderCursoById(int id)
         {
